@@ -8,7 +8,6 @@ class House {
 public:
     House(const std::string& inputFile) {
         loadHouse(inputFile);
-        ensureWalls();
         adjustDockingStationPosition();
     }
 
@@ -27,6 +26,7 @@ public:
 private:
     std::vector<std::vector<int>> grid;
     std::pair<int, int> dockingStation;
+    int totalDirt = 0;
 
     void loadHouse(const std::string& path) {
         std::ifstream file(path);
@@ -48,8 +48,11 @@ private:
             int y = 0;
             while (ss >> value) {
                 if (value == 10) {
-                    dockingStation = {x, y};  // Temporarily store initial docking position
+                    dockingStation = {x + 1, y + 1};  // Temporarily store initial docking position corresponding to adding walls
                     value = 0;  // Treat the docking station like clean floor
+                }
+                if(value > 0 && value < 10) {
+                    totalDirt += value;
                 }
                 row.push_back(value);
                 if (ss >> comma && comma != ',') {
@@ -79,10 +82,6 @@ private:
             grid.push_back(row);
         }
         grid.push_back(wallRow); // Bottom wall
-    }
-
-    void ensureWalls() {
-        // Walls are added in the loadHouse function
     }
 
     void adjustDockingStationPosition() {

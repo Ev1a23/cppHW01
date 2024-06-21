@@ -27,10 +27,11 @@ public:
         }
     }
 
-    bool isBatteryLow() const {
-        return battery < (maxBattery * 0.2);  // Example threshold, adjust as needed
+    int batteryLevel()
+    {
+        return battery;
     }
-
+    
     std::pair<int, int> getPosition() const {
         return position;
     }

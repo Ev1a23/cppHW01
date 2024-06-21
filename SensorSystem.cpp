@@ -8,12 +8,31 @@ public:
         return house.getDirtLevel(pos.first, pos.second);
     }
 
-    std::array<bool, 4> checkWalls() const {
+    std::vector<std::pair<int, int>> checkNonWalls() const {
         auto pos = cleaner.getPosition();
-        return {house.isWall(pos.first, pos.second - 1),   // North
-                house.isWall(pos.first + 1, pos.second),  // East
-                house.isWall(pos.first, pos.second + 1),   // South
-                house.isWall(pos.first - 1, pos.second)};  // West
+        std::vector<std::pair<int, int>> nonWallLocations;
+
+        // North
+        if (!house.isWall(pos.first, pos.second - 1)) {
+            nonWallLocations.push_back({pos.first, pos.second - 1});
+        }
+
+        // East
+        if (!house.isWall(pos.first + 1, pos.second)) {
+            nonWallLocations.push_back({pos.first + 1, pos.second});
+        }
+
+        // South
+        if (!house.isWall(pos.first, pos.second + 1)) {
+            nonWallLocations.push_back({pos.first, pos.second + 1});
+        }
+
+        // West
+        if (!house.isWall(pos.first - 1, pos.second)) {
+            nonWallLocations.push_back({pos.first - 1, pos.second});
+        }
+
+        return nonWallLocations;
     }
 
     int batteryStatus() const {
