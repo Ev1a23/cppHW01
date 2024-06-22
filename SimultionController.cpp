@@ -1,3 +1,4 @@
+#include <iostream>
 class SimulationController {
 public:
     SimulationController(std::string inputFilePath, std::string outputFilePath)
@@ -12,19 +13,22 @@ public:
     void runSimulation()
     {
         int cnt = 0;
-        pair<int, int> curPos = cleaner.getPosition();
         while(house.getDirtLevel() > 0 && house.getMaxAllowedSteps() > cnt)
         {
             cnt++;
+            pair<int, int> curPos = cleaner.getPosition();
             std::pair<int, int> nextMove = algorithm.decideNextMove();
+            std::cout << "Current Position: (" << curPos.first << ", " << curPos.second << "), Next Move: (" << nextMove.first << ", " << nextMove.second << ")\n";
             if(nextMove == house.getDockingStation())
             {
                 if(nextMove != curPos)
                 {
+                    std:cout << "Moving to docking station\n";
                     cleaner.move(nextMove);
                 }
                 else
                 {
+                    std:cout << "Charging at docking station\n";
                     cleaner.charge();
                 }
             }
@@ -32,10 +36,12 @@ public:
             {
                 if(nextMove != curPos)
                 {
+                    std:cout << "Moving to next location\n";
                     cleaner.move(nextMove);
                 }
                 else
                 {
+                    std:cout << "Cleaning at current location\n";
                     cleaner.clean();
                 }
             }
