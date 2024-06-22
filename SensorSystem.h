@@ -9,7 +9,10 @@ class SensorSystem {
 public:
     SensorSystem(const House& house, const VacuumCleaner& cleaner);
     std::vector<std::pair<int, int>> checkNonWalls() const;
-    int batteryStatus() const;  // Declaration added if batteryStatus() is needed
+    int batteryStatus() const;
+	int checkDirt() const;
+	House getHouse() const;
+	VacuumCleaner getCleaner() const;
 
 private:
     const House& house;

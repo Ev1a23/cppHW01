@@ -34,3 +34,11 @@ int SensorSystem::batteryStatus() const {
     // Modify the method according to your VacuumCleaner's implementation
     return cleaner.batteryLevel();
 }
+
+House SensorSystem::getHouse() const {
+	return house;
+}
+
+VacuumCleaner SensorSystem::getCleaner() const {
+	return cleaner;
+}

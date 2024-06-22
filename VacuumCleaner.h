@@ -12,6 +12,7 @@ public:
     void clean();
     void charge();
     int batteryLevel() const;
+	int maxBatteryLevel() const;
     std::pair<int, int> getPosition() const;
 
 private:

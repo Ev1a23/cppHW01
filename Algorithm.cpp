@@ -1,17 +1,19 @@
 #include "Algorithm.h"
+#include "VacuumCleaner.h"
 
 Algorithm::Algorithm(const SensorSystem& sensors)
-    : sensors(sensors), dockingStation(sensors.house.getDockingStation()) {}
+    : sensors(sensors), dockingStation(sensors.getHouse().getDockingStation()) {}
 
 std::pair<int, int> Algorithm::decideNextMove()
 {
-    auto pos = sensors.cleaner.getPosition();
-    if (pos == dockingStation && sensors.cleaner.batteryLevel() < sensors.cleaner.maxBattery())
+	VacuumCleaner cleaner = sensors.getCleaner();
+    auto pos = cleaner.getPosition();
+    if (pos == dockingStation && cleaner.batteryLevel() < cleaner.maxBatteryLevel())
     {
         return pos;
     }
 
-    if (sensors.battery() == path.size() && !path.empty())
+    if (static_cast<std::vector<int>::size_type>(cleaner.batteryLevel()) == path.size() && !path.empty())
     {
         std::pair<int, int> prevStep = path.back();
         path.pop_back();
@@ -33,7 +35,7 @@ std::pair<int, int> Algorithm::decideNextMove()
     std::pair<int, int> nextMove = pos;
     for (auto& location : nonWallLocations)
     {
-        int dirtLevel = sensors.house.getDirtLevel(location.first, location.second);
+        int dirtLevel = sensors.getHouse().getDirtLevel(location.first, location.second);
         if (cleanedLocations.find(location) == cleanedLocations.end() && dirtLevel > 0 && dirtLevel < minDirtLevel)
         {
             nextMove = location;

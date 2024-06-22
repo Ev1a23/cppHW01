@@ -28,6 +28,11 @@ int VacuumCleaner::batteryLevel() const
     {
         return battery;
     }
+
+int VacuumCleaner::maxBatteryLevel() const
+	{
+		return maxBattery;
+	}
     
 std::pair<int, int> VacuumCleaner::getPosition() const {
         return position;
