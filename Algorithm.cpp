@@ -9,6 +9,7 @@ public:
         {
             return pos;
         }
+
         if(sensors.battery == path.size() && !path.empty())
         {
             std::pair<int, int> prevStep = path.back();
@@ -24,6 +25,7 @@ public:
             }
             return pos;
         }
+        
         cleanedLocations.insert(pos);
         std::vector<std::pair<int, int>> nonWallLocations = sensors.checkNonWalls();
         int minDirtLevel = 100;

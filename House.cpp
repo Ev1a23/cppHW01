@@ -23,10 +23,24 @@ public:
         return dockingStation;
     }
 
+    int getTotalDirt() const {
+        return totalDirt;
+    }
+
+    int getMaxBatterySteps() const {
+        return maxBatterySteps;
+    }
+
+    int getMaxAllowedSteps() const {
+        return maxAllowedSteps;
+    }
+
 private:
     std::vector<std::vector<int>> grid;
     std::pair<int, int> dockingStation;
     int totalDirt = 0;
+    int maxBatterySteps = 0;
+    int maxAllowedSteps = 0;
 
     void loadHouse(const std::string& path) {
         std::ifstream file(path);
@@ -35,6 +49,17 @@ private:
         }
 
         std::string line;
+        if (std::getline(file, line)) {
+            auto pos = line.find(":");
+            if (pos != std::string::npos) {
+                maxBatterySteps = std::stoi(line.substr(pos + 1));
+            }
+        }
+        if (std::getline(file, line)) {
+            auto pos = line.find(":");
+            if (pos != std::string::npos) {
+                maxAllowedSteps = std::stoi(line.substr(pos + 1));
+            }
         int x = 0;
         int maxWidth = 0;
         std::vector<std::vector<int>> tempGrid;
