@@ -7,7 +7,6 @@
 
 class FileManagement {
 public:
-    static House loadHouse(const std::string& path);
     static void saveOutput(const std::string& path, const std::vector<std::string>& data);
 };
 

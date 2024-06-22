@@ -2,11 +2,6 @@
 #include <fstream>
 #include <stdexcept>
 
-House FileManagement::loadHouse(const std::string& path) {
-    House house(path);
-    return house;
-}
-
 void FileManagement::saveOutput(const std::string& path, const std::vector<std::string>& data) {
     std::ofstream file(path);
     if (!file.is_open()) {

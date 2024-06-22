@@ -2,15 +2,13 @@
 #include <iostream>
 
 SimulationController::SimulationController(const std::string& inputFilePath, const std::string& outputFilePath)
-    : inputFilePath(inputFilePath), outputFilePath(outputFilePath)
-{
-    house = FileManagement::loadHouse(inputFilePath);
-    // Assume getDockingStation() returns the needed position
-    cleaner = VacuumCleaner(10, house.getDockingStation());
-    sensors = SensorSystem(house, cleaner);
-    algorithm = Algorithm(sensors);
-}
-
+: 	inputFilePath(inputFilePath), 
+	outputFilePath(outputFilePath),
+	house(House(inputFilePath)), 
+	cleaner(10, house.getDockingStation()), 
+	sensors(house, cleaner),
+	algorithm(sensors)
+{}
 void SimulationController::runSimulation()
 {
     int cnt = 0;
@@ -26,7 +24,7 @@ void SimulationController::runSimulation()
             if (nextMove != curPos)
             {
                 std::cout << "Moving to docking station\n";
-                cleaner.move(nextMove);
+                cleaner.move(nextMove.first, nextMove.second);
             }
             else
             {
@@ -39,7 +37,7 @@ void SimulationController::runSimulation()
             if (nextMove != curPos)
             {
                 std::cout << "Moving to next location\n";
-                cleaner.move(nextMove);
+                cleaner.move(nextMove.first, nextMove.second);
             }
             else
             {

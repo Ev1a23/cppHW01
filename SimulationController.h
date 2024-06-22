@@ -15,13 +15,13 @@ public:
     void runSimulation();
 
 private:
+    std::string inputFilePath;
+    std::string outputFilePath;
     House house;
     VacuumCleaner cleaner;
     SensorSystem sensors;
     Algorithm algorithm;
     std::vector<std::string> log;
-    std::string inputFilePath;
-    std::string outputFilePath;
 };
 
 #endif // SIMULATIONCONTROLLER_H
