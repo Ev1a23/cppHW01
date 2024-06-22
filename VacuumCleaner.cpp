@@ -1,5 +1,4 @@
-#include <cmath>  // Include cmath for std::round
-
+#include "VacuumCleaner.h"
 class VacuumCleaner {
 public:
     VacuumCleaner(int maxBattery, const std::pair<int, int>& startPosition)

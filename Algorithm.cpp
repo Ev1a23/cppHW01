@@ -1,6 +1,4 @@
-#include <set>
-#include <vector>
-#include <utility>
+#include "Algorithm.h"
 class Algorithm {
 public:
     Algorithm(const SensorSystem& sensors);

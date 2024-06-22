@@ -1,3 +1,4 @@
+#include "SensorSystem.h"
 class SensorSystem {
 public:
     SensorSystem(const House& house, const VacuumCleaner& cleaner)

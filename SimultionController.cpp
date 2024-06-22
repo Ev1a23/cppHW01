@@ -1,4 +1,4 @@
-#include <iostream>
+#include "SimulationController.h"
 class SimulationController {
 public:
     SimulationController(std::string inputFilePath, std::string outputFilePath)

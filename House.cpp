@@ -1,9 +1,4 @@
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <stdexcept>
-#include <algorithm>
-
+#include "House.h"
 class House {
 public:
     House(const std::string& inputFile) {
