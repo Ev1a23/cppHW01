@@ -4,31 +4,32 @@ TARGET=myrobot
 SRC=$(wildcard *.cpp)
 OBJ=$(SRC:.cpp=.o)
 
-# Corrected rules for compiling object files
-VacuumCleaner.o: VacuumCleaner.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+.PHONY: all clean
 
 all: $(TARGET)
 
+# Compile the target from all object files
 $(TARGET): $(OBJ)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Corrected dependency and compilation command
+# Rules for individual object files
+VacuumCleaner.o: VacuumCleaner.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 main.o: main.cpp SimulationController.o
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-Algoritm.o: Algoritm.cpp SensorSystem.o
+Algorithm.o: Algorithm.cpp SensorSystem.o
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 FileManagement.o: FileManagement.cpp House.o
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# This rule seems to be a duplicate of the main.o rule and should be removed or corrected
-# Main.o: SimulationController.o
-# 	$(CXX) $(CXXFLAGS) -o Main.cpp $^
-
 SensorSystem.o: SensorSystem.cpp House.o VacuumCleaner.o
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-SimulationController.o: SimulationController.cpp VacuumCleaner.o SensorSystem.o House.o Algoritm.o
+SimulationController.o: SimulationController.cpp VacuumCleaner.o SensorSystem.o House.o Algorithm.o
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+clean:
+	rm -f $(OBJ) $(TARGET)
