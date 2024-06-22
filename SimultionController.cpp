@@ -42,7 +42,7 @@ public:
                 else
                 {
                     std:cout << "Cleaning at current location\n";
-                    cleaner.clean();
+                    house.cleanPos(nextMove.first, nextMove.second);
                 }
             }
             

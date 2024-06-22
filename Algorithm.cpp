@@ -1,4 +1,6 @@
 #include <set>
+#include <vector>
+#include <utility>
 class Algorithm {
 public:
     Algorithm(const SensorSystem& sensors);
@@ -25,7 +27,7 @@ public:
             }
             return pos;
         }
-        
+
         cleanedLocations.insert(pos);
         std::vector<std::pair<int, int>> nonWallLocations = sensors.checkNonWalls();
         int minDirtLevel = 100;

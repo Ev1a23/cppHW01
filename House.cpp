@@ -35,6 +35,11 @@ public:
         return maxAllowedSteps;
     }
 
+    void cleanPos(int x, int y)
+    {
+        grid[x][y] = grid[x][y] - 1;
+    }
+
 private:
     std::vector<std::vector<int>> grid;
     std::pair<int, int> dockingStation;
