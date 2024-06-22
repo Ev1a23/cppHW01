@@ -8,7 +8,6 @@ class House {
 public:
     House(const std::string& inputFile) {
         loadHouse(inputFile);
-        adjustDockingStationPosition();
     }
 
     int getDirtLevel(int x, int y) const {
@@ -97,7 +96,7 @@ private:
 
         // Normalize widths and add walls at left and right if necessary
         for (auto& row : tempGrid) {
-            if (row.size() < maxWidth) {
+            if (row.size() < static_cast<std::vector<int>::size_type>(maxWidth)) {
                 row.resize(maxWidth, -1);  // Pad with walls if row is shorter
             }
             // Add left and right walls
@@ -113,8 +112,8 @@ private:
         }
         grid.push_back(wallRow); // Bottom wall
     }
-
-    void adjustDockingStationPosition() {
+}
+	    void adjustDockingStationPosition() {
         // Adjust the docking station position to account for the added wall on the left and potentially top
         dockingStation.first += 1;  // One position right due to the left wall
         dockingStation.second += 1;  // One position down due to the top wall

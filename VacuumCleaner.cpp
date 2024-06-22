@@ -3,7 +3,7 @@
 class VacuumCleaner {
 public:
     VacuumCleaner(int maxBattery, const std::pair<int, int>& startPosition)
-        : maxBattery(maxBattery), battery(maxBattery), position(startPosition), dockedSteps(0) {}
+        : battery(maxBattery), maxBattery(maxBattery), position(startPosition), dockedSteps(0) {}
 
     void move(int x, int y) {
         if (x != position.first || y != position.second) {  // Moving to a new position

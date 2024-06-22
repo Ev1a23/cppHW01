@@ -31,5 +31,8 @@ SensorSystem.o: SensorSystem.cpp House.o VacuumCleaner.o
 SimulationController.o: SimulationController.cpp VacuumCleaner.o SensorSystem.o House.o Algorithm.o
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+House.o: House.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 clean:
 	rm -f $(OBJ) $(TARGET)
