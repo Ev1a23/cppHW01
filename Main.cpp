@@ -1,3 +1,5 @@
+#include "SimulationController.h"
+#include <iostream>
 int main(int argc, char* argv[]) {
     if (argc != 2) {
         std::cerr << "Usage: " << argv[0] << " <house_input_file>" << std::endl;
