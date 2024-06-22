@@ -1,4 +1,5 @@
 #include "Algorithm.h"
+#include <iostream>
 #include "VacuumCleaner.h"
 
 Algorithm::Algorithm(const SensorSystem& sensors)
@@ -35,6 +36,7 @@ std::pair<int, int> Algorithm::decideNextMove()
     std::pair<int, int> nextMove = pos;
     for (auto& location : nonWallLocations)
     {
+		std::cout << "Possible location: (" << location.first << ", " << location.second << ")\n";
         int dirtLevel = sensors.getHouse().getDirtLevel(location.first, location.second);
         if (cleanedLocations.find(location) == cleanedLocations.end() && dirtLevel > 0 && dirtLevel < minDirtLevel)
         {

@@ -1,5 +1,5 @@
-maxBatterySteps: 500
-maxAllowedSteps: 1000
+maxBatterySteps: 10
+maxAllowedSteps: 10
 -1, -1, -1, -1, -1
 -1, 3, 10, 4, -1
 -1, -1, -1, -1, -1
