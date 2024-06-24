@@ -50,7 +50,7 @@ std::pair<int, int> Algorithm::decideNextMove(bool finishedCleaning)
 	}
     for (auto& location : nonWallLocations)
     {
-		std::cout << "Possible location: (" << location.first << ", " << location.second << ")\n";
+		//std::cout << "Possible location: (" << location.first << ", " << location.second << ")\n";
         int dirtLevel = sensors.getHouse().getDirtLevel(location.first, location.second);
         if (dirtLevel > maxDirtLevel)
         {

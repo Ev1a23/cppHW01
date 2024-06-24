@@ -23,19 +23,25 @@ int House::getTotalDirt() const {
     return totalDirt;
 }
 
-int House::getMaxBatterySteps() const {
-    return maxBatterySteps;
-}
+// double House::getMaxBatterySteps() const {
+//     return maxBatterySteps;
+// }
 
 int House::getMaxAllowedSteps() const {
     return maxAllowedSteps;
 }
 
+VacuumCleaner House::getCleaner() const {
+    return cleaner;
+}
+
 void House::cleanPos(int x, int y) {
     grid[x][y] = grid[x][y] - 1;
+    cleaner.clean();
 }
 
 void House::loadHouse(const std::string& path) {
+    double maxBatterySteps;
     std::ifstream file(path);
     if (!file.is_open()) {
         throw std::runtime_error("Failed to open input file.");
@@ -45,7 +51,7 @@ void House::loadHouse(const std::string& path) {
     if (std::getline(file, line)) {
         auto pos = line.find(":");
         if (pos != std::string::npos) {
-            maxBatterySteps = std::stoi(line.substr(pos + 1));
+            maxBatterySteps = std::stod(line.substr(pos + 1));
         }
     }
     if (std::getline(file, line)) {
@@ -100,5 +106,7 @@ void House::loadHouse(const std::string& path) {
     for (auto& row : tempGrid) {
         grid.push_back(row);
     }
+
+    cleaner = VacuumCleaner(maxBatterySteps, dockingStation);
 };
    

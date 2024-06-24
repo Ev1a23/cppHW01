@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <utility> // For std::pair
+#include "VacuumCleaner.h"
 
 class House {
 public:
@@ -13,17 +14,18 @@ public:
     bool isWall(int x, int y) const;
     std::pair<int, int> getDockingStation() const;
     int getTotalDirt() const;
-    int getMaxBatterySteps() const;
+    double getMaxBatterySteps() const;
     int getMaxAllowedSteps() const;
     void cleanPos(int x, int y);
+    VacuumCleaner getCleaner() const;
 
 private:
     std::vector<std::vector<int>> grid;
     std::pair<int, int> dockingStation;
     int totalDirt;
-    int maxBatterySteps;
+    //int maxBatterySteps;
     int maxAllowedSteps;
-
+    VacuumCleaner cleaner;
     void loadHouse(const std::string& path);
     void adjustDockingStationPosition();
 };

@@ -5,19 +5,20 @@ SimulationController::SimulationController(const std::string& inputFilePath, con
 : 	inputFilePath(inputFilePath), 
 	outputFilePath(outputFilePath),
 	house(House(inputFilePath)), 
-	cleaner(10, house.getDockingStation()), 
-	sensors(house, cleaner),
+	sensors(house, house.getCleaner()),
 	algorithm(sensors)
 {}
 void SimulationController::runSimulation()
 {
     int cnt = 0;
+    std::cout << "(" << cleaner.getPosition().first << ", " << cleaner.getPosition().second << ") -> ";
     while (house.getTotalDirt() > 0 && cnt < house.getMaxAllowedSteps())
     {
         cnt++;
         std::pair<int, int> curPos = cleaner.getPosition();
         std::pair<int, int> nextMove = algorithm.decideNextMove(false);
-        std::cout << "Current Position: (" << curPos.first << ", " << curPos.second << "), Next Move: (" << nextMove.first << ", " << nextMove.second << ")\n";
+        // std::cout << "Current Position: (" << curPos.first << ", " << curPos.second << "), Next Move: (" << nextMove.first << ", " << nextMove.second << ")\n";
+        std::cout << "(" << nextMove.first << ", " << nextMove.second << ") -> ";
 
         if (nextMove == house.getDockingStation())
         {
@@ -28,7 +29,7 @@ void SimulationController::runSimulation()
             }
             else
             {
-                std::cout << "Charging at docking station\n";
+                std::cout << "Charging at docking station (batter level = " << cleaner.batteryLevel() << "\n";
                 cleaner.charge();
             }
         }

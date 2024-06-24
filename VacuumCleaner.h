@@ -6,20 +6,20 @@
 
 class VacuumCleaner {
 public:
-    VacuumCleaner(int maxBattery, const std::pair<int, int>& startPosition);
+    VacuumCleaner(double maxBattery, const std::pair<int, int> startPosition);
 
     void move(int x, int y);
     void clean();
     void charge();
-    int batteryLevel() const;
-	int maxBatteryLevel() const;
+    double batteryLevel() const;
+	double maxBatteryLevel() const;
     std::pair<int, int> getPosition() const;
 
 private:
-    int battery;
-    int maxBattery;
+    double battery;
+    double maxBattery;
     std::pair<int, int> position;
-    int dockedSteps;
+    // int dockedSteps;
 };
 
 #endif // VACUUMCLEANER_H
