@@ -1,6 +1,6 @@
 #include "SensorSystem.h"
 
-SensorSystem::SensorSystem(const House& house)
+SensorSystem::SensorSystem(House& house)
     : house(house) {}
 
 int SensorSystem::checkDirt() const {

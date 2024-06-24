@@ -1,4 +1,5 @@
 #include "VacuumCleaner.h"
+#include <iostream>
 VacuumCleaner::VacuumCleaner(double maxBattery, const std::pair<int, int> startPosition)
         : battery(maxBattery), maxBattery(maxBattery), position(startPosition) {}
 

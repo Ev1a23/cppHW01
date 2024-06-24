@@ -13,9 +13,10 @@ std::pair<int, int> Algorithm::decideNextMove(bool finishedCleaning)
 		path.pop_back();
 		return nextMove;
 	}
-	VacuumCleaner& cleaner = sensors.getHouse().getCleaner();
+	const VacuumCleaner& cleaner = sensors.getHouse().getCleaner();
+
     auto pos = cleaner.getPosition();
-    std::cout << "pos = (" << pos.first << "," << pos.second << ")\n";
+    // std::cout << "pos = (" << pos.first << "," << pos.second << ")\n";
     if (pos == dockingStation && cleaner.batteryLevel() < cleaner.maxBatteryLevel())
     {
         return pos;
@@ -30,7 +31,6 @@ std::pair<int, int> Algorithm::decideNextMove(bool finishedCleaning)
     
     if (sensors.checkDirt() > 0)
     {
-        std::cout << "dirt level = " << sensors.checkDirt();
         if (sensors.checkDirt() == 1)
         {
             cleanedLocations.insert(pos);
@@ -64,7 +64,7 @@ std::pair<int, int> Algorithm::decideNextMove(bool finishedCleaning)
             cleanedLocations.insert(location);
         }
     }
-	if(!path.empty() && nextMove != path.back())
+	if(!path.empty() && std::find(path.begin(), path.end(), nextMove) != path.end())
     {
 		path.push_back(nextMove);
 	}

@@ -33,13 +33,13 @@ int House::getMaxAllowedSteps() const {
     return maxAllowedSteps;
 }
 
-VacuumCleaner& House::getCleaner() {
+VacuumCleaner& House::getCleaner(){
     return cleaner;
 }
 
 void House::cleanPos(int x, int y) {
-    std::cout << "-------" << grid[x][y] << "-------";
     grid[x][y] = grid[x][y] - 1;
+    totalDirt --;
     cleaner.clean();
 }
 
@@ -67,6 +67,7 @@ void House::loadHouse(const std::string& path) {
     int maxWidth = 0;
     std::vector<std::vector<int>> tempGrid;
 
+    totalDirt = 0;
     while (std::getline(file, line)) {
         std::stringstream ss(line);
         std::vector<int> row;

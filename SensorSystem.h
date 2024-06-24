@@ -7,7 +7,7 @@
 
 class SensorSystem {
 public:
-    SensorSystem(const House& house);
+    SensorSystem(House& house);
     std::vector<std::pair<int, int>> checkNonWalls() const;
     int batteryStatus() const;
 	int checkDirt() const;
@@ -15,7 +15,7 @@ public:
 	VacuumCleaner getCleaner() const;
 
 private:
-    const House& house;
+    House& house;
     // const VacuumCleaner& cleaner;
 };
 
