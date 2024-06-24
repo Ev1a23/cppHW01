@@ -1,6 +1,8 @@
 #include "VacuumCleaner.h"
 VacuumCleaner::VacuumCleaner(double maxBattery, const std::pair<int, int> startPosition)
         : battery(maxBattery), maxBattery(maxBattery), position(startPosition) {}
+
+VacuumCleaner::VacuumCleaner() {}
  
 void VacuumCleaner::move(int x, int y) {
         if (x != position.first || y != position.second) {  // Moving to a new position

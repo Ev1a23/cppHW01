@@ -2,6 +2,8 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
+#include <iostream>
+
 
 House::House(const std::string& inputFile) {
     loadHouse(inputFile);
@@ -31,11 +33,12 @@ int House::getMaxAllowedSteps() const {
     return maxAllowedSteps;
 }
 
-VacuumCleaner House::getCleaner() const {
+VacuumCleaner& House::getCleaner() {
     return cleaner;
 }
 
 void House::cleanPos(int x, int y) {
+    std::cout << "-------" << grid[x][y] << "-------";
     grid[x][y] = grid[x][y] - 1;
     cleaner.clean();
 }

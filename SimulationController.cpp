@@ -5,11 +5,12 @@ SimulationController::SimulationController(const std::string& inputFilePath, con
 : 	inputFilePath(inputFilePath), 
 	outputFilePath(outputFilePath),
 	house(House(inputFilePath)), 
-	sensors(house, house.getCleaner()),
+	sensors(house),
 	algorithm(sensors)
 {}
 void SimulationController::runSimulation()
 {
+    cleaner = house.getCleaner();
     int cnt = 0;
     std::cout << "(" << cleaner.getPosition().first << ", " << cleaner.getPosition().second << ") -> ";
     while (house.getTotalDirt() > 0 && cnt < house.getMaxAllowedSteps())

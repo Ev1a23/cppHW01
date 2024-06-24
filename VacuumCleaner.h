@@ -7,6 +7,7 @@
 class VacuumCleaner {
 public:
     VacuumCleaner(double maxBattery, const std::pair<int, int> startPosition);
+    VacuumCleaner();
 
     void move(int x, int y);
     void clean();

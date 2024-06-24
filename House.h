@@ -17,7 +17,7 @@ public:
     double getMaxBatterySteps() const;
     int getMaxAllowedSteps() const;
     void cleanPos(int x, int y);
-    VacuumCleaner getCleaner() const;
+    VacuumCleaner& getCleaner();
 
 private:
     std::vector<std::vector<int>> grid;
