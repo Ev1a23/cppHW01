@@ -7,6 +7,7 @@ void VacuumCleaner::move(int x, int y) {
             position = {x, y};
             dockedSteps = 0;  // Reset docked steps if moving
         }
+		battery--;  // Moving consumes battery
     }
  
 void VacuumCleaner::clean() {

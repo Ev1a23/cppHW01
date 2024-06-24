@@ -9,7 +9,7 @@
 class Algorithm {
 public:
     explicit Algorithm(const SensorSystem& sensors);
-    std::pair<int, int> decideNextMove();
+    std::pair<int, int> decideNextMove(bool finishedCleaning);
 
 private:
     const SensorSystem& sensors;

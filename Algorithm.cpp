@@ -5,8 +5,14 @@
 Algorithm::Algorithm(const SensorSystem& sensors)
     : sensors(sensors), dockingStation(sensors.getHouse().getDockingStation()) {}
 
-std::pair<int, int> Algorithm::decideNextMove()
+std::pair<int, int> Algorithm::decideNextMove(bool finishedCleaning)
 {
+	if(!path.empty() && finishedCleaning)
+	{
+		std::pair<int, int> nextMove = path.back();
+		path.pop_back();
+		return nextMove;
+	}
 	VacuumCleaner cleaner = sensors.getCleaner();
     auto pos = cleaner.getPosition();
     if (pos == dockingStation && cleaner.batteryLevel() < cleaner.maxBatteryLevel())
@@ -32,22 +38,33 @@ std::pair<int, int> Algorithm::decideNextMove()
 
     cleanedLocations.insert(pos);
     std::vector<std::pair<int, int>> nonWallLocations = sensors.checkNonWalls();
-    int minDirtLevel = 100;
-    std::pair<int, int> nextMove = pos;
+    int maxDirtLevel = -1;
+	std::pair<int, int> nextMove;
+	if(!path.empty())
+	{
+    	nextMove = path.back();
+	}
+	else
+	{
+		nextMove = pos;
+	}
     for (auto& location : nonWallLocations)
     {
 		std::cout << "Possible location: (" << location.first << ", " << location.second << ")\n";
         int dirtLevel = sensors.getHouse().getDirtLevel(location.first, location.second);
-        if (cleanedLocations.find(location) == cleanedLocations.end() && dirtLevel > 0 && dirtLevel < minDirtLevel)
+        if (dirtLevel > maxDirtLevel)
         {
             nextMove = location;
-            minDirtLevel = dirtLevel;
+            maxDirtLevel = dirtLevel;
         }
         if (dirtLevel == 0)
         {
             cleanedLocations.insert(location);
         }
     }
-    path.push_back(nextMove);
+	if(!path.empty() && nextMove != path.back())
+    {
+		path.push_back(nextMove);
+	}
     return nextMove;
 }

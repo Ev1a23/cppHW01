@@ -16,7 +16,7 @@ void SimulationController::runSimulation()
     {
         cnt++;
         std::pair<int, int> curPos = cleaner.getPosition();
-        std::pair<int, int> nextMove = algorithm.decideNextMove();
+        std::pair<int, int> nextMove = algorithm.decideNextMove(false);
         std::cout << "Current Position: (" << curPos.first << ", " << curPos.second << "), Next Move: (" << nextMove.first << ", " << nextMove.second << ")\n";
 
         if (nextMove == house.getDockingStation())
@@ -46,4 +46,15 @@ void SimulationController::runSimulation()
             }
         }
     }
+	std::pair<int, int> curPos = cleaner.getPosition();
+	if(house.getTotalDirt() == 0 && curPos != house.getDockingStation())
+	{
+		while(cnt < house.getMaxAllowedSteps())
+		{
+			cnt++;
+        	std::pair<int, int> nextMove = algorithm.decideNextMove(false);
+        	std::cout << "Current Position: (" << curPos.first << ", " << curPos.second << "), Next Move: (" << nextMove.first << ", " << nextMove.second << ")\n";
+			cleaner.move(nextMove.first, nextMove.second);
+		}
+	}
 }
