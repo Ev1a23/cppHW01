@@ -108,3 +108,7 @@ Current Position: (2, 2), Next Move: (2, 3)
 Success!! Reached docking station
 Simulation completed
 Statistics
+Total Steps Taken: 23
+Amount of Dirt Remaining: 0
+Battery Exausted: No
+Mission Status: Success
