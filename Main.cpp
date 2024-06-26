@@ -7,8 +7,15 @@ int main(int argc, char* argv[]) {
     }
     std::string inputFilePath = argv[1];
     std::string outputFilePath = "output.txt";
-
-    SimulationController simController(inputFilePath, outputFilePath);
-    simController.runSimulation();
+	try
+	{
+    	SimulationController simController(inputFilePath, outputFilePath);
+    	simController.runSimulation();
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+		return 1;
+	}
     return 0;
 }

@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include <utility> // For std::pair
+#include <utility>
 #include "VacuumCleaner.h"
 
 class House {
@@ -21,9 +21,8 @@ public:
 
 private:
     std::vector<std::vector<int>> grid;
-    std::pair<int, int> dockingStation;
+    std::pair<int, int> dockingStation = std::make_pair(-1, -1);
     int totalDirt;
-    //int maxBatterySteps;
     int maxAllowedSteps;
     VacuumCleaner cleaner;
     void loadHouse(const std::string& path);

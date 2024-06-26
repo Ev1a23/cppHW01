@@ -53,15 +53,31 @@ void House::loadHouse(const std::string& path) {
     std::string line;
     if (std::getline(file, line)) {
         auto pos = line.find(":");
-        if (pos != std::string::npos) {
+        if (pos != std::string::npos && line.substr(0, pos) == "maxBatterySteps") {
             maxBatterySteps = std::stod(line.substr(pos + 1));
+			if(maxBatterySteps < 0)
+			{
+				throw std::runtime_error("Invalid max battery steps");
+			}
         }
+		else
+		{
+			throw std::runtime_error("Invalid file format, max battery steps not found");
+		}
     }
     if (std::getline(file, line)) {
         auto pos = line.find(":");
-        if (pos != std::string::npos) {
+        if (pos != std::string::npos && line.substr(0, pos) == "maxAllowedSteps"){
             maxAllowedSteps = std::stoi(line.substr(pos + 1));
-        }
+			if(maxAllowedSteps < 0)
+			{
+				throw std::runtime_error("Invalid max allowed steps");
+			}
+		}
+		else
+		{
+			throw std::runtime_error("Invalid file format, max allowed steps not found");
+		}
     }
     int x = 0;
     int maxWidth = 0;
@@ -76,7 +92,13 @@ void House::loadHouse(const std::string& path) {
 
         int y = 0;
         while (ss >> value) {
+			if(!(value >= -1 && value <= 10)) {
+				throw std::runtime_error("Invalid value found in house");
+			}
             if (value == 10) {
+				if(dockingStation.first != -1 && dockingStation.second != -1) {
+					throw std::runtime_error("Duplicate docking station found");
+				}
                 dockingStation = {x + 1, y + 1};  // Temporarily store initial docking position corresponding to adding walls
                 value = 0;  // Treat the docking station like clean floor
             }
@@ -110,6 +132,9 @@ void House::loadHouse(const std::string& path) {
     for (auto& row : tempGrid) {
         grid.push_back(row);
     }
+	if(dockingStation.first == -1 && dockingStation.second == -1) {
+		throw std::runtime_error("No docking station found");
+	}
 
     cleaner = VacuumCleaner(maxBatterySteps, dockingStation);
 };
