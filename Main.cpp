@@ -6,10 +6,9 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     std::string inputFilePath = argv[1];
-    std::string outputFilePath = "output.txt";
 	try
 	{
-    	SimulationController simController(inputFilePath, outputFilePath);
+    	SimulationController simController(inputFilePath);
     	simController.runSimulation();
 	}
 	catch(const std::exception& e)

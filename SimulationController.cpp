@@ -1,15 +1,28 @@
 #include "SimulationController.h"
-#include <iostream>
+#include <iostream>	
+#include <fstream>
+#include <sstream>
 
-SimulationController::SimulationController(const std::string& inputFilePath, const std::string& outputFilePath)
+SimulationController::SimulationController(const std::string& inputFilePath)
 : 	inputFilePath(inputFilePath), 
-	outputFilePath(outputFilePath),
 	house(House(inputFilePath)), 
 	sensors(house),
 	algorithm(sensors)
-{}
+	{}
+
 void SimulationController::runSimulation()
 {
+	std::ofstream outputFile("output.txt");
+	if(!outputFile.is_open())
+	{
+		throw std::runtime_error("Failed to open output file.");
+	}
+	std::ostringstream msgStream;
+	msgStream << "Steps Performed (Current Location -> Next Location)";
+	msgLog(outputFile, msgStream.str());
+	msgStream.str("");
+	msgStream.clear();
+	std::cout << "Simulation started\n";
     VacuumCleaner& cleaner = house.getCleaner();
     int cnt = 0;
     std::cout << "(" << cleaner.getPosition().first << ", " << cleaner.getPosition().second << ") -> ";
@@ -19,6 +32,12 @@ void SimulationController::runSimulation()
         cnt++;
         std::pair<int, int> curPos = cleaner.getPosition();
         std::pair<int, int> nextMove = algorithm.decideNextMove(false);
+		msgStream << "(" << cleaner.getPosition().first << ", " << cleaner.getPosition().second << ") -> "
+          << "(" << nextMove.first << ", " << nextMove.second << ")";
+		msgLog(outputFile, msgStream.str());
+		msgStream.str("");
+		msgStream.clear();
+		//msgLog(outputFile, "(" << cleaner.getPosition().first << ", " << cleaner.getPosition().second << ") -> " << "(" << nextMove.first << ", " << nextMove.second << ")");
         // std::cout << "Current Position: (" << curPos.first << ", " << curPos.second << "), Next Move: (" << nextMove.first << ", " << nextMove.second << ")\n";
 
         if (nextMove == house.getDockingStation())
@@ -75,4 +94,14 @@ void SimulationController::runSimulation()
 		std::cout << "Failed to clean all dirt due to Max Allowed steps\n";
 	}
 	std::cout << "Simulation completed\n";
+	std::ostringstream logStream;
+	logStream << "Statistics\nTotal Steps Taken: " << cnt <<"\nAmount of Dirt Remaining: " << house.getTotalDirt() << "\nBattery Exausted: " << (cleaner.batteryLevel() == 0 ? "Yes" : "No") << "\nMission Status: " << (house.getTotalDirt() == 0 && curPos == house.getDockingStation() ? "Success" : "Failure");
+	msgLog(outputFile, logStream.str());
+	outputFile.close();
+}
+
+void SimulationController::msgLog(std::ofstream & outputFile, const std::string& msg)
+{
+	outputFile << msg << std::endl;
+	std::cout << msg << std::endl;
 }

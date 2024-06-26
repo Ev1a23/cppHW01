@@ -8,19 +8,19 @@
 #include "Algorithm.h" 
 #include <string>
 #include <vector>
+#include <fstream>
 
 class SimulationController {
 public:
-    SimulationController(const std::string& inputFilePath, const std::string& outputFilePath);
+    SimulationController(const std::string& inputFilePath);
     void runSimulation();
+	void msgLog(std::ofstream & outputFile, const std::string& msg);
 
 private:
     std::string inputFilePath;
-    std::string outputFilePath;
-    House house;
+	House house;
     SensorSystem sensors;
     Algorithm algorithm;
-    std::vector<std::string> log;
 };
 
 #endif // SIMULATIONCONTROLLER_H
