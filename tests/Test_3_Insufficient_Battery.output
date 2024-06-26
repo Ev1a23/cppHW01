@@ -1,0 +1,131 @@
+Steps Performed (Current Location -> Next Location)
+Simulation started
+(2, 3) -> Total Dirt Level=7
+Path length = (0) BatteryLevel = (5)
+(2, 3) -> (2, 4)
+Moving to next location
+(2, 4) -> Total Dirt Level=7
+Path length = (1) BatteryLevel = (4)
+(2, 4) -> (2, 4)
+Cleaning at current location
+(2, 4) -> Total Dirt Level=6
+Path length = (1) BatteryLevel = (3)
+(2, 4) -> (2, 4)
+Cleaning at current location
+(2, 4) -> Total Dirt Level=5
+Path length = (1) BatteryLevel = (2)
+(2, 4) -> (2, 4)
+Cleaning at current location
+(2, 4) -> Total Dirt Level=4
+Path length = (1) BatteryLevel = (1)
+Backtracking
+(2, 4) -> (2, 3)
+Moving to docking station
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (0)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 0)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (0.25)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 0.25)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (0.5)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 0.5)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (0.75)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 0.75)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (1)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 1)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (1.25)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 1.25)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (1.5)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 1.5)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (1.75)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 1.75)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (2)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 2)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (2.25)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 2.25)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (2.5)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 2.5)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (2.75)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 2.75)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (3)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 3)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (3.25)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 3.25)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (3.5)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 3.5)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (3.75)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 3.75)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (4)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 4)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (4.25)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 4.25)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (4.5)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 4.5)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (4.75)
+(2, 3) -> (2, 3)
+Charging at docking station (battery level = 4.75)
+(2, 3) -> Total Dirt Level=4
+Path length = (0) BatteryLevel = (5)
+(2, 3) -> (2, 2)
+Moving to next location
+(2, 2) -> Total Dirt Level=4
+Path length = (1) BatteryLevel = (4)
+(2, 2) -> (2, 2)
+Cleaning at current location
+(2, 2) -> Total Dirt Level=3
+Path length = (1) BatteryLevel = (3)
+(2, 2) -> (2, 2)
+Cleaning at current location
+(2, 2) -> Total Dirt Level=2
+Path length = (1) BatteryLevel = (2)
+(2, 2) -> (2, 2)
+Cleaning at current location
+(2, 2) -> Total Dirt Level=1
+Path length = (1) BatteryLevel = (1)
+Backtracking
+(2, 2) -> (2, 3)
+Moving to docking station
+(2, 3) -> Failed to clean all dirt due to Max Allowed steps
+Simulation completed
+Statistics
+Total Steps Taken: 30
+Amount of Dirt Remaining: 1
+Battery Exausted: Yes
+Mission Status: Failure
