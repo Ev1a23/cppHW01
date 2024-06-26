@@ -2,8 +2,6 @@
 #define SENSOR_SYSTEM_H
 
 #include <vector>
-#include "House.h"
-#include "VacuumCleaner.h"
 
 class SensorSystem {
 public:

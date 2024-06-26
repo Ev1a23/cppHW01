@@ -33,9 +33,9 @@ int House::getMaxAllowedSteps() const {
     return maxAllowedSteps;
 }
 
-VacuumCleaner& House::getCleaner(){
-    return cleaner;
-}
+// VacuumCleaner& House::getCleaner(){
+//     return cleaner;
+// }
 
 void House::cleanPos(int x, int y) {
     grid[x][y] = grid[x][y] - 1;

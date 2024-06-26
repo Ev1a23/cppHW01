@@ -13,14 +13,15 @@ public:
     void clean();
     void charge();
     double batteryLevel() const;
-	double maxBatteryLevel() const;
-    std::pair<int, int> getPosition() const;
+	// double maxBatteryLevel() const; // shouldnt be accessable to everyone
+    // std::pair<int, int> getPosition() const; // should be private so only sensor function can access it
 
 private:
     double battery;
     double maxBattery;
     std::pair<int, int> position;
     // int dockedSteps;
+    std::pair<int, int> getPosition() const;
 };
 
 #endif // VACUUMCLEANER_H
