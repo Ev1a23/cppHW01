@@ -132,6 +132,15 @@ void House::loadHouse(const std::string& path) {
     for (auto& row : tempGrid) {
         grid.push_back(row);
     }
+	grid.push_back(wallRow); // Bottom wall
+
+    for (const auto& row : grid) {
+        for (int val : row) {
+            std::cout << val << " ";
+        }
+        std::cout << std::endl;
+    }
+
 	if(dockingStation.first == -1 && dockingStation.second == -1) {
 		throw std::runtime_error("No docking station found");
 	}
