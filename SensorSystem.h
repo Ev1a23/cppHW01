@@ -16,7 +16,6 @@ public:
 
 private:
     House& house;
-    // const VacuumCleaner& cleaner;
 };
 
 #endif // SENSOR_SYSTEM_H

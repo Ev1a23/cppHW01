@@ -34,14 +34,9 @@ std::pair<int, int> Algorithm::decideNextMove(bool finishedCleaning)
     
     if (sensors.checkDirt() > 0)
     {
-        if (sensors.checkDirt() == 1)
-        {
-            cleanedLocations.insert(pos);
-        }
         return pos;
     }
 
-    cleanedLocations.insert(pos);
     std::vector<std::pair<int, int>> nonWallLocations = sensors.checkNonWalls();
     int maxDirtLevel = -1;
 	std::pair<int, int> nextMove;
@@ -54,10 +49,6 @@ std::pair<int, int> Algorithm::decideNextMove(bool finishedCleaning)
         {
             nextMove = location;
             maxDirtLevel = dirtLevel;
-        }
-        if (dirtLevel == 0)
-        {
-            cleanedLocations.insert(location);
         }
     }
 	if(nextMove != path.back()){

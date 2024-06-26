@@ -14,7 +14,6 @@ public:
 private:
     const SensorSystem& sensors;
     std::vector<std::pair<int, int>> path;
-    std::set<std::pair<int, int>> cleanedLocations;
     const std::pair<int, int> dockingStation;
 };
 
