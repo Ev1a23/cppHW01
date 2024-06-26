@@ -22,9 +22,6 @@ main.o: main.cpp SimulationController.o
 Algorithm.o: Algorithm.cpp SensorSystem.o
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-FileManagement.o: FileManagement.cpp House.o
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
 SensorSystem.o: SensorSystem.cpp House.o VacuumCleaner.o
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
