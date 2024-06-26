@@ -9,12 +9,12 @@ test_files=$(ls ${test_dir}Test_*.txt)
 my_robot_path=../myrobot
 # Loop through each test file and run the program
 
-for test_file in $te
+output_folder=./output/
 
 
-st_files; do
+for test_file in $test_files; do
   echo "Running test: $test_file"
-  output_file="${test_file%.txt}.output"
+  output_file="$output_folder${test_file%.txt}.output"
   # Run the vacuum cleaner simulation program and store the output
   $my_robot_path "$test_file" > "$output_file"
   echo "Test $test_file completed. Output saved to $output_file."
