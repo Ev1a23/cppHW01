@@ -3,29 +3,32 @@
 #include "VacuumCleaner.h"
 
 Algorithm::Algorithm(const SensorSystem& sensors)
-    : sensors(sensors), dockingStation(sensors.getHouse().getDockingStation()) {}
+    : sensors(sensors), dockingStation(sensors.getHouse().getDockingStation()) {
+		path.push_back(dockingStation);
+	}
 
 std::pair<int, int> Algorithm::decideNextMove(bool finishedCleaning)
 {
-	if(!path.empty() && finishedCleaning)
+	if(finishedCleaning)
 	{
-		std::pair<int, int> nextMove = path.back();
 		path.pop_back();
+		std::pair<int, int> nextMove = path.back();
 		return nextMove;
 	}
 	const VacuumCleaner& cleaner = sensors.getHouse().getCleaner();
 
     auto pos = cleaner.getPosition();
-    // std::cout << "pos = (" << pos.first << "," << pos.second << ")\n";
+     std::cout << "Path length = (" << path.size() - 1 << ")" << " BatteryLevel = (" << cleaner.batteryLevel() << ")\n";
     if (pos == dockingStation && cleaner.batteryLevel() < cleaner.maxBatteryLevel())
     {
         return pos;
     }
 
-    if (static_cast<std::vector<int>::size_type>(cleaner.batteryLevel()) == path.size() && !path.empty())
+    if (static_cast<std::vector<int>::size_type>(cleaner.batteryLevel()) == path.size() - 1 )
     {
-        std::pair<int, int> prevStep = path.back();
+		std::cout << "Backtracking\n";
         path.pop_back();
+        std::pair<int, int> prevStep = path.back();
         return prevStep;
     }
     
@@ -42,14 +45,7 @@ std::pair<int, int> Algorithm::decideNextMove(bool finishedCleaning)
     std::vector<std::pair<int, int>> nonWallLocations = sensors.checkNonWalls();
     int maxDirtLevel = -1;
 	std::pair<int, int> nextMove;
-	if(!path.empty())
-	{
-    	nextMove = path.back();
-	}
-	else
-	{
-		nextMove = pos;
-	}
+	nextMove = path.back();
     for (auto& location : nonWallLocations)
     {
 		//std::cout << "Possible location: (" << location.first << ", " << location.second << ")\n";
@@ -64,9 +60,7 @@ std::pair<int, int> Algorithm::decideNextMove(bool finishedCleaning)
             cleanedLocations.insert(location);
         }
     }
-	if(!path.empty() && std::find(path.begin(), path.end(), nextMove) != path.end())
-    {
-		path.push_back(nextMove);
-	}
+	if(nextMove != path.back()){
+		path.push_back(nextMove);}
     return nextMove;
 }

@@ -52,7 +52,7 @@ void SimulationController::runSimulation()
 	std::pair<int, int> curPos = cleaner.getPosition();
 	if(house.getTotalDirt() == 0 && curPos != house.getDockingStation())
 	{
-        std::cout << "\nFinished Cleaning - returning to dockng station\n";
+        std::cout << "\nFinished Cleaning - returning to docking station\n";
 		while(cnt < house.getMaxAllowedSteps() && curPos!=house.getDockingStation())
 		{
 			cnt++;
@@ -61,5 +61,18 @@ void SimulationController::runSimulation()
             curPos = nextMove;
 			cleaner.move(nextMove.first, nextMove.second);
 		}
+		if(curPos == house.getDockingStation())
+		{
+			std::cout << "Success!! Reached docking station\n";
+		}
+		else
+		{
+			std::cout << "Failed to reach docking station due to Max Allowed steps\n";
+		}
 	}
+	else
+	{
+		std::cout << "Failed to clean all dirt due to Max Allowed steps\n";
+	}
+	std::cout << "Simulation completed\n";
 }
