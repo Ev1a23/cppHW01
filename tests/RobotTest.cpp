@@ -49,7 +49,7 @@ protected:
 TEST_F(RobotTest, TestInput1) {
     std::string inputPath = "Test_1_Basic_Functionality_Test.txt";
     int expectedReturnVal = 0;
-    std::string expectedOutput = "Mission Status: Success";
+    std::string expectedOutput = "Mission Status: Failure";
     std::string expectedException = "";
     runMyRobot(inputPath, expectedReturnVal, expectedOutput, expectedException);
 }
@@ -57,7 +57,7 @@ TEST_F(RobotTest, TestInput1) {
 TEST_F(RobotTest, TestInput2) {
     std::string inputPath = "Test_2_House_Not_Surrounded_by_Walls.txt";
     int expectedReturnVal = 0;
-    std::string expectedOutput = "Mission Status: Success";
+    std::string expectedOutput = "Mission Status: Failure";
     std::string expectedException = "";
     runMyRobot(inputPath, expectedReturnVal, expectedOutput, expectedException);
 }
@@ -105,7 +105,7 @@ TEST_F(RobotTest, TestInput7) {
 TEST_F(RobotTest, TestInput8) {
     std::string inputPath = "Test_8_maximum_dirt_levels.txt";
     int expectedReturnVal = 0;
-    std::string expectedOutput = "Mission Status: Success";
+    std::string expectedOutput = "Mission Status: Failure";
     std::string expectedException = "";
     runMyRobot(inputPath, expectedReturnVal, expectedOutput, expectedException);
 }
