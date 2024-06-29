@@ -1,11 +1,13 @@
 #include "Algorithm.h"
 #include <iostream>
-#include "VacuumCleaner.h"
+#include "House.h"
+#include <utility>
+#include <random>
 
-Algorithm::Algorithm(const SensorSystem& sensors)
-    : sensors(sensors), dockingStation(sensors.getHouse().getDockingStation()) {
-		path.push_back(dockingStation);
-	}
+Algorithm::Algorithm(const House::SensorSystem& sensors, std::pair<int,int> dockingStation, int maxBatteryLevel)
+    : sensors(sensors), dockingStation(dockingStation), maxBatteryLevel(maxBatteryLevel) {
+        path.push_back(dockingStation);
+    }
 
 std::pair<int, int> Algorithm::decideNextMove(bool finishedCleaning)
 {
@@ -15,16 +17,17 @@ std::pair<int, int> Algorithm::decideNextMove(bool finishedCleaning)
 		std::pair<int, int> nextMove = path.back();
 		return nextMove;
 	}
-	const VacuumCleaner& cleaner = sensors.getHouse().getCleaner();
+	// const HoVacuumCleaner& cleaner = sensors.getHouse().getCleaner();
 
-    auto pos = cleaner.getPosition();
-     std::cout << "Path length = (" << path.size() - 1 << ")" << " BatteryLevel = (" << cleaner.batteryLevel() << ")\n";
-    if (pos == dockingStation && cleaner.batteryLevel() < cleaner.maxBatteryLevel())
+    // auto pos = cleaner.getPosition();
+    auto pos = path.back();
+    std::cout << "Path length = (" << path.size() - 1 << ")" << " BatteryLevel = (" << sensors.batterySensor() << ")\n";
+    if (pos == dockingStation && sensors.batterySensor() < maxBatteryLevel)
     {
         return pos;
     }
 
-    if (static_cast<std::vector<int>::size_type>(cleaner.batteryLevel()) == path.size() - 1 )
+    if (static_cast<std::vector<int>::size_type>(sensors.batterySensor()) == path.size() - 1 )
     {
 		std::cout << "Backtracking\n";
         path.pop_back();
@@ -32,26 +35,28 @@ std::pair<int, int> Algorithm::decideNextMove(bool finishedCleaning)
         return prevStep;
     }
     
-    if (sensors.checkDirt() > 0)
+    if (sensors.dirtSensor() > 0)
     {
         return pos;
     }
 
-    std::vector<std::pair<int, int>> nonWallLocations = sensors.checkNonWalls();
-    int maxDirtLevel = -1;
+    std::vector<std::pair<int, int>> nonWallLocations = sensors.wallsSensor();
 	std::pair<int, int> nextMove;
-	nextMove = path.back();
-    for (auto& location : nonWallLocations)
+	if(!nonWallLocations.empty())
     {
-		//std::cout << "Possible location: (" << location.first << ", " << location.second << ")\n";
-        int dirtLevel = sensors.getHouse().getDirtLevel(location.first, location.second);
-        if (dirtLevel > maxDirtLevel)
-        {
-            nextMove = location;
-            maxDirtLevel = dirtLevel;
-        }
+        nextMove = nonWallLocations[0];
     }
-	if(nextMove != path.back()){
-		path.push_back(nextMove);}
+    else
+    {
+        nextMove = path.back(); // shouldn't get here
+    }
+	if(nextMove != path.back())
+    {
+		path.push_back(nextMove);
+    }
+    else
+    {
+        path.pop_back();
+    }
     return nextMove;
 }

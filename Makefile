@@ -12,20 +12,13 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-# Rules for individual object files
-VacuumCleaner.o: VacuumCleaner.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
 main.o: main.cpp SimulationController.o
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-Algorithm.o: Algorithm.cpp SensorSystem.o
+Algorithm.o: Algorithm.cpp House.o
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-SensorSystem.o: SensorSystem.cpp House.o VacuumCleaner.o
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-SimulationController.o: SimulationController.cpp VacuumCleaner.o SensorSystem.o House.o Algorithm.o
+SimulationController.o: SimulationController.cpp House.o Algorithm.o
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 House.o: House.cpp

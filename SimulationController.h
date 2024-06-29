@@ -2,8 +2,6 @@
 #define SIMULATIONCONTROLLER_H
 
 #include "House.h" 
-#include "VacuumCleaner.h" 
-#include "SensorSystem.h" 
 #include "Algorithm.h" 
 #include <string>
 #include <vector>
@@ -18,7 +16,6 @@ public:
 private:
     std::string inputFilePath;
 	House house;
-    SensorSystem sensors;
     Algorithm algorithm;
 };
 
