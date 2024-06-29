@@ -5,7 +5,7 @@
 #include <iostream>
 
 
-House::House(const std::string& inputFile) : sensors(*this) {
+House::House(const std::string& inputFile) : cleaner(-1, -1, {-1,-1}), sensors(*this) {
     loadHouse(inputFile);
 }
 
@@ -18,6 +18,10 @@ void House::clean(){
 
 House::VacuumCleaner& House::getCleaner(){
     return cleaner;
+}
+
+House::SensorSystem& House::getSensors(){
+    return sensors;
 }
 
 bool House::isWall(int x, int y) const {

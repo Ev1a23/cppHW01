@@ -20,7 +20,7 @@ public:
         double getMaxBatterySteps() const;
         int getMaxAllowedSteps() const;
         VacuumCleaner(const int maxAllowedSteps, const double maxBattery, const std::pair<int, int> startPosition);
-        VacuumCleaner();
+        // VacuumCleaner();
 
     private:
         // VacuumCleaner(const int maxAllowedSteps, const double maxBattery, const std::pair<int, int> startPosition);
@@ -34,7 +34,7 @@ public:
     class SensorSystem {
     public:
         SensorSystem(House& house); // access from House only
-        SensorSystem(); // access from House only
+        // SensorSystem(); // access from House only
         std::vector<std::pair<int, int>> wallsSensor() const; // returns a vector of the non-walls neighbors
         double  batterySensor() const;
         int dirtSensor() const;
