@@ -1,5 +1,15 @@
-#include "SimulationController.h"
+#include "MySimulator.h"
 #include <iostream>
+
+// int main(int argc, char** argv) {
+// 	MySimulator::MySimulator simulator;
+// 	// TODO: get houseFilePath from command line
+// 	simulator.readHouseFile(houseFilePath);
+// 	MySimulator::MyAlgorithm algo;
+// 	simulator.setAlgorithm(algo);
+// 	simulator.run();
+// }
+
 int main(int argc, char* argv[]) {
     if (argc != 2) {
         std::cerr << "Usage: " << argv[0] << " <house_input_file>" << std::endl;
@@ -8,8 +18,8 @@ int main(int argc, char* argv[]) {
     std::string inputFilePath = argv[1];
 	try
 	{
-    	SimulationController simController(inputFilePath);
-    	simController.runSimulation();
+    	MySimulator simController(inputFilePath);
+    	simController.run();
 	}
 	catch(const std::exception& e)
 	{

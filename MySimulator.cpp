@@ -1,15 +1,15 @@
-#include "SimulationController.h"
+#include "MySimulator.h"
 #include <iostream>	
 #include <fstream>
 #include <sstream>
 
-SimulationController::SimulationController(const std::string& inputFilePath)
+MySimulator::MySimulator(std::string inputFilePath)
 : 	inputFilePath(inputFilePath), 
 	house(House(inputFilePath)), 
 	algorithm(house.getSensors(), house.getDockingStation(), house.getCleaner().getMaxBatterySteps())
 	{}
 
-void SimulationController::runSimulation()
+void MySimulator::run()
 {
 	std::ofstream outputFile("output.txt");
 	if(!outputFile.is_open())
@@ -118,8 +118,20 @@ void SimulationController::runSimulation()
 	outputFile.close();
 }
 
-void SimulationController::msgLog(std::ofstream & outputFile, const std::string& msg)
+// void readHouseFile(std::string& houseFilePath)
+// {
+// 	this.house = House(houseFilePath);
+// }
+
+// void setAlgorithm(Algorithm algorithm)
+// {
+// 	algorithm(house.getSensors(), house.getDockingStation(), house.getCleaner().getMaxBatterySteps())
+// }
+
+void MySimulator::msgLog(std::ofstream & outputFile, const std::string& msg)
 {
 	outputFile << msg << std::endl;
 	std::cout << msg << std::endl;
 }
+
+

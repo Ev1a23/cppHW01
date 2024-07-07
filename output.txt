@@ -1,0 +1,6 @@
+Steps Performed (Current Location -> Next Location)
+Statistics
+Total Steps Taken: 0
+Amount of Dirt Remaining: 0
+Battery Exausted: No
+Mission Status: Success

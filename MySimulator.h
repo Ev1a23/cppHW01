@@ -7,10 +7,11 @@
 #include <vector>
 #include <fstream>
 
-class SimulationController {
+class MySimulator {
 public:
-    SimulationController(const std::string& inputFilePath);
-    void runSimulation();
+    MySimulator(std::string inputFilePath);
+    // void readHouseFile(std::string& houseFilePath);
+    void run();
 	void msgLog(std::ofstream & outputFile, const std::string& msg);
 
 private:
