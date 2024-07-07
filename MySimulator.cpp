@@ -30,7 +30,7 @@ void MySimulator::run()
         std::cout << "Total Dirt Level=" << house.getTotalDirt() << "\n";
         cnt++;
         std::pair<int, int> curPos = cleaner.getPosition();
-        std::pair<int, int> nextMove = algorithm.decideNextMove(false);
+        std::pair<int, int> nextMove = algorithm.nextStep(false);
 		msgStream << "(" << cleaner.getPosition().first << ", " << cleaner.getPosition().second << ") -> "
           << "(" << nextMove.first << ", " << nextMove.second << ")";
 		msgLog(outputFile, msgStream.str());
@@ -93,7 +93,7 @@ void MySimulator::run()
 		while(cnt < cleaner.getMaxAllowedSteps() && curPos!=house.getDockingStation())
 		{
 			cnt++;
-        	std::pair<int, int> nextMove = algorithm.decideNextMove(true);
+        	std::pair<int, int> nextMove = algorithm.nextStep(true);
         	std::cout << "Current Position: (" << curPos.first << ", " << curPos.second << "), Next Move: (" << nextMove.first << ", " << nextMove.second << ")\n";
             curPos = nextMove;
 			cleaner.move(nextMove.first, nextMove.second);

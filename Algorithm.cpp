@@ -6,11 +6,29 @@
 
 Algorithm::Algorithm(const House::SensorSystem& sensors, std::pair<int,int> dockingStation, int maxBatteryLevel)
     : sensors(sensors), dockingStation(dockingStation), maxBatteryLevel(maxBatteryLevel) {
+        std::unordered_map<std::pair<int,int>, std::pair<int,int>>(knownLocations);
         path.push_back(dockingStation);
     }
 
-std::pair<int, int> Algorithm::decideNextMove(bool finishedCleaning)
+std::pair<int, int> Algorithm::nextStep(bool finishedCleaning)
 {
+    // maintain for each known location its path to the docking station !!
+    // maintain a set of locations which you know thier dirt (clean ones as well)
+
+    // logic:
+    // if have to go back (aka if len(path_to_dock) is getting too 
+    // large wrt to battery level) -> nextStep = move to haed of path_to_dock
+    // else
+        // if there is dirt on cur location - clean (nextStep = stay)
+        // else:
+            // update neighbors path to docking station
+            // choose where to go by the following priorities:
+                // Known Dirty -> Unknown dirt level -> Known Clean
+                // 1. dont choose a wall
+                // 2. prefer dirty neighbor (if known)
+                // 3. otherwise - prefer unknown location over location that you know is cleaned
+                // generally if there are two equal choises - prioritize by Direction enum
+
 	if(finishedCleaning)
 	{
 		path.pop_back();
