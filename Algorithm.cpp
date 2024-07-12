@@ -4,13 +4,43 @@
 #include <utility>
 #include <random>
 
-Algorithm::Algorithm(const House::SensorSystem& sensors, std::pair<int,int> dockingStation, int maxBatteryLevel)
-    : sensors(sensors), dockingStation(dockingStation), maxBatteryLevel(maxBatteryLevel) {
-        std::unordered_map<std::pair<int,int>, std::pair<int,int>>(knownLocations);
-        path.push_back(dockingStation);
-    }
+// Algorithm::Algorithm(const House::SensorSystem& sensors, std::pair<int,int> dockingStation, int maxBatteryLevel)
+//     : sensors(sensors), dockingStation(dockingStation), maxBatteryLevel(maxBatteryLevel) {
+//         std::unordered_map<std::pair<int,int>, std::pair<int,int>>(knownLocations);
+//         path.push_back(dockingStation);
+//     }
 
-std::pair<int, int> Algorithm::nextStep(bool finishedCleaning)
+void setMaxSteps(std::size_t maxSteps)
+{
+    this.maxSteps = maxSteps;
+}
+
+void setWallsSensor(const WallsSensor& wallsSensor)
+{
+    this.wallsSensor = wallsSensor;
+}
+
+void setDirtSensor(const DirtSensor& dirtSensor)
+{
+    this.dirtSensor = dirtSensor;
+}
+
+void setBatteryMeter(const BatteryMeter& batteryMeter)
+{
+    this.batteryMeter = batteryMeter;
+}
+
+void setMaxBatterLevel(int maxBatteryLevel)
+{
+    this.maxBatteryLevel = maxBatteryLevel;
+}
+
+void setDockingStation(std::pair<int, int> dockingStation)
+{
+    this.dockingStation = dockingStation;
+}
+
+Step Algorithm::nextStep(bool finishedCleaning)
 {
     // maintain for each known location its path to the docking station !!
     // maintain a set of locations which you know thier dirt (clean ones as well)

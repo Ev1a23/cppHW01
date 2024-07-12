@@ -10,7 +10,7 @@
 class MySimulator {
 public:
     MySimulator(std::string inputFilePath);
-    // void readHouseFile(std::string& houseFilePath);
+    void readHouseFile(std::string& houseFilePath);
     void run();
 	void msgLog(std::ofstream & outputFile, const std::string& msg);
 

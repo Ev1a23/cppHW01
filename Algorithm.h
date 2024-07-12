@@ -4,19 +4,39 @@
 #include <set>
 #include <vector>
 #include <utility>
-#include "House.h"
+// #include "House.h"
+#include "abstract_algorithm.h"
+// #include "enums.h"
+// #include "wall_sensor.h"
+// #include "dirt_sensor.h"
+// #include "battery_meter.h"
 
-class Algorithm {
+class Algorithm : public abstract_algorithm  {
 public:
-    explicit Algorithm(const House::SensorSystem& sensors, std::pair<int, int> dockingStation, int maxBatteryLevel);
-    std::pair<int, int> nextStep(bool finishedCleaning);
+    void setMaxSteps(std::size_t maxSteps);
+	void setWallsSensor(const WallsSensor&);
+	void setDirtSensor(const DirtSensor&);
+	void setBatteryMeter(const BatteryMeter&);
+    void setMaxBatterLevel(int maxBatteryLevel);
+    void setDockingStation(std::pair<int, int> dockingStation);
+    Step nextStep();
+
+    class Position {
+    private:
+        int dirtLevel = -1;
+        int distToDocking = 
+
+    }
 
 private:
-    const House::SensorSystem& sensors;
-    std::vector<std::pair<int, int>> path;
+    const int maxSteps;
+    const WallsSensor& wallsSensor;
+    const DirtSensor& dirtSensor;
+    const BatteryMeter& batteryMeter;
+
+    // std::vector<std::pair<int, int>> path;
     const std::pair<int, int> dockingStation;
     int maxBatteryLevel;
-    std::unordered_map<std::pair<int, int>, std::pair<int, int>> knownLocations;
 };
 
 #endif // ALGORITHM_H
