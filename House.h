@@ -8,26 +8,26 @@
 class House {
 
 public:
-
+	std::pair<int,int> moveTranslation(int x);
     class VacuumCleaner {
     public:
         void move(int x, int y);
         void clean();
         void charge();
-        double batteryLevel() const; // should be accessed by SensorSystem so probably has to be public, 
+        std::size_t batteryLevel() const; // should be accessed by SensorSystem so probably has to be public, 
                                         // anyway no one can have an instance of VacuumCleaner besides within House classes
         std::pair<int, int> getPosition() const; // should be private so only sensor function can access it
         double getMaxBatterySteps() const;
-        int getMaxAllowedSteps() const;
-        VacuumCleaner(const int maxAllowedSteps, const double maxBattery, const std::pair<int, int> startPosition);
+        std::size_t getMaxAllowedSteps() const;
+        VacuumCleaner(const std::size_t maxAllowedSteps, const std::size_t maxBattery, const std::pair<int, int> startPosition);
         // VacuumCleaner();
 
     private:
         // VacuumCleaner(const int maxAllowedSteps, const double maxBattery, const std::pair<int, int> startPosition);
         // VacuumCleaner();
-        int maxAllowedSteps;
-        double battery;
-        double maxBattery;
+        size_t maxAllowedSteps;
+        std::size_t battery;
+        std::size_t maxBattery;
         std::pair<int, int> position;
     };
 
