@@ -23,13 +23,13 @@ std::pair<int,int> House::moveTranslation(int directionFromEnum)
 	switch(directionFromEnum)
 	{
 		case 0:
-			return {0,1};
-		case 1:
-			return {1,0};
-		case 2:
-			return {0,-1};
-		case 3:
 			return {-1,0};
+		case 1:
+			return {0,1};
+		case 2:
+			return {1,0};
+		case 3:
+			return {0,-1};
 		default:
 			return {0,0};
 	}
