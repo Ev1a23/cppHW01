@@ -23,9 +23,10 @@ public:
 
     class Position {
     private:
-        int dirtLevel = -1;
-        int distToDocking = 
-
+        Position(std::size_t distToDocking, Direction directionToDocking);
+        int dirtLevel = -2;
+        std::size_t distToDocking = -1;
+        Direction directionToDocking = -1;
     }
 
 private:
@@ -33,10 +34,10 @@ private:
     const WallsSensor& wallsSensor;
     const DirtSensor& dirtSensor;
     const BatteryMeter& batteryMeter;
-
-    // std::vector<std::pair<int, int>> path;
     const std::pair<int, int> dockingStation;
     int maxBatteryLevel;
+    std::pair<int,int> here;
+    std::unordered_map<std::pair<int,int>, Algorithm::Position> algoGrid;
 };
 
 #endif // ALGORITHM_H
