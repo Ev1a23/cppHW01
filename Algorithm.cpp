@@ -12,38 +12,43 @@
 //         path.push_back(dockingStation);
 //     }
 
+Algorithm::Algorithm() : maxSteps(0), 
+                         dirtSensor(DirtSensor::DirtSensor()), 
+                         wallsSensor(WallsSensor::WallsSensor()), 
+                         batteryMeter(BatteryMeter::BatteryMeter()) {}
 
-Algorithm::Position(std::size_t distToDocking, Direction directionToDocking) 
-: distToDocking(distToDocking) directionToDocking(directionToDocking) {}
 
-void setMaxSteps(std::size_t maxSteps)
+Algorithm::Position::Position(std::size_t distToDocking, Direction directionToDocking) 
+: distToDocking(distToDocking), directionToDocking(directionToDocking) {}
+
+void Algorithm::setMaxSteps(std::size_t maxSteps)
 {
-    this.maxSteps = maxSteps;
+    maxSteps = maxSteps;
 }
 
-void setWallsSensor(const WallsSensor& wallsSensor)
+void Algorithm::setWallsSensor(const WallsSensor& wallsSensor)
 {
-    this.wallsSensor = wallsSensor;
+    this->wallsSensor = wallsSensor;
 }
 
-void setDirtSensor(const DirtSensor& dirtSensor)
+void Algorithm::setDirtSensor(const DirtSensor& dirtSensor)
 {
-    this.dirtSensor = dirtSensor;
+    dirtSensor = dirtSensor;
 }
 
-void setBatteryMeter(const BatteryMeter& batteryMeter)
+void Algorithm::setBatteryMeter(const BatteryMeter& batteryMeter)
 {
-    this.batteryMeter = batteryMeter;
+    batteryMeter = batteryMeter;
 }
 
-void setMaxBatterLevel(std::size_t maxBatteryLevel)
+void Algorithm::setMaxBatterLevel(std::size_t maxBatteryLevel)
 {
-    this.maxBatteryLevel = maxBatteryLevel;
+    maxBatteryLevel = maxBatteryLevel;
 }
 
-void setDockingStation(std::pair<int, int> dockingStation)
+void Algorithm::setDockingStation(std::pair<int, int> dockingStation)
 {
-    this.dockingStation = dockingStation;
+    dockingStation = dockingStation;
 }
 
 static std::pair<int,int> moveTranslation(int directionFromEnum)
