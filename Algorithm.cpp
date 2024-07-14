@@ -12,6 +12,10 @@
 //         path.push_back(dockingStation);
 //     }
 
+
+Algorithm::Position(std::size_t distToDocking, Direction directionToDocking) 
+: distToDocking(distToDocking) directionToDocking(directionToDocking) {}
+
 void setMaxSteps(std::size_t maxSteps)
 {
     this.maxSteps = maxSteps;
@@ -32,7 +36,7 @@ void setBatteryMeter(const BatteryMeter& batteryMeter)
     this.batteryMeter = batteryMeter;
 }
 
-void setMaxBatterLevel(int maxBatteryLevel)
+void setMaxBatterLevel(std::size_t maxBatteryLevel)
 {
     this.maxBatteryLevel = maxBatteryLevel;
 }

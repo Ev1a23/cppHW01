@@ -35,7 +35,7 @@ private:
     const DirtSensor& dirtSensor;
     const BatteryMeter& batteryMeter;
     const std::pair<int, int> dockingStation;
-    int maxBatteryLevel;
+    std::size_t maxBatteryLevel;
     std::pair<int,int> here;
     std::unordered_map<std::pair<int,int>, Algorithm::Position> algoGrid;
 };
