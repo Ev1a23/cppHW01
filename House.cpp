@@ -16,6 +16,25 @@ void House::clean(){
     cleaner.clean();
 }
 
+
+//enum class Step { North, East, South, West, Stay, Finish };
+std::pair<int,int> House::moveTranslation(int directionFromEnum)
+{
+	switch(directionFromEnum)
+	{
+		case 0:
+			return {-1,0};
+		case 1:
+			return {0,1};
+		case 2:
+			return {1,0};
+		case 3:
+			return {0,-1};
+		default:
+			return {0,0};
+	}
+}
+
 House::VacuumCleaner& House::getCleaner(){
     return cleaner;
 }
@@ -36,17 +55,17 @@ int House::getTotalDirt() const {
     return totalDirt;
 }
 
-House::VacuumCleaner::VacuumCleaner(const int maxAllowedSteps, const double maxBattery, const std::pair<int, int> startPosition)
+House::VacuumCleaner::VacuumCleaner(const std::size_t maxAllowedSteps, const double maxBattery, const std::pair<int, int> startPosition)
         : maxAllowedSteps(maxAllowedSteps), battery(maxBattery), maxBattery(maxBattery), position(startPosition) {}
 
 
 
 
-double House::VacuumCleaner::getMaxBatterySteps() const {
+std::size_t House::VacuumCleaner::getMaxBatterySteps() const {
     return maxBattery;
 }
 
-int House::VacuumCleaner::getMaxAllowedSteps() const {
+std::size_t House::VacuumCleaner::getMaxAllowedSteps() const {
     return maxAllowedSteps;
 }
 
@@ -153,7 +172,7 @@ void House::loadHouse(const std::string& path) {
     
     // load house itself
 
-    int maxSteps = getValue(file, "MaxSteps");
+    size_t maxSteps = (size_t)getValue(file, "MaxSteps");
     int maxBattery = getValue(file, "MaxBattery");
     int rows = getValue(file, "Rows");
     int cols = getValue(file, "Cols");

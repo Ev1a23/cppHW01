@@ -2,12 +2,12 @@
 #include <iostream>	
 #include <fstream>
 #include <sstream>
+#include "enums.h"
 
-MySimulator::MySimulator(std::string inputFilePath)
-: 	inputFilePath(inputFilePath), 
-	house(House(inputFilePath)), 
-	algorithm(house.getSensors(), house.getDockingStation(), house.getCleaner().getMaxBatterySteps())
-	{}
+MySimulator::MySimulator()
+: house(),
+  algorithm()
+{}
 
 void MySimulator::run()
 {
@@ -23,30 +23,29 @@ void MySimulator::run()
 	msgStream.clear();
 	std::cout << "Simulation started\n";
     House::VacuumCleaner& cleaner = house.getCleaner();
-    int cnt = 0;
+    size_t cnt = 0;
+	Step nextMove = Step::Stay;
     std::cout << "(" << cleaner.getPosition().first << ", " << cleaner.getPosition().second << ") -> ";
-    while (house.getTotalDirt() > 0 && cnt < cleaner.getMaxAllowedSteps())
+    while (cnt < cleaner.getMaxAllowedSteps() && nextMove != Step::Finish)
     {
         std::cout << "Total Dirt Level=" << house.getTotalDirt() << "\n";
         cnt++;
         std::pair<int, int> curPos = cleaner.getPosition();
-        std::pair<int, int> nextMove = algorithm.nextStep(false);
-		msgStream << "(" << cleaner.getPosition().first << ", " << cleaner.getPosition().second << ") -> "
-          << "(" << nextMove.first << ", " << nextMove.second << ")";
+        nextMove = algorithm.nextStep();
+		std::pair <int,int> moveTranslation = house.moveTranslation(nextMove);
+		msgStream << "(" << curPos.first << ", " << curPos.second << ") -> "
+          << "(" << curPos.first + moveTranslation.first  << ", " << curPos.first + moveTranslation.first << ")";
 		msgLog(outputFile, msgStream.str());
 		msgStream.str("");
 		msgStream.clear();
-		//msgLog(outputFile, "(" << cleaner.getPosition().first << ", " << cleaner.getPosition().second << ") -> " << "(" << nextMove.first << ", " << nextMove.second << ")");
-        // std::cout << "Current Position: (" << curPos.first << ", " << curPos.second << "), Next Move: (" << nextMove.first << ", " << nextMove.second << ")\n";
-
-		if (nextMove != curPos)
+		
+		if (nextMove == Step::Finish)
 		{
-			std::cout << "Moving to docking station\n";
-			cleaner.move(nextMove.first, nextMove.second);
+			continue;
 		}
-		else
+		if (nextMove == Step::Stay)
 		{
-			if (nextMove == house.getDockingStation())
+			if (curPos == house.getDockingStation())
         	{
 				std::cout << "Charging at docking station (battery level = " << cleaner.batteryLevel() << ")\n";
                 cleaner.charge();
@@ -57,76 +56,50 @@ void MySimulator::run()
                 house.clean();
 			}
 		}
-
-        // if (nextMove == house.getDockingStation())
-        // {
-        //     if (nextMove != curPos)
-        //     {
-        //         std::cout << "Moving to docking station\n";
-        //         cleaner.move(nextMove.first, nextMove.second);
-        //     }
-        //     else
-        //     {
-        //         std::cout << "Charging at docking station (battery level = " << cleaner.batteryLevel() << ")\n";
-        //         cleaner.charge();
-        //     }
-        // }
-        // else
-        // {
-        //     if (nextMove != curPos)
-        //     {
-        //         std::cout << "Moving to next location\n";
-        //         cleaner.move(nextMove.first, nextMove.second);
-        //     }
-        //     else
-        //     {
-        //         std::cout << "Cleaning at current location\n";
-        //         house.cleanPos(nextMove.first, nextMove.second);
-        //     }
-        // }
-        std::cout << "(" << nextMove.first << ", " << nextMove.second << ") -> ";
-    }
-	std::pair<int, int> curPos = cleaner.getPosition();
-	if(house.getTotalDirt() == 0 && curPos != house.getDockingStation())
-	{
-        std::cout << "\nFinished Cleaning - returning to docking station\n";
-		while(cnt < cleaner.getMaxAllowedSteps() && curPos!=house.getDockingStation())
-		{
-			cnt++;
-        	std::pair<int, int> nextMove = algorithm.nextStep(true);
-        	std::cout << "Current Position: (" << curPos.first << ", " << curPos.second << "), Next Move: (" << nextMove.first << ", " << nextMove.second << ")\n";
-            curPos = nextMove;
-			cleaner.move(nextMove.first, nextMove.second);
-		}
-		if(curPos == house.getDockingStation())
-		{
-			std::cout << "Success!! Reached docking station\n";
-		}
 		else
 		{
-			std::cout << "Failed to reach docking station due to Max Allowed steps\n";
+			std::cout << "Moving\n";
+			cleaner.move(curPos.first + moveTranslation.first, curPos.second + moveTranslation.second);
 		}
+
+        std::cout << "(" << curPos.first + moveTranslation.first << ", " << curPos.second + moveTranslation.second << ") -> ";
+    }
+	std::pair<int, int> curPos = cleaner.getPosition();
+	std::string status = "";
+	if(curPos == house.getDockingStation() && nextMove == Step::Finish)
+	{
+		status = "FINISHED";
+	}
+	else if(cnt == cleaner.getMaxAllowedSteps() && curPos != house.getDockingStation())
+	{
+		status = "WORKING";
 	}
 	else
 	{
-		std::cout << "Failed to clean all dirt due to Max Allowed steps\n";
+		status = "DEAD"; //Should not reach here
 	}
+	//TODO Change format to include steps at the bottom instead of after every step
 	std::cout << "Simulation completed\n";
 	std::ostringstream logStream;
-	logStream << "Statistics\nTotal Steps Taken: " << cnt <<"\nAmount of Dirt Remaining: " << house.getTotalDirt() << "\nBattery Exausted: " << (cleaner.batteryLevel() == 0 ? "Yes" : "No") << "\nMission Status: " << (house.getTotalDirt() == 0 && curPos == house.getDockingStation() ? "Success" : "Failure");
+	logStream << "NumSteps= " << cnt <<"\nDirtLeft= " << house.getTotalDirt() << "\nStatus= " << status;
 	msgLog(outputFile, logStream.str());
+
 	outputFile.close();
 }
 
-// void readHouseFile(std::string& houseFilePath)
-// {
-// 	this.house = House(houseFilePath);
-// }
+void readHouseFile(std::string& houseFilePath)
+{
+	this.house = House(houseFilePath);
+}
 
-// void setAlgorithm(Algorithm algorithm)
-// {
-// 	algorithm(house.getSensors(), house.getDockingStation(), house.getCleaner().getMaxBatterySteps())
-// }
+void setAlgorithm(Algorithm algorithm)
+{
+	algorithm.setMaxSteps(this.house.getCleaner().getMaxAllowedSteps());
+	algorithm.setWallsSensor(MyWallsSensor(this.house));
+	algorithm.setDirtSensor(MyDirtSensor(this.house));
+	algorithm.setBatteryMeter(BatteryMeter(this.house));
+	this.algorithm = algorithm;
+}
 
 void MySimulator::msgLog(std::ofstream & outputFile, const std::string& msg)
 {

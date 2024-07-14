@@ -9,13 +9,12 @@
 
 class MySimulator {
 public:
-    MySimulator(std::string inputFilePath);
-    void readHouseFile(std::string& houseFilePath);
+    MySimulator();
     void run();
 	void msgLog(std::ofstream & outputFile, const std::string& msg);
+	void readHouseFile(std::string& houseFilePath);
 
 private:
-    std::string inputFilePath;
 	House house;
     Algorithm algorithm;
 };
