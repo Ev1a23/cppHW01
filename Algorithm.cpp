@@ -102,6 +102,19 @@ void updateHere()
     }
 }
 
+std::size_t minDist()
+{
+    std::size_t minDist = 0;
+    for (auto it = this.algoGrid.begin(); it != this.algoGrid.end(); ++it) 
+    {
+        if (it.seocnd.dirtLevel != 0 && it.second.distToDocking > minDist)
+        {
+            minDist = it.setDockingStation
+        }
+    }
+    return minDist;
+}
+
 Algorithm::Position neighborsHandle()
 {
     Algorithm::Position best = algoGrid[here + moveTranslation(here.directionToDocking)];
@@ -137,6 +150,8 @@ Algorithm::Position neighborsHandle()
 }
 
 
+
+
 Step Algorithm::nextStep(bool finishedCleaning)
 {
     // maintain for each known location its path to the docking station !!
@@ -156,14 +171,26 @@ Step Algorithm::nextStep(bool finishedCleaning)
                 // 3. otherwise - prefer unknown location over location that you know is cleaned
                 // generally if there are two equal choises - prioritize by Direction enum
 
+    if (this.algoGrid.empty())
+    {
+        this.setDockingStation({-1,-1});
+        Position dock = Algorithm::Position(0, -1);
+        this.algoGrid[this.dockingStation] = dock;
+    }
+    
     ////////////////////////////
     // charging:
-    if ((here.first == dockingStation.first && here.second == dockingStation.second) &&
-         this.batteryMeter.getBatteryState() < maxBatteryLevel)
+    if ((here.first == dockingStation.first && here.second == dockingStation.second)
     {
-        return Step::Stay;
+        if (this.minDist() * 2 > this.maxSteps)
+        { // can't clean anymore
+            return Step::Finish;
+        }
+        else if (this.batteryMeter.getBatteryState() < maxBatteryLevel)
+        {
+            return Step::Stay;
+        }
     }
-
 
     // if not charging, update info:
     this.updateHere();
@@ -171,7 +198,7 @@ Step Algorithm::nextStep(bool finishedCleaning)
 
     ////////////////////////////
     // returnning to docking:
-    if (this.batteryMeter.getBatteryState() >= here.distToDocking - 1)
+    if ((here.distToDocking - 1) >= std::min(this.batteryMeter.getBatteryState(), this.maxSteps))
     {
 		std::cout << "Backtracking\n";
         Step res = algoGrid[here].directionToDocking;
