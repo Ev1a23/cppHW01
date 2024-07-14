@@ -55,7 +55,7 @@ int House::getTotalDirt() const {
     return totalDirt;
 }
 
-House::VacuumCleaner::VacuumCleaner(const size_t maxAllowedSteps, const double maxBattery, const std::pair<int, int> startPosition)
+House::VacuumCleaner::VacuumCleaner(const std::size_t maxAllowedSteps, const double maxBattery, const std::pair<int, int> startPosition)
         : maxAllowedSteps(maxAllowedSteps), battery(maxBattery), maxBattery(maxBattery), position(startPosition) {}
 
 
