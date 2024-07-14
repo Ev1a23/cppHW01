@@ -38,13 +38,12 @@ void MySimulator::run()
 		msgLog(outputFile, msgStream.str());
 		msgStream.str("");
 		msgStream.clear();
-
-		if (moveTranslation != {0,0})
+		
+		if (nextMove == Step::Finish)
 		{
-			std::cout << "Moving to docking station\n";
-			cleaner.move(curPos.first + moveTranslation.first, curPos.second + moveTranslation.second);
+			continue;
 		}
-		else
+		if (nextMove == Step::Stay)
 		{
 			if (curPos == house.getDockingStation())
         	{
@@ -57,6 +56,12 @@ void MySimulator::run()
                 house.clean();
 			}
 		}
+		else
+		{
+			std::cout << "Moving\n";
+			cleaner.move(curPos.first + moveTranslation.first, curPos.second + moveTranslation.second);
+		}
+
         std::cout << "(" << curPos.first + moveTranslation.first << ", " << curPos.second + moveTranslation.second << ") -> ";
     }
 	std::pair<int, int> curPos = cleaner.getPosition();
