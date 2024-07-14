@@ -65,6 +65,10 @@ static std::pair<int,int> moveTranslation(int directionFromEnum)
 
 static bool compareDirts(int a, int b)
 {
+    if (a == -3 || b == -3) // one of them is the docking station
+    {
+        return b == -3;
+    }
     if (a == 0) // a is clean
     {
         return false;
@@ -102,9 +106,23 @@ void updateHere()
     }
 }
 
-Algorithm::Position neighborsHandle()
+std::size_t minDist()
 {
-    Algorithm::Position best = algoGrid[here + moveTranslation(here.directionToDocking)];
+    std::size_t minDist = 0;
+    for (auto it = this.algoGrid.begin(); it != this.algoGrid.end(); ++it) 
+    {
+        if (it.seocnd.dirtLevel != 0 && it.second.distToDocking > minDist)
+        {
+            minDist = it.setDockingStation
+        }
+    }
+    return minDist;
+}
+
+Direction neighborsHandle()
+{
+    Direction d = here.directionToDocking;
+    int best = algoGrid[here + moveTranslation(d)].dirtLevel;
     for (int i = 0; i < 4; i++)
     {
         if (!this.wallsSensor.isWall(i))
@@ -129,12 +147,15 @@ Algorithm::Position neighborsHandle()
             }
             if (compareDirts(neighbor.dirtLevel, best))
             {
-                best = neighbor;
+                best = neighbor.dirtLevel;
+                d = i;
             }
         }
     }
-    return best;
+    return d;
 }
+
+
 
 
 Step Algorithm::nextStep(bool finishedCleaning)
@@ -156,14 +177,28 @@ Step Algorithm::nextStep(bool finishedCleaning)
                 // 3. otherwise - prefer unknown location over location that you know is cleaned
                 // generally if there are two equal choises - prioritize by Direction enum
 
+    if (this.algoGrid.empty())
+    {
+        this.setDockingStation({-1,-1});
+        Position dock = Algorithm::Position(0, -1);
+        dock.dirtLevel = -3;
+        this.algoGrid[this.dockingStation] = dock;
+        here = this.dockingStation;
+    }
+    
     ////////////////////////////
     // charging:
-    if ((here.first == dockingStation.first && here.second == dockingStation.second) &&
-         this.batteryMeter.getBatteryState() < maxBatteryLevel)
+    if ((here.first == dockingStation.first && here.second == dockingStation.second)
     {
-        return Step::Stay;
+        if (this.minDist() * 2 > this.maxSteps)
+        { // can't clean anymore
+            return Step::Finish;
+        }
+        else if (this.batteryMeter.getBatteryState() < maxBatteryLevel)
+        {
+            return Step::Stay;
+        }
     }
-
 
     // if not charging, update info:
     this.updateHere();
@@ -171,7 +206,7 @@ Step Algorithm::nextStep(bool finishedCleaning)
 
     ////////////////////////////
     // returnning to docking:
-    if (this.batteryMeter.getBatteryState() >= here.distToDocking - 1)
+    if ((here.distToDocking - 1) >= std::min(this.batteryMeter.getBatteryState(), this.maxSteps))
     {
 		std::cout << "Backtracking\n";
         Step res = algoGrid[here].directionToDocking;

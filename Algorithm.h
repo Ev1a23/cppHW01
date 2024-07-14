@@ -34,7 +34,7 @@ private:
     const WallsSensor& wallsSensor;
     const DirtSensor& dirtSensor;
     const BatteryMeter& batteryMeter;
-    const std::pair<int, int> dockingStation;
+    const std::pair<int, int> dockingStation = {0,0};
     std::size_t maxBatteryLevel;
     std::pair<int,int> here;
     std::unordered_map<std::pair<int,int>, Algorithm::Position> algoGrid;
