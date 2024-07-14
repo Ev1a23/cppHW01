@@ -65,6 +65,10 @@ static std::pair<int,int> moveTranslation(int directionFromEnum)
 
 static bool compareDirts(int a, int b)
 {
+    if (a == -3 || b == -3) // one of them is the docking station
+    {
+        return b == -3;
+    }
     if (a == 0) // a is clean
     {
         return false;
@@ -115,9 +119,10 @@ std::size_t minDist()
     return minDist;
 }
 
-Algorithm::Position neighborsHandle()
+Direction neighborsHandle()
 {
-    Algorithm::Position best = algoGrid[here + moveTranslation(here.directionToDocking)];
+    Direction d = here.directionToDocking;
+    int best = algoGrid[here + moveTranslation(d)].dirtLevel;
     for (int i = 0; i < 4; i++)
     {
         if (!this.wallsSensor.isWall(i))
@@ -142,11 +147,12 @@ Algorithm::Position neighborsHandle()
             }
             if (compareDirts(neighbor.dirtLevel, best))
             {
-                best = neighbor;
+                best = neighbor.dirtLevel;
+                d = i;
             }
         }
     }
-    return best;
+    return d;
 }
 
 
@@ -175,7 +181,9 @@ Step Algorithm::nextStep(bool finishedCleaning)
     {
         this.setDockingStation({-1,-1});
         Position dock = Algorithm::Position(0, -1);
+        dock.dirtLevel = -3;
         this.algoGrid[this.dockingStation] = dock;
+        here = this.dockingStation;
     }
     
     ////////////////////////////
