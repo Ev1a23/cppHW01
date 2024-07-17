@@ -17,9 +17,9 @@ public:
 	void msgLog(std::ofstream & outputFile, const std::string& msg);
 	void readHouseFile(std::string& houseFilePath);
     void setAlgorithm(MyAlgorithm algorithm);
+    House* house;
 
 private:
-	House* house;
     MyAlgorithm* algorithm;
 };
 

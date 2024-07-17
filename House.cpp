@@ -5,7 +5,7 @@
 #include <iostream>
 
 
-House::House(const std::string& inputFile) : cleaner(-1, -1, {-1,-1}), sensors(*this) {
+House::House(const std::string& inputFile) : cleaner(-1, -1, {-1,-1}){
     loadHouse(inputFile);
 }
 
@@ -39,9 +39,9 @@ House::VacuumCleaner& House::getCleaner(){
     return cleaner;
 }
 
-House::SensorSystem& House::getSensors(){
-    return sensors;
-}
+// House::SensorSystem& House::getSensors(){
+//     return sensors;
+// }
 
 bool House::isWall(int x, int y) const {
     return grid[x][y] == -1;
@@ -51,14 +51,12 @@ std::pair<int, int> House::getDockingStation() const {
     return dockingStation;
 }
 
-int House::getTotalDirt() const {
-    return totalDirt;
-}
+// int House::getTotalDirt() const {
+//     return totalDirt;
+// }
 
 House::VacuumCleaner::VacuumCleaner(const std::size_t maxAllowedSteps, const double maxBattery, const std::pair<int, int> startPosition)
         : maxAllowedSteps(maxAllowedSteps), battery(maxBattery), maxBattery(maxBattery), position(startPosition) {}
-
-
 
 
 std::size_t House::VacuumCleaner::getMaxBatterySteps() const {
@@ -95,37 +93,37 @@ void House::VacuumCleaner::charge(){
 double House::VacuumCleaner::batteryLevel() const {return battery;};
 
 
-House::SensorSystem::SensorSystem(House& house) : house(house){}
+// House::SensorSystem::SensorSystem(House& house) : house(house){}
 
-int House::SensorSystem::dirtSensor() const {
-    std::pair<int,int> pos = house.getCleaner().getPosition();
-    return house.grid[pos.first][pos.second];
-}
+// int House::SensorSystem::dirtSensor() const {
+//     std::pair<int,int> pos = house.getCleaner().getPosition();
+//     return house.grid[pos.first][pos.second];
+// }
 
-double House::SensorSystem::batterySensor() const {
-    return house.getCleaner().batteryLevel();
-}
+// double House::SensorSystem::batterySensor() const {
+//     return house.getCleaner().batteryLevel();
+// }
 
-std::vector<std::pair<int, int>> House::SensorSystem::wallsSensor() const{
-    std::pair<int,int> cleanerPos = house.getCleaner().getPosition();
-    std::vector<std::pair<int, int>> nonWallLocations;
+// std::vector<std::pair<int, int>> House::SensorSystem::wallsSensor() const{
+//     std::pair<int,int> cleanerPos = house.getCleaner().getPosition();
+//     std::vector<std::pair<int, int>> nonWallLocations;
  
-    // Check each direction for non-wall positions
-    if (!house.isWall(cleanerPos.first, cleanerPos.second - 1)) {
-        nonWallLocations.push_back({cleanerPos.first, cleanerPos.second - 1});  // North
-    }
-    if (!house.isWall(cleanerPos.first + 1, cleanerPos.second)) {
-        nonWallLocations.push_back({cleanerPos.first + 1, cleanerPos.second});  // East
-    }
-    if (!house.isWall(cleanerPos.first, cleanerPos.second + 1)) {
-        nonWallLocations.push_back({cleanerPos.first, cleanerPos.second + 1});  // South
-    }
-    if (!house.isWall(cleanerPos.first - 1, cleanerPos.second)) {
-        nonWallLocations.push_back({cleanerPos.first - 1, cleanerPos.second});  // West
-    }
+//     // Check each direction for non-wall positions
+//     if (!house.isWall(cleanerPos.first, cleanerPos.second - 1)) {
+//         nonWallLocations.push_back({cleanerPos.first, cleanerPos.second - 1});  // North
+//     }
+//     if (!house.isWall(cleanerPos.first + 1, cleanerPos.second)) {
+//         nonWallLocations.push_back({cleanerPos.first + 1, cleanerPos.second});  // East
+//     }
+//     if (!house.isWall(cleanerPos.first, cleanerPos.second + 1)) {
+//         nonWallLocations.push_back({cleanerPos.first, cleanerPos.second + 1});  // South
+//     }
+//     if (!house.isWall(cleanerPos.first - 1, cleanerPos.second)) {
+//         nonWallLocations.push_back({cleanerPos.first - 1, cleanerPos.second});  // West
+//     }
  
-    return nonWallLocations;
-}
+//     return nonWallLocations;
+// }
 
 
 
@@ -253,6 +251,7 @@ void House::loadHouse(const std::string& path) {
 	}
 
     cleaner = VacuumCleaner(maxSteps, maxBattery, dockingStation);
+    // std::cout << &cleaner << "\n";
 	file.close();
 };
    

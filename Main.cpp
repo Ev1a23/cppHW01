@@ -11,8 +11,16 @@ int main(int argc, char* argv[]) {
 	{
     	MySimulator simulator;
 		simulator.readHouseFile(houseFilePath);
+		// int x = simulator.house->getCleaner().getPosition().first;
+		// std::cout << "x = " << x << "\n";
+		std::cout << "first = " << ((simulator.house)->getCleaner()).getPosition().first << "\n";
+		std::cout << "first = " << ((simulator.house)->getCleaner()).getPosition().first << "\n";
+		std::cout << "first = " << simulator.house->getCleaner().getPosition().first << "\n";
+
 		MyAlgorithm algo;
+		//std::cout << "first = " << simulator.house->getCleaner().getPosition().first << "\n";
 		simulator.setAlgorithm(algo);
+		//std::cout << "first = " << simulator.house->getCleaner().getPosition().first << "\n";
 		simulator.run();
 	}
 	catch(const std::exception& e)

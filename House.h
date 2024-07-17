@@ -34,27 +34,27 @@ public:
         std::pair<int, int> position;
     };
 
-    class SensorSystem {
-    public:
-        SensorSystem(House& house); // access from House only
-        // SensorSystem(); // access from House only
-        std::vector<std::pair<int, int>> wallsSensor() const; // returns a vector of the non-walls neighbors
-        double  batterySensor() const;
-        int dirtSensor() const;
-        // House getHouse() const;
-        // VacuumCleaner getCleaner() const;
+    // class SensorSystem {
+    // public:
+    //     SensorSystem(House& house); // access from House only
+    //     // SensorSystem(); // access from House only
+    //     std::vector<std::pair<int, int>> wallsSensor() const; // returns a vector of the non-walls neighbors
+    //     double  batterySensor() const;
+    //     int dirtSensor() const;
+    //     // House getHouse() const;
+    //     // VacuumCleaner getCleaner() const;
 
-    private:
-        House& house;
-        // SensorSystem(); // access from House only
-    };
+    // private:
+    //     House& house;
+    //     // SensorSystem(); // access from House only
+    // };
 
     House(const std::string& inputFile);
     // int getDirtLevel(int x, int y) const;
     std::pair<int, int> getDockingStation() const;
-    int getTotalDirt() const;
+    // int getTotalDirt() const;
     // VacuumCleaner& getCleaner(); no need
-    SensorSystem& getSensors();
+    // SensorSystem& getSensors();
     VacuumCleaner& getCleaner();
     void clean();
 
@@ -62,9 +62,8 @@ private:
     std::pair<int, int> dockingStation = std::make_pair(-1, -1);
     int totalDirt;
     void loadHouse(const std::string& path);
-
     VacuumCleaner cleaner;
-    SensorSystem sensors;
+    // SensorSystem sensors;
 
 };
 

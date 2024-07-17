@@ -12,6 +12,7 @@ MySimulator::MySimulator()
 
 void MySimulator::run()
 {
+	// std::cout << house->getCleaner().getPosition().first << "\n";
 	std::ofstream outputFile("output.txt");
 	if(!outputFile.is_open())
 	{
@@ -24,12 +25,13 @@ void MySimulator::run()
 	msgStream.clear();
 	std::cout << "Simulation started\n";
     House::VacuumCleaner& cleaner = house->getCleaner();
+    // std::cout << &cleaner << "\n";
     size_t cnt = 0;
 	Step nextMove = Step::Stay;
-    std::cout << "(" << cleaner.getPosition().first << ", " << cleaner.getPosition().second << ") -> ";
+    // std::cout << "(" << cleaner.getPosition().first << ", " << cleaner.getPosition().second << ") -> \n";
     while (cnt < cleaner.getMaxAllowedSteps() && nextMove != Step::Finish)
     {
-        std::cout << "Total Dirt Level=" << house->getTotalDirt() << "\n";
+        // std::cout << "Total Dirt Level=" << house->getTotalDirt() << "\n";
         cnt++;
         std::pair<int, int> curPos = cleaner.getPosition();
         nextMove = algorithm->nextStep();
@@ -82,7 +84,7 @@ void MySimulator::run()
 	//TODO Change format to include steps at the bottom instead of after every step
 	std::cout << "Simulation completed\n";
 	std::ostringstream logStream;
-	logStream << "NumSteps= " << cnt <<"\nDirtLeft= " << house->getTotalDirt() << "\nStatus= " << status;
+	logStream << "NumSteps= " << cnt << "\nStatus= " << status;
 	msgLog(outputFile, logStream.str());
 
 	outputFile.close();
