@@ -15,10 +15,10 @@ $(TARGET): $(OBJ)
 main.o: main.cpp MySimulator.o
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-Algorithm.o: Algorithm.cpp wall_sensor.h dirt_sensor.h battery_meter.h abstract_algorithm.h
+MyAlgorithm.o: MyAlgorithm.cpp wall_sensor.h dirt_sensor.h battery_meter.h abstract_algorithm.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-MySimulator.o: MySimulator.cpp House.o Algorithm.o
+MySimulator.o: MySimulator.cpp House.o MyAlgorithm.o
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 House.o: House.cpp my_wall_sensor.o my_dirt_sensor.o my_battery_meter.o

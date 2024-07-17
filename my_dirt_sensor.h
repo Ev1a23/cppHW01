@@ -1,10 +1,13 @@
 #ifndef MY_DIRT_SENSOR_H_
 #define MY_DIRT_SENSOR_H_
 
-class MyDirtSensor : public my_dirt_sensor {
+#include "dirt_sensor.h"
+#include "House.h"
+
+class MyDirtSensor : public DirtSensor {
 public:
-	MyDirtSensor(House&);
-	int dirtLevel() const = 0;
+	MyDirtSensor(House*);
+	int dirtLevel() const override = 0;
 
 private:
 	House& house;

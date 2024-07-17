@@ -18,17 +18,17 @@ void House::clean(){
 
 
 //enum class Step { North, East, South, West, Stay, Finish };
-std::pair<int,int> House::moveTranslation(int directionFromEnum)
+std::pair<int,int> House::moveTranslation(Step step)
 {
-	switch(directionFromEnum)
+	switch(step)
 	{
-		case 0:
+		case Step::North:
 			return {-1,0};
-		case 1:
+		case Step::East:
 			return {0,1};
-		case 2:
+		case Step::South:
 			return {1,0};
-		case 3:
+		case Step::West:
 			return {0,-1};
 		default:
 			return {0,0};

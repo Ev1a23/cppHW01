@@ -1,4 +1,4 @@
-#include "Algorithm.h"
+#include "MyAlgorithm.h"
 #include <iostream>
 #include "House.h"
 #include <utility>
@@ -7,16 +7,17 @@
 #include <unordered_map>
 #include <limits>
 
-// Algorithm::Algorithm(const House::SensorSystem& sensors, std::pair<int,int> dockingStation, int maxBatteryLevel)
+// MyAlgorithm::MyAlgorithm(const House::SensorSystem& sensors, std::pair<int,int> dockingStation, int maxBatteryLevel)
 //     : sensors(sensors), dockingStation(dockingStation), maxBatteryLevel(maxBatteryLevel) {
 //         std::unordered_map<std::pair<int,int>, std::pair<int,int>>(knownLocations);
 //         path.push_back(dockingStation);
 //     }
 
-Algorithm::Algorithm() {}
+MyAlgorithm::MyAlgorithm() {}
 
+MyAlgorithm::Position::Position(){}
 
-Algorithm::Position::Position(std::size_t distToDocking, Direction directionToDocking) 
+MyAlgorithm::Position::Position(std::size_t distToDocking, Direction directionToDocking) 
 : distToDocking(distToDocking), directionToDocking(directionToDocking) {}
 
 static size_t keyConvert(std::pair<int,int> pos)
@@ -26,50 +27,54 @@ static size_t keyConvert(std::pair<int,int> pos)
     return ((size_t)i) << 32 | (unsigned int) j;
 }
 
-void Algorithm::setMaxSteps(std::size_t maxSteps)
+void MyAlgorithm::setMaxSteps(std::size_t maxSteps)
 {
     this->maxSteps = maxSteps;
 }
 
-void Algorithm::setWallsSensor(const WallsSensor& wallsSensor)
+void MyAlgorithm::setWallsSensor(const WallsSensor& wallsSensor)
 {
     this->wallsSensor = &wallsSensor;
 }
 
-void Algorithm::setDirtSensor(const DirtSensor& dirtSensor)
+void MyAlgorithm::setDirtSensor(const DirtSensor& dirtSensor)
 {
     this->dirtSensor = &dirtSensor;
 }
 
-void Algorithm::setBatteryMeter(const BatteryMeter& batteryMeter)
+void MyAlgorithm::setBatteryMeter(const BatteryMeter& batteryMeter)
 {
     this->batteryMeter = &batteryMeter;
 }
 
-void Algorithm::setMaxBatterLevel(std::size_t maxBatteryLevel)
+void MyAlgorithm::setMaxBatterLevel(std::size_t maxBatteryLevel)
 {
     this->maxBatteryLevel = maxBatteryLevel;
 }
 
-void Algorithm::setDockingStation(std::pair<int, int> dockingStation)
+void MyAlgorithm::setDockingStation(std::pair<int, int> dockingStation)
 {
     this->dockingStation.first = dockingStation.first;
     this->dockingStation.second = dockingStation.second;
 }
 
-std::pair<int,int> Algorithm::moveTranslation(Direction directionFromEnum)
+std::pair<int,int> MyAlgorithm::moveTranslation(Direction directionFromEnum)
 {
     std::pair<int,int> diff;
 	switch(directionFromEnum)
 	{
 		case Direction::North:
-			diff = {-1,0};
+			diff = {(-1),0};
+            break;
 		case Direction::East:
 			diff = {0,1};
+            break;
 		case Direction::South:
 			diff = {1,0};
+            break;
 		case Direction::West:
 			diff = {0,-1};
+            break;
 		default:
 			diff = {0,0};
 	}
@@ -99,7 +104,7 @@ static bool compareDirts(int a, int b)
     }
 }
 
-void Algorithm::updateHere()
+void MyAlgorithm::updateHere()
 {
     Direction d;
     Position here_p = this->algoGrid[keyConvert(here)];
@@ -128,7 +133,7 @@ void Algorithm::updateHere()
     }
 }
 
-std::size_t Algorithm::minDist()
+std::size_t MyAlgorithm::minDist()
 { // Find the furthest known point from docking station which is potentially not cleaned
     std::size_t minDist = std::numeric_limits<std::size_t>::max();
     for (auto it = this->algoGrid.begin(); it != this->algoGrid.end(); ++it) 
@@ -141,7 +146,7 @@ std::size_t Algorithm::minDist()
     return minDist;
 }
 
-Direction Algorithm::neighborsHandle()
+Direction MyAlgorithm::neighborsHandle()
 {
     Position herePos = this->algoGrid[keyConvert(here)];
     Direction bestD = herePos.directionToDocking;
@@ -179,7 +184,7 @@ Direction Algorithm::neighborsHandle()
 }
 
 
-Step Algorithm::nextStep()
+Step MyAlgorithm::nextStep()
 {
     // maintain for each known location its path to the docking station !!
     // maintain a set of locations which you know thier dirt (clean ones as well)
@@ -201,7 +206,7 @@ Step Algorithm::nextStep()
     if (this->algoGrid.empty())
     {
         // this->setDockingStation({0,0});
-        Position dock = Algorithm::Position(0, Direction::North); // TODO
+        Position dock = MyAlgorithm::Position(0, Direction::North); // TODO
         dock.dirtLevel = -3;
         this->algoGrid[keyConvert(this->dockingStation)] = dock;
         here = this->dockingStation;

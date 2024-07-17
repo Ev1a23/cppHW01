@@ -2,7 +2,7 @@
 #define SIMULATIONCONTROLLER_H
 
 #include "House.h" 
-#include "Algorithm.h" 
+#include "MyAlgorithm.h" 
 #include <string>
 #include <vector>
 #include <fstream>
@@ -13,10 +13,11 @@ public:
     void run();
 	void msgLog(std::ofstream & outputFile, const std::string& msg);
 	void readHouseFile(std::string& houseFilePath);
+    void setAlgorithm(MyAlgorithm& algorithm);
 
 private:
 	House* house;
-    Algorithm* algorithm;
+    MyAlgorithm* algorithm;
 };
 
 #endif // SIMULATIONCONTROLLER_H

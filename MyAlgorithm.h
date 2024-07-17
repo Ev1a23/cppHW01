@@ -12,9 +12,9 @@
 // #include "dirt_sensor.h"
 // #include "battery_meter.h"
 
-class Algorithm : public AbstractAlgorithm  {
+class MyAlgorithm : public AbstractAlgorithm  {
 public:
-    Algorithm();
+    MyAlgorithm();
     void setMaxSteps(std::size_t maxSteps);
 	void setWallsSensor(const WallsSensor&);
 	void setDirtSensor(const DirtSensor&);
@@ -25,6 +25,7 @@ public:
 
     class Position {
     public:
+        Position();
         Position(std::size_t distToDocking, Direction directionToDocking);
         int dirtLevel = -2;
         std::size_t distToDocking = -1;
@@ -39,8 +40,8 @@ private:
     std::pair<int, int> dockingStation = {0,0};
     std::size_t maxBatteryLevel;
     std::pair<int,int> here;
-    std::unordered_map<size_t, Algorithm::Position> algoGrid;
-    // std::unordered_map<std::pair<int, int>, Algorithm::Position, decltype([](const std::pair<int, int>& p) {
+    std::unordered_map<size_t, MyAlgorithm::Position> algoGrid;
+    // std::unordered_map<std::pair<int, int>, MyAlgorithm::Position, decltype([](const std::pair<int, int>& p) {
     //     return std::hash<int>()(p.first) ^ (std::hash<int>()(p.second) << 1);
     // })> algoGrid;
     void updateHere();

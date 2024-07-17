@@ -4,11 +4,14 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include "enums.h"
 
 class House {
 
 public:
-	std::pair<int,int> moveTranslation(int x);
+	std::pair<int,int> moveTranslation(Step x);
+    bool isWall(int x, int y) const;
+    std::vector<std::vector<int>> grid;
     class VacuumCleaner {
     public:
         void move(int x, int y);
@@ -56,11 +59,9 @@ public:
     void clean();
 
 private:
-    std::vector<std::vector<int>> grid;
     std::pair<int, int> dockingStation = std::make_pair(-1, -1);
     int totalDirt;
     void loadHouse(const std::string& path);
-    bool isWall(int x, int y) const; // priviously public
 
     VacuumCleaner cleaner;
     SensorSystem sensors;

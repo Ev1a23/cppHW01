@@ -2,16 +2,16 @@
 #define MY_WALL_SENSOR_H_
 
 // #include "enums.h"
-#include "walls_sensor.h"
+#include "wall_sensor.h"
 #include "House.h"
 
 class MyWallsSensor : public WallsSensor {
 public:
-	MyWallsSensor(House&);
+	MyWallsSensor(House*);
 	bool isWall(Direction d) const;
 
 private:
-	House&;
+	House& house;
 };
 
 #endif  // MY_WALL_SENSOR_H_
