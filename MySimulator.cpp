@@ -3,9 +3,6 @@
 #include <fstream>
 #include <sstream>
 #include "enums.h"
-#include "my_dirt_sensor.h"
-#include "my_wall_sensor.h"
-#include "my_battery_meter.h"
 
 
 MySimulator::MySimulator()
@@ -97,12 +94,12 @@ void MySimulator::readHouseFile(std::string& houseFilePath)
 	house = &h;
 }
 
-void MySimulator::setAlgorithm(MyAlgorithm& algorithm)
+void MySimulator::setAlgorithm(MyAlgorithm algorithm)
 {
 	algorithm.setMaxSteps(house->getCleaner().getMaxAllowedSteps());
 	algorithm.setWallsSensor(MyWallsSensor(house));
 	algorithm.setDirtSensor(MyDirtSensor(house));
-	algorithm.setBatteryMeter(BatteryMeter(house));
+	algorithm.setBatteryMeter(MyBatteryMeter(house));
 	algorithm = algorithm;
 }
 

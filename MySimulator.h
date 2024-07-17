@@ -6,6 +6,9 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include "my_dirt_sensor.h"
+#include "my_wall_sensor.h"
+#include "my_battery_meter.h"
 
 class MySimulator {
 public:
@@ -13,7 +16,7 @@ public:
     void run();
 	void msgLog(std::ofstream & outputFile, const std::string& msg);
 	void readHouseFile(std::string& houseFilePath);
-    void setAlgorithm(MyAlgorithm& algorithm);
+    void setAlgorithm(MyAlgorithm algorithm);
 
 private:
 	House* house;

@@ -7,7 +7,7 @@
 class MyDirtSensor : public DirtSensor {
 public:
 	MyDirtSensor(House*);
-	int dirtLevel() const override = 0;
+	int dirtLevel() const;
 
 private:
 	House& house;

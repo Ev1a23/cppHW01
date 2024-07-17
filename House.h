@@ -18,7 +18,7 @@ public:
         void clean();
         void charge();
         double batteryLevel() const; // should be accessed by SensorSystem so probably has to be public, 
-                                        // anyway no one can have an instance of VacuumCleaner besides within House classes
+                                     // anyway no one can have an instance of VacuumCleaner besides within House classes
         std::pair<int, int> getPosition() const; // should be private so only sensor function can access it
         std::size_t getMaxBatterySteps() const;
         std::size_t getMaxAllowedSteps() const;

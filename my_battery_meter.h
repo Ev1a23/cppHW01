@@ -9,7 +9,7 @@
 class MyBatteryMeter : public BatteryMeter {
 public:
 	MyBatteryMeter(House*);
-	std::size_t getBatteryState() const = 0;
+	std::size_t getBatteryState() const;
 private:
 	House& house;
 };
