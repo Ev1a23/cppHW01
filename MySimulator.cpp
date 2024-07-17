@@ -87,9 +87,10 @@ void MySimulator::run()
 	outputFile.close();
 }
 
-void readHouseFile(std::string& houseFilePath)
+void MySimulator::readHouseFile(std::string& houseFilePath)
 {
-	this.house = House(houseFilePath);
+	House h = House(houseFilePath);
+	house = h;
 }
 
 void setAlgorithm(Algorithm algorithm)

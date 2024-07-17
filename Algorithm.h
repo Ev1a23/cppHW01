@@ -1,7 +1,7 @@
 #ifndef ALGORITHM_H
 #define ALGORITHM_H
 
-#include <set>
+//#include <set>
 #include <vector>
 #include <utility>
 // #include "House.h"
@@ -19,12 +19,12 @@ public:
 	void setWallsSensor(const WallsSensor&);
 	void setDirtSensor(const DirtSensor&);
 	void setBatteryMeter(const BatteryMeter&);
-    void setMaxBatterLevel(int maxBatteryLevel);
+    void setMaxBatterLevel(std::size_t maxBatteryLevel);
     void setDockingStation(std::pair<int, int> dockingStation);
     Step nextStep();
 
     class Position {
-    private:
+    public:
         Position(std::size_t distToDocking, Direction directionToDocking);
         int dirtLevel = -2;
         std::size_t distToDocking = -1;
@@ -32,14 +32,21 @@ public:
     };
 
 private:
-    const int maxSteps;
-    WallsSensor& wallsSensor;
-    DirtSensor& dirtSensor;
-    BatteryMeter& batteryMeter;
-    const std::pair<int, int> dockingStation = {0,0};
+    std::size_t maxSteps;
+    const WallsSensor* wallsSensor;
+    const DirtSensor* dirtSensor;
+    const BatteryMeter* batteryMeter;
+    std::pair<int, int> dockingStation = {0,0};
     std::size_t maxBatteryLevel;
     std::pair<int,int> here;
-    std::unordered_map<std::pair<int,int>, Algorithm::Position> algoGrid;
+    std::unordered_map<size_t, Algorithm::Position> algoGrid;
+    // std::unordered_map<std::pair<int, int>, Algorithm::Position, decltype([](const std::pair<int, int>& p) {
+    //     return std::hash<int>()(p.first) ^ (std::hash<int>()(p.second) << 1);
+    // })> algoGrid;
+    void updateHere();
+    std::pair<int,int> moveTranslation(Direction directionFromEnum);
+    std::size_t minDist();
+    Direction neighborsHandle();
 };
 
 #endif // ALGORITHM_H

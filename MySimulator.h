@@ -15,8 +15,8 @@ public:
 	void readHouseFile(std::string& houseFilePath);
 
 private:
-	House house;
-    Algorithm algorithm;
+	House* house;
+    Algorithm* algorithm;
 };
 
 #endif // SIMULATIONCONTROLLER_H

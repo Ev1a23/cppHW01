@@ -5,6 +5,7 @@
 #include <random>
 #include <algorithm>
 #include <unordered_map>
+#include <limits>
 
 // Algorithm::Algorithm(const House::SensorSystem& sensors, std::pair<int,int> dockingStation, int maxBatteryLevel)
 //     : sensors(sensors), dockingStation(dockingStation), maxBatteryLevel(maxBatteryLevel) {
@@ -12,60 +13,67 @@
 //         path.push_back(dockingStation);
 //     }
 
-Algorithm::Algorithm() : maxSteps(0), 
-                         dirtSensor(DirtSensor::DirtSensor()), 
-                         wallsSensor(WallsSensor::WallsSensor()), 
-                         batteryMeter(BatteryMeter::BatteryMeter()) {}
+Algorithm::Algorithm() {}
 
 
 Algorithm::Position::Position(std::size_t distToDocking, Direction directionToDocking) 
 : distToDocking(distToDocking), directionToDocking(directionToDocking) {}
 
+static size_t keyConvert(std::pair<int,int> pos)
+{
+    int i = pos.first;
+    int j = pos.second;
+    return ((size_t)i) << 32 | (unsigned int) j;
+}
+
 void Algorithm::setMaxSteps(std::size_t maxSteps)
 {
-    maxSteps = maxSteps;
+    this->maxSteps = maxSteps;
 }
 
 void Algorithm::setWallsSensor(const WallsSensor& wallsSensor)
 {
-    this->wallsSensor = wallsSensor;
+    this->wallsSensor = &wallsSensor;
 }
 
 void Algorithm::setDirtSensor(const DirtSensor& dirtSensor)
 {
-    dirtSensor = dirtSensor;
+    this->dirtSensor = &dirtSensor;
 }
 
 void Algorithm::setBatteryMeter(const BatteryMeter& batteryMeter)
 {
-    batteryMeter = batteryMeter;
+    this->batteryMeter = &batteryMeter;
 }
 
 void Algorithm::setMaxBatterLevel(std::size_t maxBatteryLevel)
 {
-    maxBatteryLevel = maxBatteryLevel;
+    this->maxBatteryLevel = maxBatteryLevel;
 }
 
 void Algorithm::setDockingStation(std::pair<int, int> dockingStation)
 {
-    dockingStation = dockingStation;
+    this->dockingStation.first = dockingStation.first;
+    this->dockingStation.second = dockingStation.second;
 }
 
-static std::pair<int,int> moveTranslation(int directionFromEnum)
+std::pair<int,int> Algorithm::moveTranslation(Direction directionFromEnum)
 {
+    std::pair<int,int> diff;
 	switch(directionFromEnum)
 	{
 		case Direction::North:
-			return {-1,0};
+			diff = {-1,0};
 		case Direction::East:
-			return {0,1};
+			diff = {0,1};
 		case Direction::South:
-			return {1,0};
+			diff = {1,0};
 		case Direction::West:
-			return {0,-1};
+			diff = {0,-1};
 		default:
-			return {0,0};
+			diff = {0,0};
 	}
+    return {(this->here).first + diff.first, (this->here).second + diff.second};
 }
 
 static bool compareDirts(int a, int b)
@@ -91,55 +99,65 @@ static bool compareDirts(int a, int b)
     }
 }
 
-void updateHere()
+void Algorithm::updateHere()
 {
+    Direction d;
+    Position here_p = this->algoGrid[keyConvert(here)];
     for (int i = 0; i < 4; i++)
     {
-        if (!this.wallsSensor.isWall(i))
+        d = static_cast<Direction>(i);
+        if (!(*(this->wallsSensor)).isWall(d))
         {
-            std::pair<int,int> n = here + moveTranslation(i);
-            Position p = this.algoGrid[n];
-            if (p != this.algoGrid.end())
+            std::pair<int,int> n = moveTranslation(d);
+            size_t n_key = keyConvert(n);
+            auto it = (this->algoGrid).find(n_key);
+            if (it != this->algoGrid.end())
             {
-                if (here.distToDocking > p.distToDocking)
+                Position neighbor_p = this->algoGrid[n_key];
+                if (here_p.distToDocking > neighbor_p.distToDocking)
                 {
-                    here.distToDocking = p.distToDocking + 1;
-                    here.directionToDocking = i;
-                } 
+                    here_p.distToDocking = neighbor_p.distToDocking + 1;
+                    here_p.directionToDocking = d;
+                }
+            }
+            else
+            {
+                this->algoGrid[n_key] = Position(here_p.distToDocking + 1 ,static_cast<Direction>((i + 2) % 4));
             }
         }
     }
 }
 
-std::size_t minDist()
-{
-    std::size_t minDist = 0;
-    for (auto it = this.algoGrid.begin(); it != this.algoGrid.end(); ++it) 
+std::size_t Algorithm::minDist()
+{ // Find the furthest known point from docking station which is potentially not cleaned
+    std::size_t minDist = std::numeric_limits<std::size_t>::max();
+    for (auto it = this->algoGrid.begin(); it != this->algoGrid.end(); ++it) 
     {
-        if (it.seocnd.dirtLevel != 0 && it.second.distToDocking > minDist)
+        if (it->second.dirtLevel != 0 && it->second.distToDocking < minDist)
         {
-            minDist = it.setDockingStation
+            minDist = it->second.distToDocking;
         }
     }
     return minDist;
 }
 
-Direction neighborsHandle()
+Direction Algorithm::neighborsHandle()
 {
-    Direction d = here.directionToDocking;
-    int best = algoGrid[here + moveTranslation(d)].dirtLevel;
+    Position herePos = this->algoGrid[keyConvert(here)];
+    Direction bestD = herePos.directionToDocking;
+    int best = algoGrid[keyConvert(moveTranslation(bestD))].dirtLevel;
     for (int i = 0; i < 4; i++)
     {
-        if (!this.wallsSensor.isWall(i))
+        Direction d = static_cast<Direction>(i);
+        if (!(*(this->wallsSensor)).isWall(d))
         {
-            Position neighbor;
-            std::pair<int,int> n = here + moveTranslation(i);
-            neighbor = this.algoGrid[n];
-            Direction n_direction = (i + 2) % 4;
-            std::size_t n_dist = here.distToDocking + 1;
-            if (neighbor != this.algoGrid.end())
+            std::pair<int,int> n = moveTranslation(d);
+            Position neighbor = this->algoGrid[keyConvert(n)];
+            Direction n_direction = static_cast<Direction>((i + 2) % 4);
+            std::size_t n_dist = herePos.distToDocking + 1;
+            if (this->algoGrid.find(keyConvert(n)) != this->algoGrid.end())
             {
-                if (here.distToDocking < p.distToDocking)
+                if (herePos.distToDocking < neighbor.distToDocking)
                 {
                     neighbor.distToDocking = n_dist;
                     neighbor.directionToDocking = n_direction;
@@ -148,22 +166,20 @@ Direction neighborsHandle()
             else
             {
                 neighbor = Position(n_dist, n_direction);
-                this.algoGrid[n] = neighbor;
+                this->algoGrid[keyConvert(n)] = neighbor;
             }
             if (compareDirts(neighbor.dirtLevel, best))
             {
                 best = neighbor.dirtLevel;
-                d = i;
+                bestD = d;
             }
         }
     }
-    return d;
+    return bestD;
 }
 
 
-
-
-Step Algorithm::nextStep(bool finishedCleaning)
+Step Algorithm::nextStep()
 {
     // maintain for each known location its path to the docking station !!
     // maintain a set of locations which you know thier dirt (clean ones as well)
@@ -182,52 +198,54 @@ Step Algorithm::nextStep(bool finishedCleaning)
                 // 3. otherwise - prefer unknown location over location that you know is cleaned
                 // generally if there are two equal choises - prioritize by Direction enum
 
-    if (this.algoGrid.empty())
+    if (this->algoGrid.empty())
     {
-        this.setDockingStation({-1,-1});
-        Position dock = Algorithm::Position(0, -1);
+        // this->setDockingStation({0,0});
+        Position dock = Algorithm::Position(0, Direction::North); // TODO
         dock.dirtLevel = -3;
-        this.algoGrid[this.dockingStation] = dock;
-        here = this.dockingStation;
+        this->algoGrid[keyConvert(this->dockingStation)] = dock;
+        here = this->dockingStation;
     }
+    
+    Position here_p = this->algoGrid[keyConvert(here)];
     
     ////////////////////////////
     // charging:
-    if ((here.first == dockingStation.first && here.second == dockingStation.second)
+    if ((here.first == dockingStation.first && here.second == dockingStation.second))
     {
-        if (this.minDist() * 2 > this.maxSteps)
+        if (this->minDist() * 2 > this->maxSteps)
         { // can't clean anymore
             return Step::Finish;
         }
-        else if (this.batteryMeter.getBatteryState() < maxBatteryLevel)
+        else if ((*(this->batteryMeter)).getBatteryState() < maxBatteryLevel)
         {
             return Step::Stay;
         }
     }
 
     // if not charging, update info:
-    this.updateHere();
-    Algorithm::Position nextPosition = this.neighborsHandle(); // use only when exploring
+    this->updateHere();
+    Direction next = neighborsHandle(); // use only when exploring
 
     ////////////////////////////
     // returnning to docking:
-    if ((here.distToDocking - 1) >= std::min(this.batteryMeter.getBatteryState(), this.maxSteps))
+    if ((here_p.distToDocking - 1) >= std::min((*(this->batteryMeter)).getBatteryState(), this->maxSteps))
     {
 		std::cout << "Backtracking\n";
-        Step res = algoGrid[here].directionToDocking;
-        here += moveTranslation(algoGrid[here].directionToDocking);
+        Step res = static_cast<Step>(here_p.directionToDocking);
+        here = moveTranslation(algoGrid[keyConvert(here)].directionToDocking);
         return res;
     }
     ////////////////////////////
     // cleaning:
-    if (this.dirtSensor() > 0)
+    if ((*(this->dirtSensor)).dirtLevel() > 0)
     {
         return Step::Stay;
     }
     ////////////////////////////
 
     // exploring:
-    return nextPosition.directionToDocking;
+    return static_cast<Step>(next);
     ////////////////////////////
 
 	// if(finishedCleaning)
