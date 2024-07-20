@@ -21,20 +21,28 @@ void House::clean(){
 //enum class Step { North, East, South, West, Stay, Finish };
 std::pair<int,int> House::moveTranslation(Step step)
 {
+    std::pair<int,int> diff;
 	switch(step)
 	{
 		case Step::North:
-			return {-1,0};
+			diff = {-1,0};
+            break;
 		case Step::East:
-			return {0,1};
+			diff = {0,1};
+            break;
 		case Step::South:
-			return {1,0};
+			diff = {1,0};
+            break;
 		case Step::West:
-			return {0,-1};
+			diff = {0,-1};
+            break;
 		default:
-			return {0,0};
+			diff = {0,0};
+            break;
 	}
+    return {cleaner.getPosition().first + diff.first, cleaner.getPosition().second + diff.second};
 }
+
 
 House::VacuumCleaner& House::getCleaner(){
     return cleaner;

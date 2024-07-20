@@ -45,6 +45,7 @@ void MyAlgorithm::setDirtSensor(const DirtSensor& dirtSensor)
 void MyAlgorithm::setBatteryMeter(const BatteryMeter& batteryMeter)
 {
     this->batteryMeter = &batteryMeter;
+    this->maxBatteryLevel = this->batteryMeter->getBatteryState();
 }
 
 void MyAlgorithm::setMaxBatterLevel(std::size_t maxBatteryLevel)
@@ -111,8 +112,9 @@ void MyAlgorithm::updateHere()
     for (int i = 0; i < 4; i++)
     {
         d = static_cast<Direction>(i);
-        if (!(*(this->wallsSensor)).isWall(d))
+        if (!(this->wallsSensor->isWall(d)))
         {
+            // std::cout << "AAAAAAA\n";
             std::pair<int,int> n = moveTranslation(d);
             size_t n_key = keyConvert(n);
             auto it = (this->algoGrid).find(n_key);
@@ -131,6 +133,7 @@ void MyAlgorithm::updateHere()
             }
         }
     }
+    // std::cout << "BBBBBBBB\n";
 }
 
 std::size_t MyAlgorithm::minDist()
@@ -209,22 +212,18 @@ Step MyAlgorithm::nextStep()
         Position dock = MyAlgorithm::Position(0, Direction::North); // TODO
         dock.dirtLevel = -3;
         this->algoGrid[keyConvert(this->dockingStation)] = dock;
+        std::cout << "dock's distToDocking = " << algoGrid[keyConvert(dockingStation)].distToDocking << "\n";
         here = this->dockingStation;
     }
-
+    std::cout << "here_p's distToDocking = " << algoGrid[keyConvert(here)].distToDocking << "\n";
     Position here_p = this->algoGrid[keyConvert(here)];
     
     ////////////////////////////
     // charging:
-    if ((here.first == dockingStation.first && here.second == dockingStation.second))
+    if ((here.first == dockingStation.first && here.second == dockingStation.second) &&
+        batteryMeter->getBatteryState() < maxBatteryLevel)
     {
         std::cout << "Algo decision: Charging\n";
-        std::cout << this->minDist() << "\n";
-        std::cout << this->maxSteps << "\n";
-	    std::cout << "dirtSensor address = " << dirtSensor << "\n";
-        //std::cout << batteryMeter->getBatteryState() << "\n";
-        //std::cout << "dirtSensor's house address = " << dirtSensor->house << "\n";
-        std::cout << dirtSensor->dirtLevel() << "\n";
         if (this->minDist() * 2 > this->maxSteps)
         { // can't clean anymore
             return Step::Finish;
@@ -243,9 +242,13 @@ Step MyAlgorithm::nextStep()
 
     ////////////////////////////
     // returnning to docking:
-    if ((here_p.distToDocking - 1) >= std::min((*(this->batteryMeter)).getBatteryState(), this->maxSteps))
+    if ((here_p.distToDocking) >= std::min(this->batteryMeter->getBatteryState(), this->maxSteps) + 1)
     {
-        std::cout << "Algo decision: returnning to docking:\n";
+        std::cout << "Algo decision: returnning to docking\n";
+        std::cout << "current_battery = " << this->batteryMeter->getBatteryState() << "\n";
+        std::cout << "maxSteps = " << this->maxSteps << "\n";
+        std::cout << "here_p.distToDocking - 1 = " << here_p.distToDocking - 1 << "\n";
+
         Step res = static_cast<Step>(here_p.directionToDocking);
         here = moveTranslation(algoGrid[keyConvert(here)].directionToDocking);
         return res;

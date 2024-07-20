@@ -6,12 +6,13 @@
 #include "House.h"
 
 class MyWallsSensor : public WallsSensor {
+private:
+	House* house;
+
 public:
 	MyWallsSensor(House*);
 	bool isWall(Direction d) const;
 
-private:
-	House& house;
 };
 
 #endif  // MY_WALL_SENSOR_H_

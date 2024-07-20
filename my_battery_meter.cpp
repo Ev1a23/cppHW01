@@ -5,6 +5,6 @@
 MyBatteryMeter::MyBatteryMeter(House* house) : house(*house) {}
 std::size_t MyBatteryMeter::getBatteryState() const
 {
-	std::cout << "Im in MyBatteryMeter::getBatteryState()\n";
+	// std::cout << "Im in MyBatteryMeter::getBatteryState()\n";
 	return house.getCleaner().batteryLevel();
 }

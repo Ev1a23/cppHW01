@@ -9,7 +9,7 @@ MySimulator::MySimulator() : dirtSensor(&house), wallsSensor(&house), batteryMet
 // : house(),
 //   algorithm()
 {
-    //std::cout << "dirtSensor's house address = " << dirtSensor->house << "\n";
+    // std::cout << "dirtSensor address = " << &dirtSensor << "\n";
 }
 
 void MySimulator::run()
@@ -30,18 +30,16 @@ void MySimulator::run()
     // std::cout << &cleaner << "\n";
     size_t cnt = 0;
 	Step nextMove = Step::Stay;
-    std::cout << "(" << cleaner.getPosition().first << ", " << cleaner.getPosition().second << ") -> \n";
+    // std::cout << "(" << cleaner.getPosition().first << ", " << cleaner.getPosition().second << ") -> \n";
     while (cnt < cleaner.getMaxAllowedSteps() && nextMove != Step::Finish)
     {
         // std::cout << "Total Dirt Level=" << house->getTotalDirt() << "\n";
         cnt++;
         std::pair<int, int> curPos = cleaner.getPosition();
-		std::cout << "Simulator: query algorithm step\n";
         nextMove = algorithm->nextStep();
-		std::cout << "Simulator: query algorithm step:\n";
 		std::pair <int,int> moveTranslation = house.moveTranslation(nextMove);
 		msgStream << "(" << curPos.first << ", " << curPos.second << ") -> "
-          << "(" << curPos.first + moveTranslation.first  << ", " << curPos.first + moveTranslation.first << ")";
+          << "(" << moveTranslation.first  << ", " << moveTranslation.first << ")";
 		msgLog(outputFile, msgStream.str());
 		msgStream.str("");
 		msgStream.clear();
@@ -65,10 +63,10 @@ void MySimulator::run()
 		else
 		{
 			std::cout << "Moving\n";
-			cleaner.move(curPos.first + moveTranslation.first, curPos.second + moveTranslation.second);
+			cleaner.move(moveTranslation.first, moveTranslation.second);
 		}
 
-        std::cout << "(" << curPos.first + moveTranslation.first << ", " << curPos.second + moveTranslation.second << ") -> ";
+        std::cout << "MySimulator::run\n----------------\n cur position:" "(" << moveTranslation.first << ", " << moveTranslation.second << ") -> ";
     }
 	std::pair<int, int> curPos = cleaner.getPosition();
 	std::string status = "";
@@ -98,11 +96,12 @@ void MySimulator::readHouseFile(std::string& houseFilePath)
 	// House h = House(houseFilePath);
 	// house = &h;
 	house = House(houseFilePath);
-	std::cout << "Accessing dirt level in MySimulator: dirtLevel = " << dirtSensor.dirtLevel() << "\n";
+	// std::cout << "Accessing dirt level in MySimulator: dirtLevel = " << dirtSensor.dirtLevel() << "\n";
 }
 
 void MySimulator::setAlgorithm(AbstractAlgorithm& algorithm)
 {
+	//std::cout << "In MySimulator::setAlgorithm:\n" << dirtSensor.dirtLevel() << "\n";
 	this->algorithm = &algorithm;
 	this->algorithm->setMaxSteps(house.getCleaner().getMaxAllowedSteps());
 	this->algorithm->setWallsSensor(this->wallsSensor);
