@@ -12,18 +12,36 @@ MySimulator::MySimulator() : dirtSensor(&house), wallsSensor(&house), batteryMet
 
 }
 
+static std::string step2char(Step step)
+{
+	switch (step)
+	{
+		case Step::North:
+			return "N";
+		case Step::East:
+			return "E";
+		case Step::South:
+			return "S";
+		case Step::West:
+			return "W";
+		case Step::Stay:
+			return "s";
+		case Step::Finish:
+			return "F";
+		default:
+			return "";
+	}
+}
+
 void MySimulator::run()
 {
+	std::string steps_log;
 	std::ofstream outputFile("output.txt");
 	if(!outputFile.is_open())
 	{
 		throw std::runtime_error("Failed to open output file.");
 	}
 	std::ostringstream msgStream;
-	msgStream << "Steps Performed (Current Location -> Next Location)";
-	msgLog(outputFile, msgStream.str());
-	msgStream.str("");
-	msgStream.clear();
 	std::cout << "Simulation started\n";
     House::VacuumCleaner& cleaner = house.getCleaner();
     size_t cnt = 0;
@@ -35,11 +53,7 @@ void MySimulator::run()
         nextMove = algorithm->nextStep();
 		std :: cout << "nextMove: " << (int)nextMove << "\n";
 		std::pair <int,int> moveTranslation = house.moveTranslation(nextMove);
-		msgStream << "(" << curPos.first << ", " << curPos.second << ") -> "
-          << "(" << moveTranslation.first  << ", " << moveTranslation.second << ")";
-		msgLog(outputFile, msgStream.str());
-		msgStream.str("");
-		msgStream.clear();
+		steps_log += step2char(nextMove);
 		if (nextMove == Step::Finish)
 		{
 			continue;
@@ -70,7 +84,7 @@ void MySimulator::run()
 	{
 		status = "FINISHED";
 	}
-	else if(cnt == cleaner.getMaxAllowedSteps() && curPos != house.getDockingStation())
+	else if(cnt == cleaner.getMaxAllowedSteps())
 	{
 		status = "WORKING";
 	}
@@ -81,10 +95,11 @@ void MySimulator::run()
 	//TODO Change format to include steps at the bottom instead of after every step
 	std::cout << "Simulation completed\n";
 	std::ostringstream logStream;
-	logStream << "NumSteps= " << cnt << "\nStatus= " << status;
+	logStream << "NumSteps = " << cnt << "\nDirtLeft = " << house.totalDirt() << "\nStatus = " << status << "\nSteps:\n" << steps_log;
 	msgLog(outputFile, logStream.str());
 
 	outputFile.close();
+
 }
 
 void MySimulator::readHouseFile(std::string& houseFilePath)
@@ -106,5 +121,3 @@ void MySimulator::msgLog(std::ofstream & outputFile, const std::string& msg)
 	outputFile << msg << std::endl;
 	std::cout << msg << std::endl;
 }
-
-

@@ -13,7 +13,6 @@ House::House(const std::string& inputFile) : cleaner(-1, -1, {-1,-1}){
 void House::clean(){
     std::pair<int,int> pos = cleaner.getPosition();
     grid[pos.first][pos.second]--;
-    totalDirt--;
     cleaner.clean();
 }
 
@@ -188,7 +187,7 @@ void House::loadHouse(const std::string& path) {
     int cols = getValue(file, "Cols");
 
 
-    std::cout << "Max steps: " << maxSteps << "MaxBattery: " << maxBattery << "Rows: " << rows << "Cols" << cols << "\n";
+    std::cout << "Max steps: " << maxSteps << " MaxBattery: " << maxBattery << " Rows: " << rows << " Cols" << cols << "\n";
     
     int x = 0;
     // int maxWidth = 0;
@@ -205,7 +204,6 @@ void House::loadHouse(const std::string& path) {
             value = line[y];
             val_int = 0;
             if (value == 'D') {
-                std::cout << x << "," << y << " --- Docking Station Found\n";
 				if(dockingStation.first != -1 && dockingStation.second != -1) {
 					throw std::runtime_error("Duplicate docking station found");
 				}
@@ -213,11 +211,9 @@ void House::loadHouse(const std::string& path) {
                 // value = 0;  // Treat the docking station like clean floor
             }
             if(value >= '0' && value <= '9') {
-                std::cout << x << "," << y << " --- Dirt Found\n";
                 val_int = value - 48; // ascii val of '0'
             }
             if(value == 'W') {
-                std::cout << x << "," << y << " --- Wall Found\n";
                 val_int = -1;
             }
             row.push_back(val_int);
@@ -265,4 +261,17 @@ void House::loadHouse(const std::string& path) {
     cleaner = VacuumCleaner(maxSteps, maxBattery, dockingStation);
 	file.close();
 };
-   
+
+
+int House::totalDirt()
+{
+    int sum = 0;
+    for (const auto& row : grid) {
+        for (const auto& value : row) {
+            if (value != -1) {
+                sum += value;
+            }
+        }
+    }
+    return sum;
+}

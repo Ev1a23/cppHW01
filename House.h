@@ -36,10 +36,10 @@ public:
     std::pair<int, int> getDockingStation() const;
     VacuumCleaner& getCleaner();
     void clean();
+    int totalDirt();
 
 private:
     std::pair<int, int> dockingStation = std::make_pair(-1, -1);
-    int totalDirt;
     void loadHouse(const std::string& path);
     VacuumCleaner cleaner;
 };
