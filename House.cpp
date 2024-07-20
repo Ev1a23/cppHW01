@@ -4,6 +4,35 @@
 #include <stdexcept>
 #include <iostream>
 
+static void removeSpaces(std::string& str) {
+    // Use the erase-remove idiom to remove all spaces from the string
+    str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
+}
+
+static int getValue(std::ifstream& file, const std::string& var_name)
+{
+    int val = -1;
+    std::string line;
+    if (std::getline(file, line)) {
+        auto pos = line.find("=");
+        if (pos != std::string::npos && line.substr(0, var_name.length()) == var_name) {
+            std::string val_string = line.substr(pos + 1);
+            removeSpaces(val_string);
+            val = std::stoi(val_string);
+			if(val < 0)
+			{
+				throw std::runtime_error("Invalid " + var_name);
+			}
+        }
+		else
+		{
+			throw std::runtime_error("Invalid file format, " + var_name + " not found");
+		}
+    }
+    return val;
+}
+
+
 House::House(){}
 
 House::House(const std::string& inputFile) : cleaner(-1, -1, {-1,-1}){
@@ -43,128 +72,22 @@ std::pair<int,int> House::moveTranslation(Step step) const
 }
 
 
-House::VacuumCleaner& House::getCleaner(){
-    return cleaner;
-}
-
-// House::SensorSystem& House::getSensors(){
-//     return sensors;
-// }
-
-bool House::isWall(int x, int y) const {
-    return grid[x][y] == -1;
-}
 
 std::pair<int, int> House::getDockingStation() const {
     return dockingStation;
 }
 
-// int House::getTotalDirt() const {
-//     return totalDirt;
-// }
-
-House::VacuumCleaner::VacuumCleaner(){}
-
-
-House::VacuumCleaner::VacuumCleaner(const std::size_t maxAllowedSteps, const double maxBattery, const std::pair<int, int> startPosition)
-        : maxAllowedSteps(maxAllowedSteps), battery(maxBattery), maxBattery(maxBattery), position(startPosition) {}
-
-
-std::size_t House::VacuumCleaner::getMaxBatterySteps() const {
-    return maxBattery;
+House::VacuumCleaner& House::getCleaner(){
+    return cleaner;
 }
 
-std::size_t House::VacuumCleaner::getMaxAllowedSteps() const {
-    return maxAllowedSteps;
-}
-
-std::pair<int,int> House::VacuumCleaner::getPosition() const {
-    return position;
-}
-
-void House::VacuumCleaner::move(int x, int y) {
-    position.first = x;
-    position.second = y;
-    battery--;
-}
-
-void House::VacuumCleaner::clean(){
-    battery--;
-}
-
-void House::VacuumCleaner::charge(){
-    double rechargeAmount = maxBattery / 20.0;
-    battery += rechargeAmount;
-    if (battery > maxBattery)
-    {
-        battery = maxBattery;
-    }
-}
-
-double House::VacuumCleaner::batteryLevel() const {return battery;};
-
-
-// House::SensorSystem::SensorSystem(House& house) : house(house){}
-
-// int House::SensorSystem::dirtSensor() const {
-//     std::pair<int,int> pos = house.getCleaner().getPosition();
-//     return house.grid[pos.first][pos.second];
-// }
-
-// double House::SensorSystem::batterySensor() const {
-//     return house.getCleaner().batteryLevel();
-// }
-
-// std::vector<std::pair<int, int>> House::SensorSystem::wallsSensor() const{
-//     std::pair<int,int> cleanerPos = house.getCleaner().getPosition();
-//     std::vector<std::pair<int, int>> nonWallLocations;
- 
-//     // Check each direction for non-wall positions
-//     if (!house.isWall(cleanerPos.first, cleanerPos.second - 1)) {
-//         nonWallLocations.push_back({cleanerPos.first, cleanerPos.second - 1});  // North
-//     }
-//     if (!house.isWall(cleanerPos.first + 1, cleanerPos.second)) {
-//         nonWallLocations.push_back({cleanerPos.first + 1, cleanerPos.second});  // East
-//     }
-//     if (!house.isWall(cleanerPos.first, cleanerPos.second + 1)) {
-//         nonWallLocations.push_back({cleanerPos.first, cleanerPos.second + 1});  // South
-//     }
-//     if (!house.isWall(cleanerPos.first - 1, cleanerPos.second)) {
-//         nonWallLocations.push_back({cleanerPos.first - 1, cleanerPos.second});  // West
-//     }
- 
-//     return nonWallLocations;
-// }
-
-
-
-static void removeSpaces(std::string& str) {
-    // Use the erase-remove idiom to remove all spaces from the string
-    str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
-}
-
-
-static int getValue(std::ifstream& file, const std::string& var_name)
+std::vector<std::vector<int>> House::getGrid() const
 {
-    int val = -1;
-    std::string line;
-    if (std::getline(file, line)) {
-        auto pos = line.find("=");
-        if (pos != std::string::npos && line.substr(0, var_name.length()) == var_name) {
-            std::string val_string = line.substr(pos + 1);
-            removeSpaces(val_string);
-            val = std::stoi(val_string);
-			if(val < 0)
-			{
-				throw std::runtime_error("Invalid " + var_name);
-			}
-        }
-		else
-		{
-			throw std::runtime_error("Invalid file format, " + var_name + " not found");
-		}
-    }
-    return val;
+    return grid;
+}
+
+bool House::isWall(int x, int y) const {
+    return grid[x][y] == -1;
 }
 
 
@@ -262,7 +185,6 @@ void House::loadHouse(const std::string& path) {
 	file.close();
 };
 
-
 int House::totalDirt()
 {
     int sum = 0;
@@ -275,3 +197,43 @@ int House::totalDirt()
     }
     return sum;
 }
+
+House::VacuumCleaner::VacuumCleaner(){}
+
+House::VacuumCleaner::VacuumCleaner(const std::size_t maxAllowedSteps, const double maxBattery, const std::pair<int, int> startPosition)
+        : maxAllowedSteps(maxAllowedSteps), battery(maxBattery), maxBattery(maxBattery), position(startPosition) {}
+
+std::size_t House::VacuumCleaner::getMaxBatterySteps() const {
+    return maxBattery;
+}
+
+std::size_t House::VacuumCleaner::getMaxAllowedSteps() const {
+    return maxAllowedSteps;
+}
+
+std::pair<int,int> House::VacuumCleaner::getPosition() const {
+    return position;
+}
+
+void House::VacuumCleaner::move(int x, int y) {
+    position.first = x;
+    position.second = y;
+    battery--;
+}
+
+void House::VacuumCleaner::clean(){
+    battery--;
+}
+
+void House::VacuumCleaner::charge(){
+    double rechargeAmount = maxBattery / 20.0;
+    battery += rechargeAmount;
+    if (battery > maxBattery)
+    {
+        battery = maxBattery;
+    }
+}
+
+double House::VacuumCleaner::batteryLevel() const {return battery;};
+
+
