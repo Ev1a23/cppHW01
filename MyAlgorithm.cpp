@@ -183,7 +183,6 @@ Direction MyAlgorithm::neighborsHandle()
     return bestD;
 }
 
-
 Step MyAlgorithm::nextStep()
 {
     // maintain for each known location its path to the docking station !!
@@ -205,38 +204,48 @@ Step MyAlgorithm::nextStep()
 
     if (this->algoGrid.empty())
     {
+        std::cout << "First step of algo, intializing docking station in algoGrid\n";
         // this->setDockingStation({0,0});
         Position dock = MyAlgorithm::Position(0, Direction::North); // TODO
         dock.dirtLevel = -3;
         this->algoGrid[keyConvert(this->dockingStation)] = dock;
         here = this->dockingStation;
     }
-    
+
     Position here_p = this->algoGrid[keyConvert(here)];
     
     ////////////////////////////
     // charging:
     if ((here.first == dockingStation.first && here.second == dockingStation.second))
     {
+        std::cout << "Algo decision: Charging\n";
+        std::cout << this->minDist() << "\n";
+        std::cout << this->maxSteps << "\n";
+	    std::cout << "dirtSensor address = " << dirtSensor << "\n";
+        //std::cout << batteryMeter->getBatteryState() << "\n";
+        //std::cout << "dirtSensor's house address = " << dirtSensor->house << "\n";
+        std::cout << dirtSensor->dirtLevel() << "\n";
         if (this->minDist() * 2 > this->maxSteps)
         { // can't clean anymore
             return Step::Finish;
         }
-        else if ((*(this->batteryMeter)).getBatteryState() < maxBatteryLevel)
+        else if (batteryMeter->getBatteryState() < maxBatteryLevel)
         {
             return Step::Stay;
         }
     }
 
     // if not charging, update info:
+    std::cout << "Algo - update here\n";
     this->updateHere();
+    std::cout << "Algo - decisding next step by neighbors\n";
     Direction next = neighborsHandle(); // use only when exploring
 
     ////////////////////////////
     // returnning to docking:
     if ((here_p.distToDocking - 1) >= std::min((*(this->batteryMeter)).getBatteryState(), this->maxSteps))
     {
-		std::cout << "Backtracking\n";
+        std::cout << "Algo decision: returnning to docking:\n";
         Step res = static_cast<Step>(here_p.directionToDocking);
         here = moveTranslation(algoGrid[keyConvert(here)].directionToDocking);
         return res;
@@ -245,11 +254,13 @@ Step MyAlgorithm::nextStep()
     // cleaning:
     if ((*(this->dirtSensor)).dirtLevel() > 0)
     {
+        std::cout << "Algo decision: Cleaning:\n";
         return Step::Stay;
     }
     ////////////////////////////
 
     // exploring:
+    std::cout << "Algo decision: Exploring:\n";
     return static_cast<Step>(next);
     ////////////////////////////
 

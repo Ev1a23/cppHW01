@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <iostream>
 
+House::House(){}
 
 House::House(const std::string& inputFile) : cleaner(-1, -1, {-1,-1}){
     loadHouse(inputFile);
@@ -54,6 +55,9 @@ std::pair<int, int> House::getDockingStation() const {
 // int House::getTotalDirt() const {
 //     return totalDirt;
 // }
+
+House::VacuumCleaner::VacuumCleaner(){}
+
 
 House::VacuumCleaner::VacuumCleaner(const std::size_t maxAllowedSteps, const double maxBattery, const std::pair<int, int> startPosition)
         : maxAllowedSteps(maxAllowedSteps), battery(maxBattery), maxBattery(maxBattery), position(startPosition) {}

@@ -1,8 +1,11 @@
 #include "my_dirt_sensor.h"
+#include <iostream>
 
-MyDirtSensor::MyDirtSensor(House* house) : house(*house) {}
+MyDirtSensor::MyDirtSensor(House* house) : house(house) {}
 int MyDirtSensor::dirtLevel() const
 {
-	std::pair<int,int> pos = house.getCleaner().getPosition();
-    return house.grid[pos.first][pos.second]; 
+    std::cout << "Im in MyDirtSensor::dirtLevel()\n";
+	std::pair<int,int> pos = house->getCleaner().getPosition();
+    std::cout << pos.first << "," << pos.second << "\n";
+    return house->grid[pos.first][pos.second]; 
 }

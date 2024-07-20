@@ -2,7 +2,7 @@
 #define SIMULATIONCONTROLLER_H
 
 #include "House.h" 
-#include "MyAlgorithm.h" 
+#include "abstract_algorithm.h"
 #include <string>
 #include <vector>
 #include <fstream>
@@ -16,11 +16,15 @@ public:
     void run();
 	void msgLog(std::ofstream & outputFile, const std::string& msg);
 	void readHouseFile(std::string& houseFilePath);
-    void setAlgorithm(MyAlgorithm algorithm);
-    House* house;
+    void setAlgorithm(AbstractAlgorithm& algorithm);
+    House house;
 
 private:
-    MyAlgorithm* algorithm;
+    AbstractAlgorithm* algorithm;
+    MyDirtSensor dirtSensor;
+    MyWallsSensor wallsSensor;
+    MyBatteryMeter batteryMeter;
+
 };
 
 #endif // SIMULATIONCONTROLLER_H

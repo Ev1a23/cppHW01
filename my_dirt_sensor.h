@@ -5,12 +5,13 @@
 #include "House.h"
 
 class MyDirtSensor : public DirtSensor {
+private:
+	House* house;
+
 public:
 	MyDirtSensor(House*);
 	int dirtLevel() const;
 
-private:
-	House& house;
 };
 
 #endif  // MY_DIRT_SENSOR_H_

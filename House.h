@@ -23,7 +23,7 @@ public:
         std::size_t getMaxBatterySteps() const;
         std::size_t getMaxAllowedSteps() const;
         VacuumCleaner(const std::size_t maxAllowedSteps, double maxBattery, const std::pair<int, int> startPosition);
-        // VacuumCleaner();
+        VacuumCleaner();
 
     private:
         // VacuumCleaner(const int maxAllowedSteps, const double maxBattery, const std::pair<int, int> startPosition);
@@ -48,7 +48,7 @@ public:
     //     House& house;
     //     // SensorSystem(); // access from House only
     // };
-
+    House();
     House(const std::string& inputFile);
     // int getDirtLevel(int x, int y) const;
     std::pair<int, int> getDockingStation() const;
