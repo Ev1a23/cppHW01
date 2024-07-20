@@ -18,7 +18,7 @@ void House::clean(){
 
 
 //enum class Step { North, East, South, West, Stay, Finish };
-std::pair<int,int> House::moveTranslation(Step step)
+std::pair<int,int> House::moveTranslation(Step step) const
 {
     std::pair<int,int> diff;
 	switch(step)

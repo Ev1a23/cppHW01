@@ -6,7 +6,7 @@
 
 class MyDirtSensor : public DirtSensor {
 private:
-	House* house;
+	House* const house;
 
 public:
 	MyDirtSensor(House*);

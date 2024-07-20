@@ -7,11 +7,14 @@
 
 
 class MyBatteryMeter : public BatteryMeter {
+
+private:
+	House* const house;
+
 public:
 	MyBatteryMeter(House*);
 	std::size_t getBatteryState() const;
-private:
-	House& house;
+
 };
 
 #endif  // MY_BATTERY_METER_H_

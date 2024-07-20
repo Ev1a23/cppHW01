@@ -7,7 +7,7 @@
 
 class MyWallsSensor : public WallsSensor {
 private:
-	House* house;
+	const House* house;
 
 public:
 	MyWallsSensor(House*);

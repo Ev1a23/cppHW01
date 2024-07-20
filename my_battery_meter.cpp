@@ -2,8 +2,8 @@
 #include <iostream>
 
 
-MyBatteryMeter::MyBatteryMeter(House* house) : house(*house) {}
+MyBatteryMeter::MyBatteryMeter(House* house) : house(house) {}
 std::size_t MyBatteryMeter::getBatteryState() const
 {
-	return house.getCleaner().batteryLevel();
+	return house->getCleaner().batteryLevel();
 }

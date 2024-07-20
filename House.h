@@ -9,7 +9,7 @@
 class House {
 
 public:
-	std::pair<int,int> moveTranslation(Step x);
+	std::pair<int,int> moveTranslation(Step x) const;
     bool isWall(int x, int y) const;
     std::vector<std::vector<int>> grid;
     class VacuumCleaner {
