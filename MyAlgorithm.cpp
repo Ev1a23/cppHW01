@@ -230,7 +230,7 @@ Step MyAlgorithm::nextStep()
 
     ////////////////////////////
     // returning to docking:
-    if ((here_p.distToDocking) >= std::min(this->batteryMeter->getBatteryState(), this->maxSteps) + 1)
+    if ((here_p.distToDocking) + 1 >= std::min(this->batteryMeter->getBatteryState(), this->maxSteps))
     {
         std::cout << "Algo decision: returning to docking\n";
         std::cout << "current_battery = " << this->batteryMeter->getBatteryState() << "\n";
