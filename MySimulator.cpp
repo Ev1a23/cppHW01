@@ -37,9 +37,10 @@ void MySimulator::run()
         cnt++;
         std::pair<int, int> curPos = cleaner.getPosition();
         nextMove = algorithm->nextStep();
+		std :: cout << "nextMove: " << (int)nextMove << "\n";
 		std::pair <int,int> moveTranslation = house.moveTranslation(nextMove);
 		msgStream << "(" << curPos.first << ", " << curPos.second << ") -> "
-          << "(" << moveTranslation.first  << ", " << moveTranslation.first << ")";
+          << "(" << moveTranslation.first  << ", " << moveTranslation.second << ")";
 		msgLog(outputFile, msgStream.str());
 		msgStream.str("");
 		msgStream.clear();
@@ -66,7 +67,7 @@ void MySimulator::run()
 			cleaner.move(moveTranslation.first, moveTranslation.second);
 		}
 
-        std::cout << "MySimulator::run\n----------------\n cur position:" "(" << moveTranslation.first << ", " << moveTranslation.second << ") -> ";
+        std::cout << "MySimulator::run\n----------------\n cur position:" "(" << moveTranslation.first << ", " << moveTranslation.second << ") -> \n";
     }
 	std::pair<int, int> curPos = cleaner.getPosition();
 	std::string status = "";

@@ -153,32 +153,32 @@ Direction MyAlgorithm::neighborsHandle()
 {
     Position herePos = this->algoGrid[keyConvert(here)];
     Direction bestD = herePos.directionToDocking;
-    int best = algoGrid[keyConvert(moveTranslation(bestD))].dirtLevel;
+    int best = -3; //someone will win -2
+	std::cout << "best = " << best << "\n";
     for (int i = 0; i < 4; i++)
     {
         Direction d = static_cast<Direction>(i);
         if (!(*(this->wallsSensor)).isWall(d))
         {
             std::pair<int,int> n = moveTranslation(d);
-            Position neighbor = this->algoGrid[keyConvert(n)];
+            Position* neighbor = &(this->algoGrid[keyConvert(n)]);
             Direction n_direction = static_cast<Direction>((i + 2) % 4);
             std::size_t n_dist = herePos.distToDocking + 1;
             if (this->algoGrid.find(keyConvert(n)) != this->algoGrid.end())
             {
-                if (herePos.distToDocking < neighbor.distToDocking)
+                if (herePos.distToDocking + 1< neighbor->distToDocking )
                 {
-                    neighbor.distToDocking = n_dist;
-                    neighbor.directionToDocking = n_direction;
+                    neighbor->distToDocking = n_dist;
+                    neighbor->directionToDocking = n_direction;
                 }
             }
             else
             {
-                neighbor = Position(n_dist, n_direction);
-                this->algoGrid[keyConvert(n)] = neighbor;
+                this->algoGrid[keyConvert(n)] = Position(n_dist, n_direction);
             }
-            if (compareDirts(neighbor.dirtLevel, best))
+            if (compareDirts(neighbor->dirtLevel, best))
             {
-                best = neighbor.dirtLevel;
+                best = neighbor->dirtLevel;
                 bestD = d;
             }
         }
@@ -215,6 +215,7 @@ Step MyAlgorithm::nextStep()
         std::cout << "dock's distToDocking = " << algoGrid[keyConvert(dockingStation)].distToDocking << "\n";
         here = this->dockingStation;
     }
+	std::cout << "here = (" << here.first << ", " << here.second << ")\n";
     std::cout << "here_p's distToDocking = " << algoGrid[keyConvert(here)].distToDocking << "\n";
     Position here_p = this->algoGrid[keyConvert(here)];
     
@@ -264,6 +265,7 @@ Step MyAlgorithm::nextStep()
 
     // exploring:
     std::cout << "Algo decision: Exploring:\n";
+	here = moveTranslation(next);
     return static_cast<Step>(next);
     ////////////////////////////
 

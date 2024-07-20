@@ -1,5 +1,5 @@
 CXX=g++
-CXXFLAGS=-std=c++20 -Wall -Wextra -Werror -pedantic
+CXXFLAGS=-g -std=c++20 -Wall -Wextra -Werror -pedantic
 TARGET=myrobot
 SRC=$(wildcard *.cpp)
 OBJ=$(SRC:.cpp=.o)

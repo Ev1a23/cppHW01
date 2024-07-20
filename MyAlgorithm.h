@@ -28,7 +28,7 @@ public:
         Position();
         Position(std::size_t distToDocking, Direction directionToDocking);
         int dirtLevel = -2;
-        std::size_t distToDocking = -1;
+        std::size_t distToDocking = 10000000;
         Direction directionToDocking = Direction::North;
     };
 
