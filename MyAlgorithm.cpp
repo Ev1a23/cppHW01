@@ -7,12 +7,6 @@
 #include <unordered_map>
 #include <limits>
 
-// MyAlgorithm::MyAlgorithm(const House::SensorSystem& sensors, std::pair<int,int> dockingStation, int maxBatteryLevel)
-//     : sensors(sensors), dockingStation(dockingStation), maxBatteryLevel(maxBatteryLevel) {
-//         std::unordered_map<std::pair<int,int>, std::pair<int,int>>(knownLocations);
-//         path.push_back(dockingStation);
-//     }
-
 MyAlgorithm::MyAlgorithm() {}
 
 MyAlgorithm::Position::Position(){}
@@ -114,7 +108,6 @@ void MyAlgorithm::updateHere()
         d = static_cast<Direction>(i);
         if (!(this->wallsSensor->isWall(d)))
         {
-            // std::cout << "AAAAAAA\n";
             std::pair<int,int> n = moveTranslation(d);
             size_t n_key = keyConvert(n);
             auto it = (this->algoGrid).find(n_key);
@@ -133,11 +126,11 @@ void MyAlgorithm::updateHere()
             }
         }
     }
-    // std::cout << "BBBBBBBB\n";
 }
 
 std::size_t MyAlgorithm::minDist()
-{ // Find the furthest known point from docking station which is potentially not cleaned
+{ 
+	// Find the furthest known point from docking station which is potentially not cleaned
     std::size_t minDist = std::numeric_limits<std::size_t>::max();
     for (auto it = this->algoGrid.begin(); it != this->algoGrid.end(); ++it) 
     {
@@ -153,8 +146,7 @@ Direction MyAlgorithm::neighborsHandle()
 {
     Position herePos = this->algoGrid[keyConvert(here)];
     Direction bestD = herePos.directionToDocking;
-    int best = -3; //someone will win -2
-	std::cout << "best = " << best << "\n";
+    int best = -3; //someone will win -3
     for (int i = 0; i < 4; i++)
     {
         Direction d = static_cast<Direction>(i);
@@ -208,15 +200,12 @@ Step MyAlgorithm::nextStep()
     if (this->algoGrid.empty())
     {
         std::cout << "First step of algo, intializing docking station in algoGrid\n";
-        // this->setDockingStation({0,0});
         Position dock = MyAlgorithm::Position(0, Direction::North); // TODO
         dock.dirtLevel = -3;
         this->algoGrid[keyConvert(this->dockingStation)] = dock;
-        std::cout << "dock's distToDocking = " << algoGrid[keyConvert(dockingStation)].distToDocking << "\n";
         here = this->dockingStation;
     }
-	std::cout << "here = (" << here.first << ", " << here.second << ")\n";
-    std::cout << "here_p's distToDocking = " << algoGrid[keyConvert(here)].distToDocking << "\n";
+	std::cout << "here = (" << here.first << ", " << here.second << ") distToDocking = " << algoGrid[keyConvert(here)].distToDocking << "\n";
     Position here_p = this->algoGrid[keyConvert(here)];
     
     ////////////////////////////
@@ -236,16 +225,14 @@ Step MyAlgorithm::nextStep()
     }
 
     // if not charging, update info:
-    std::cout << "Algo - update here\n";
     this->updateHere();
-    std::cout << "Algo - decisding next step by neighbors\n";
     Direction next = neighborsHandle(); // use only when exploring
 
     ////////////////////////////
-    // returnning to docking:
+    // returning to docking:
     if ((here_p.distToDocking) >= std::min(this->batteryMeter->getBatteryState(), this->maxSteps) + 1)
     {
-        std::cout << "Algo decision: returnning to docking\n";
+        std::cout << "Algo decision: returning to docking\n";
         std::cout << "current_battery = " << this->batteryMeter->getBatteryState() << "\n";
         std::cout << "maxSteps = " << this->maxSteps << "\n";
         std::cout << "here_p.distToDocking - 1 = " << here_p.distToDocking - 1 << "\n";
@@ -267,54 +254,5 @@ Step MyAlgorithm::nextStep()
     std::cout << "Algo decision: Exploring:\n";
 	here = moveTranslation(next);
     return static_cast<Step>(next);
-    ////////////////////////////
 
-	// if(finishedCleaning)
-	// {
-	// 	path.pop_back();
-	// 	std::pair<int, int> nextMove = path.back();
-	// 	return nextMove;
-	// }
-	// const HoVacuumCleaner& cleaner = sensors.getHouse().getCleaner();
-
-    // auto pos = cleaner.getPosition();
-    // auto pos = path.back();
-    // std::cout << "Path length = (" << path.size() - 1 << ")" << " BatteryLevel = (" << sensors.batterySensor() << ")\n";
-    // if (pos == dockingStation && sensors.batterySensor() < maxBatteryLevel)
-    // {
-    //     return pos;
-    // }
-
-    // if (static_cast<std::vector<int>::size_type>(sensors.batterySensor()) == path.size() - 1 )
-    // {
-	// 	std::cout << "Backtracking\n";
-    //     path.pop_back();
-    //     std::pair<int, int> prevStep = path.back();
-    //     return prevStep;
-    // }
-    
-    // if (sensors.dirtSensor() > 0)
-    // {
-    //     return pos;
-    // }
-
-    // std::vector<std::pair<int, int>> nonWallLocations = sensors.wallsSensor();
-	// std::pair<int, int> nextMove;
-	// if(!nonWallLocations.empty())
-    // {
-    //     nextMove = nonWallLocations[0];
-    // }
-    // else
-    // {
-    //     nextMove = path.back(); // shouldn't get here
-    // }
-	// if(nextMove != path.back())
-    // {
-	// 	path.push_back(nextMove);
-    // }
-    // else
-    // {
-    //     path.pop_back();
-    // }
-    // return nextMove;
 }

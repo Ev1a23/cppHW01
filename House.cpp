@@ -263,7 +263,6 @@ void House::loadHouse(const std::string& path) {
 	}
 
     cleaner = VacuumCleaner(maxSteps, maxBattery, dockingStation);
-    // std::cout << &cleaner << "\n";
 	file.close();
 };
    
