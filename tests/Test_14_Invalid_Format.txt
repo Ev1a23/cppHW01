@@ -1,3 +1,0 @@
-maxBatterySteps: 50
-maxAllowedSteps: 100
--1, 10: -1
