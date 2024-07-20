@@ -12,7 +12,6 @@ int main(int argc, char* argv[]) {
 	{
     	MySimulator simulator;
 		simulator.readHouseFile(houseFilePath);
-		
 		MyAlgorithm algo;
 		simulator.setAlgorithm(algo);
 		simulator.run();

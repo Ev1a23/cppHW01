@@ -14,17 +14,16 @@ class MySimulator {
 public:
     MySimulator();
     void run();
-	void msgLog(std::ofstream & outputFile, const std::string& msg);
 	void readHouseFile(std::string& houseFilePath);
     void setAlgorithm(AbstractAlgorithm& algorithm);
     House house;
 
 private:
     AbstractAlgorithm* algorithm;
-    MyDirtSensor dirtSensor;
-    MyWallsSensor wallsSensor;
-    MyBatteryMeter batteryMeter;
-
+    const MyDirtSensor dirtSensor;
+    const MyWallsSensor wallsSensor;
+    const MyBatteryMeter batteryMeter;
+    void msgLog(std::ofstream & outputFile, const std::string& msg) const;
 };
 
 #endif // SIMULATIONCONTROLLER_H

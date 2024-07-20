@@ -5,12 +5,7 @@
 #include "enums.h"
 
 
-MySimulator::MySimulator() : dirtSensor(&house), wallsSensor(&house), batteryMeter(&house)
-// : house(),
-//   algorithm()
-{
-
-}
+MySimulator::MySimulator() : dirtSensor(&house), wallsSensor(&house), batteryMeter(&house){}
 
 static std::string step2char(Step step)
 {
@@ -116,8 +111,8 @@ void MySimulator::setAlgorithm(AbstractAlgorithm& algorithm)
 	this->algorithm->setBatteryMeter(this->batteryMeter);
 }
 
-void MySimulator::msgLog(std::ofstream & outputFile, const std::string& msg)
+void MySimulator::msgLog(std::ofstream & outputFile, const std::string& msg) const
 {
-	outputFile << msg << std::endl;
+	outputFile << msg;
 	std::cout << msg << std::endl;
 }
