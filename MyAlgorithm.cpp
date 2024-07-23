@@ -185,7 +185,6 @@ Step MyAlgorithm::nextStep()
                 // 2. prefer dirty neighbor (if known)
                 // 3. otherwise - prefer unknown location over location that you know is cleaned
                 // generally if there are two equal choises - prioritize by Direction enum
-
     if (this->algoGrid.empty())
     {
         std::cout << "First step of algo, intializing docking station in algoGrid\n";
@@ -194,7 +193,8 @@ Step MyAlgorithm::nextStep()
         this->algoGrid[keyConvert(this->dockingStation)] = dock;
         here = this->dockingStation;
     }
-
+	std::cout << "totalSteps = " << this->totalSteps << "\n";
+	
     std::cout << "here = (" << here.first << ", " << here.second << ")\n";
     std::cout << "distToDocking = " << algoGrid[keyConvert(here)].getDistToDocking() << "\n";
     std::cout << "current_battery = " << this->batteryMeter->getBatteryState() << "\n";
@@ -204,16 +204,16 @@ Step MyAlgorithm::nextStep()
     
     ////////////////////////////
     // charging:
-    if ((here.first == dockingStation.first && here.second == dockingStation.second) &&
-        batteryMeter->getBatteryState() < maxBatteryLevel)
+    if (here.first == dockingStation.first && here.second == dockingStation.second)
     {
-        std::cout << "Algo decision: Charging\n";
-        if (this->minDist() * 2 > this->maxSteps)
+        if (this->minDist() * 2 > (this->maxSteps - this->totalSteps) && this->maxSteps - this->totalSteps < this->maxBatteryLevel)
         { // can't clean anymore
             return Step::Finish;
         }
         else if (batteryMeter->getBatteryState() < maxBatteryLevel)
         {
+			std::cout << "Algo decision: Charging\n";
+			this->totalSteps++;
             return Step::Stay;
         }
     }
@@ -221,14 +221,14 @@ Step MyAlgorithm::nextStep()
     // if not charging, update info:
     this->updateHere();
     Direction next = neighborsHandle(); // use only when exploring
-
     ////////////////////////////
     // returning to docking:
-    if ((here_p.getDistToDocking()) + 1 >= std::min(this->batteryMeter->getBatteryState(), this->maxSteps))
+    if ((here_p.getDistToDocking()) + 1 >= std::min(this->batteryMeter->getBatteryState(), this->maxSteps - this->totalSteps))
     {
         std::cout << "Algo decision: returning to docking\n";
         Step res = static_cast<Step>(here_p.getDirectionToDocking());
         here = moveTranslation(algoGrid[keyConvert(here)].getDirectionToDocking());
+		this->totalSteps++;
         return res;
     }
     ////////////////////////////
@@ -236,12 +236,14 @@ Step MyAlgorithm::nextStep()
     if (this->dirtSensor->dirtLevel() > 0)
     {
         std::cout << "Algo decision: Cleaning\n";
+		this->totalSteps++;
         return Step::Stay;
     }
     ////////////////////////////
 
     // exploring:
     std::cout << "Algo decision: Exploring\n";
+	this->totalSteps++;
 	here = moveTranslation(next);
     return static_cast<Step>(next);
 

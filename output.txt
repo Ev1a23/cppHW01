@@ -1,5 +1,5 @@
-NumSteps = 100
-DirtLeft = 39
-Status = WORKING
+NumSteps = 200
+DirtLeft = 10
+Status = FINISHED
 Steps:
-EEEEEWWWWWssssssssssssssssssssSsEssENWWssssssssssssssssssWSNEssssssssEESsssNWWssssssssssssssssssEEES
+EEEEEEssSSSWsssssssNsssssNssssWSSWNNWSSWNNWSSWENNNssssssssssssssssssssWSSWNNWSSSENNNEEsssssssEEEEEESNSNSNSNSNSNSNSNSNSNSNSNSNSNSNSNSNSNSNWWWWWWssssssssssssssssssssEEEEEESNSNSNSNSNSNSNSNSNSNSNSNWWWWWWF

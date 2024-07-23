@@ -34,6 +34,7 @@ public:
 
 private:
     std::size_t maxSteps;
+	std::size_t totalSteps = 0;
     const WallsSensor* wallsSensor;
     const DirtSensor* dirtSensor;
     const BatteryMeter* batteryMeter;
