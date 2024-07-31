@@ -126,11 +126,11 @@ void process_pairs(const std::string& house_path, const std::string& algo_path, 
 }
 
 int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " <house_input_file>" << std::endl;
-        return 1;
-    }
-     std::string houseFilePath = argv[1];
+//     if (argc != 2) {
+//         std::cerr << "Usage: " << argv[0] << " <house_input_file>" << std::endl;
+//         return 1;
+//     }
+//      std::string houseFilePath = argv[1];
     // Options options;
 
     // if (!parseInput(argc, argv, options)) {

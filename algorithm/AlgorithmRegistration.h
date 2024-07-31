@@ -1,3 +1,5 @@
+#include <string>
+#include "AlgorithmRegistrar.h"
 //------------------------------------
 // algorithm/AlgorithmRegistration.h
 //------------------------------------

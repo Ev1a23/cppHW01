@@ -2,6 +2,7 @@
 #define BFS_ALGORITHM_H
 
 #include "../algorithm/MyAlgorithm.h"
+#include "../algorithm/AlgorithmRegistration.h"
 #include <queue>
 #include <utility>
 #include <unordered_set>

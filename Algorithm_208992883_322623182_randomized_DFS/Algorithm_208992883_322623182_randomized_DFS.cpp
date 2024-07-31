@@ -4,6 +4,8 @@
 #include <utility>
 #include <random>
 
+REGISTER_ALGORITHM(Algorithm_208992883_322623182_randomized_DFS);
+
 Algorithm_208992883_322623182_randomized_DFS::Algorithm_208992883_322623182_randomized_DFS() {}
 
 

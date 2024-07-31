@@ -2,6 +2,8 @@
 #include <iostream>
 #include <algorithm>
 
+REGISTER_ALGORITHM(Algorithm_208992883_322623182_BFS);
+
 Algorithm_208992883_322623182_BFS::Algorithm_208992883_322623182_BFS() : MyAlgorithm() {}
 
 Algorithm_208992883_322623182_BFS::~Algorithm_208992883_322623182_BFS() {}
