@@ -13,7 +13,6 @@ public:
 	void setWallsSensor(const WallsSensor&);
 	void setDirtSensor(const DirtSensor&);
 	void setBatteryMeter(const BatteryMeter&);
-    virtual Step nextStep();
 
     class Position {
     public:
@@ -32,7 +31,14 @@ public:
         Direction directionToDocking = Direction::North;
     };
 
-private:
+	static size_t keyConvert(std::pair<int,int> pos)
+	{
+		int i = pos.first;
+		int j = pos.second;
+		return ((size_t)i) << 32 | (unsigned int) j;
+	}
+
+protected:
     std::size_t maxSteps;
 	std::size_t totalSteps = 0;
     const WallsSensor* wallsSensor;

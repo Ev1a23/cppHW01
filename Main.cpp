@@ -1,6 +1,7 @@
 #include "MySimulator.h"
 #include <iostream>
 #include "MyAlgorithm.h"
+#include "RandomizedStepAlgorithm.h"
 
 #include <boost/program_options.hpp>
 #include <iostream>
@@ -84,11 +85,20 @@ int main(int argc, char* argv[]) {
 
 	try
 	{
-    	MySimulator simulator;
-		simulator.readHouseFile(houseFilePath);
-		MyAlgorithm algo;
-		simulator.setAlgorithm(algo);
-		simulator.run();
+		//base
+    	// MySimulator simulator;
+		// simulator.readHouseFile(houseFilePath);
+		// MyAlgorithm algo;
+		// simulator.setAlgorithm(algo);
+		// simulator.run();
+
+		//RandomizedStepAlgorithm
+		MySimulator simulator2;
+		simulator2.readHouseFile(houseFilePath);
+		RandomizedStepAlgorithm algo;
+		simulator2.setAlgorithm(algo);
+		simulator2.run();
+
 	}
 	catch(const std::exception& e)
 	{
