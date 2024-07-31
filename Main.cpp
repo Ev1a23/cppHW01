@@ -1,55 +1,125 @@
+#include "./common/AlgorithmRegistrar.h"
 #include "MySimulator.h"
 #include <iostream>
 #include "MyAlgorithm.h"
 
-#include <boost/program_options.hpp>
+//#include <boost/program_options.hpp>
 #include <iostream>
 #include <string>
+#include <cstring>
 
-// Structure to hold the parsed options
-struct Options {
-    std::string house_path;
-    std::string algo_path;
-    int num_threads;
-    bool summary_only;
-};
+#include <iostream>
+#include <string>
+#include <filesystem>
 
-// Function to parse command-line arguments
-bool parseInput(int argc, char* argv[], Options& options) {
-    namespace po = boost::program_options;
+#include <dlfcn.h>
 
-    // Default values
-    options.house_path = ".";
-    options.algo_path = ".";
-    options.num_threads = 10;
-    options.summary_only = false;
+namespace fs = std::filesystem;
 
-    // Define the options
-    po::options_description desc("Allowed options");
-    desc.add_options()
-        ("help", "produce help message")
-        ("house_path", po::value<std::string>(&options.house_path)->default_value("."), "path to the house file")
-        ("algo_path", po::value<std::string>(&options.algo_path)->default_value("."), "path to the algorithm file")
-        ("num_threads", po::value<int>(&options.num_threads)->default_value(10), "number of threads")
-        ("summary_only", po::bool_switch(&options.summary_only), "output summary only");
+const std::string ERROR_FILES_PATH = fs::current_path().string();
 
-    po::variables_map vm;
-    try {
-        po::store(po::parse_command_line(argc, argv, desc), vm);
-        po::notify(vm);
+void handleInvalidFileException(const std::exception &e, const fs::path &invalidFilePath)
+{
+    fs::path errorPath = invalidFilePath;
+    errorPath = fs::current_path().string() / errorPath.replace_extension("error").filename();
+    std::ofstream errorFile(errorPath);
+    if (!errorFile) {
+        std::cerr << "Failed to open file: " << invalidFilePath << std::endl;
+        throw std::runtime_error("Could not write error file");
+    }
+    errorFile <<  e.what() << std::endl;
+}
 
-        if (vm.count("help")) {
-            std::cout << desc << "\n";
-            return false;
-        }
-    } catch (std::exception& e) {
-        std::cerr << "Error: " << e.what() << "\n";
+bool validateHouseFile(MySimulator &sim, const fs::path &houseFilePath)
+{
+    try
+    {
+        std::string houseFilePath_str = houseFilePath.string();
+        sim.readHouseFile(houseFilePath_str);
+    }
+    catch (const std::exception& e)
+    {
+        handleInvalidFileException(e, houseFilePath);
         return false;
     }
-
     return true;
 }
 
+bool validateAlgoFile(MySimulator &sim, const fs::path &algoFilePath)
+{
+    size_t algoCountBefore = AlgorithmRegistrar::getAlgorithmRegistrar().count(); // how many algorithm are registered so far
+    try
+    {
+        if (!(dlopen(algoFilePath.string().c_str(), RTLD_LAZY)))
+        {
+            throw std::runtime_error("dlopen failed openning " + algoFilePath.string());
+        }
+        else if (algoCountBefore == AlgorithmRegistrar::getAlgorithmRegistrar().count())
+        {
+            throw std::runtime_error("Algorithm " + algoFilePath.string() + "failed to regiter, make sure you call REGISTER_ALGORITHM("+algoFilePath.string()+") in it.");
+        }
+        else
+        {
+            auto algoPtr = AlgorithmRegistrar::getAlgorithmRegistrar().begin()->create();
+            sim.setAlgorithm(*algoPtr);
+        }
+    }
+    catch (const std::exception& e)
+    {
+        handleInvalidFileException(e, algoFilePath);
+        return false;
+    }
+    return true;
+}
+
+struct Config {
+    std::string house_path = fs::current_path().string();
+    std::string algo_path = fs::current_path().string();
+    int num_threads = 10;
+    bool summary_only = false;
+};
+
+Config parse_args(int argc, char* argv[]) {
+    Config config;
+
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+
+        if (arg.find("-house_path=") == 0) {
+            config.house_path = arg.substr(strlen("-house_path="));
+        } else if (arg.find("-algo_path=") == 0) {
+            config.algo_path = arg.substr(strlen("-algo_path="));
+        } else if (arg.find("-num_threads=") == 0) {
+            config.num_threads = std::stoi(arg.substr(strlen("-num_threads=")));
+        } else if (arg == "-summary_only") {
+            config.summary_only = true;
+        } else {
+            std::cerr << "Unknown argument: " << arg << std::endl;
+        }
+    }
+
+    return config;
+}
+
+void process_pairs(const std::string& house_path, const std::string& algo_path, std::vector<MySimulator> &simulators) {
+    std::cout << "\nprocess_pairs\n";
+    for (const auto& house_entry : fs::directory_iterator(house_path)) {
+        if (house_entry.is_regular_file() && house_entry.path().extension() == ".house") {
+            for (const auto& algo_entry : fs::directory_iterator(algo_path)) {
+                if (algo_entry.is_regular_file() && algo_entry.path().extension() == ".so") {
+                    std::cout << "Found pair: "
+                              << house_entry.path() << " and "
+                              << algo_entry.path() << std::endl;
+                    MySimulator sim;
+                    if (validateHouseFile(sim, house_entry.path()) && validateAlgoFile(sim, algo_entry.path()))
+                    {
+                        simulators.push_back(sim);
+                    }
+                }
+            }
+        }
+    }
+}
 
 int main(int argc, char* argv[]) {
     // if (argc != 2) {
@@ -57,43 +127,57 @@ int main(int argc, char* argv[]) {
     //     return 1;
     // }
     // std::string houseFilePath = argv[1];
-    Options options;
+    try
+    {
+        Config config = parse_args(argc, argv);
 
-    if (!parseInput(argc, argv, options)) {
+        std::cout << "House Path: " << config.house_path << std::endl;
+        std::cout << "Algo Path: " << config.algo_path << std::endl;
+        std::cout << "Number of Threads: " << config.num_threads << std::endl;
+        std::cout << "Summary Only: " << (config.summary_only ? "true" : "false") << std::endl;
+
+        std::vector<MySimulator> simulators;
+        process_pairs(config.house_path, config.algo_path, simulators);
+
+
+        // simple running with no concurrent simulations:
+        for (MySimulator sim : simulators)
+        {
+            sim.run();
+        }
+
+
+        // generate the cartesian product of algos x houses:
+            // list of all house files
+            // list of all .so files
+            // 1. house file path
+            // 2. algorithm instance of some form (.so file)
+            // 3. simulator to run this algo on this file
+
+        // generate <num_threads> threads
+        // send each pair (its simulator.run()) to a thread
+        // when a thread ends, use ot again or replace it and send it the next pair, until all pairs were processed
+        // 
+
+
+        // try
+        // {
+        // 	MySimulator simulator;
+        // 	simulator.readHouseFile(houseFilePath);
+        // 	MyAlgorithm algo;
+        // 	simulator.setAlgorithm(algo);
+        // 	simulator.run();
+        // }
+        // catch(const std::exception& e)
+        // {
+        // 	std::cerr << e.what() << '\n';
+        // 	return 1;
+        // }
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
         return 1;
     }
-
-    // Output the values
-    std::cout << "House path: " << options.house_path << "\n";
-    std::cout << "Algorithm path: " << options.algo_path << "\n";
-    std::cout << "Number of threads: " << options.num_threads << "\n";
-    std::cout << "Summary only: " << std::boolalpha << options.summary_only << "\n";
-
-    // generate the cartesian product of algos x houses:
-        // list of all house files
-        // list of all .so files
-        // 1. house file path
-        // 2. algorithm instance of some form (.so file)
-        // 3. simulator to run this algo on this file
-
-    // generate <num_threads> threads
-    // send each pair (its simulator.run()) to a thread
-    // when a thread ends, use ot again or replace it and send it the next pair, until all pairs were processed
-    // 
-
-
-	try
-	{
-    	MySimulator simulator;
-		simulator.readHouseFile(houseFilePath);
-		MyAlgorithm algo;
-		simulator.setAlgorithm(algo);
-		simulator.run();
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << '\n';
-		return 1;
-	}
     return 0;
 }
