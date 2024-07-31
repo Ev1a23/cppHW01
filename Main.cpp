@@ -16,8 +16,6 @@
 
 namespace fs = std::filesystem;
 
-const std::string ERROR_FILES_PATH = fs::current_path().string();
-
 void handleInvalidFileException(const std::exception &e, const fs::path &invalidFilePath)
 {
     fs::path errorPath = invalidFilePath;
