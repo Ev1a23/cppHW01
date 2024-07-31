@@ -7,30 +7,6 @@
 #include <unordered_map>
 #include <limits>
 
-static bool compareDirts(int a, int b)
-{
-    if (a == -3 || b == -3) // one of them is the docking station
-    {
-        return b == -3;
-    }
-    if (a == 0) // a is clean
-    {
-        return false;
-    }
-    else
-    {
-        if (a > 0) // a has dirt
-        {
-            return b == -2 ? true : a > b; 
-        }
-        else // a is unknown
-        {
-            return b == 0;
-        }
-    }
-}
-
-
 MyAlgorithm::MyAlgorithm() {}
 
 void MyAlgorithm::setMaxSteps(std::size_t maxSteps)
@@ -52,6 +28,7 @@ void MyAlgorithm::setBatteryMeter(const BatteryMeter& batteryMeter)
 {
     this->batteryMeter = &batteryMeter;
     this->maxBatteryLevel = this->batteryMeter->getBatteryState();
+	this->rechargeAmount = this->maxBatteryLevel / 20.0;
 }
 
 std::pair<int,int> MyAlgorithm::moveTranslation(Direction directionFromEnum) const
@@ -93,6 +70,7 @@ void MyAlgorithm::updateHere()
             if (it != this->algoGrid.end())
             {
                 Position neighbor_p = this->algoGrid[n_key];
+				
                 if (here_p.getDistToDocking() > neighbor_p.getDistToDocking())
                 {
                     here_p.setDistToDocking(neighbor_p.getDistToDocking() + 1);

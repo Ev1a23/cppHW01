@@ -11,7 +11,6 @@ RandomizedStepAlgorithm::RandomizedStepAlgorithm() {}
 
 
 Step RandomizedStepAlgorithm::nextStep() {
-
     // maintain for each known location its path to the docking station !!
     // maintain a set of locations which you know thier dirt (clean ones as well)
 
@@ -49,7 +48,13 @@ Step RandomizedStepAlgorithm::nextStep() {
     // charging:
     if (here.first == dockingStation.first && here.second == dockingStation.second)
     {
-        if (this->minDist() * 2 > (this->maxSteps - this->totalSteps) && this->maxSteps - this->totalSteps < this->maxBatteryLevel)
+		int stepsToCharge = static_cast<int>((this->maxBatteryLevel - this->batteryMeter->getBatteryState()) / this->rechargeAmount);
+		int stepsAfterCharge = this->maxSteps - this->totalSteps - stepsToCharge;
+		if (stepsAfterCharge < 0)
+		{
+			return Step::Finish;
+		}
+    	else if ((this->minDist() * 2 > static_cast<std::size_t>(stepsAfterCharge)) && (static_cast<std::size_t>(stepsAfterCharge) < maxBatteryLevel))
         { // can't clean anymore
             return Step::Finish;
         }
@@ -63,7 +68,7 @@ Step RandomizedStepAlgorithm::nextStep() {
 
     // if not charging, update info:
     this->updateHere();
-    Direction next = neighborsHandle(); // use only when exploring
+    Direction next = RandomizedNeighborsHandle(); // use only when exploring
     ////////////////////////////
     // returning to docking:
     if ((here_p.getDistToDocking()) + 1 >= std::min(this->batteryMeter->getBatteryState(), this->maxSteps - this->totalSteps))
@@ -89,5 +94,48 @@ Step RandomizedStepAlgorithm::nextStep() {
 	this->totalSteps++;
 	here = moveTranslation(next);
     return static_cast<Step>(next);
+}
 
+
+Direction RandomizedStepAlgorithm::RandomizedNeighborsHandle()
+{
+    // std::cout << "\t\t" << "neighborsHandle:\n";
+    Position herePos = this->algoGrid[keyConvert(here)];
+    Direction bestD = herePos.getDirectionToDocking();
+    int best = -3; //someone will win -3
+	//Randomization
+	std::array<int, 4> indices = {0, 1, 2, 3};
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(indices.begin(), indices.end(), g);
+    for (int i = 0; i < 4; i++)
+    {
+        Direction d = static_cast<Direction>(indices[i]);
+        if (!this->wallsSensor->isWall(d))
+        {
+            std::pair<int,int> n = moveTranslation(d);
+            Position* neighbor = &(this->algoGrid[keyConvert(n)]);
+            Direction n_direction = static_cast<Direction>((indices[i] + 2) % 4);
+            std::size_t n_dist = herePos.getDistToDocking() + 1;
+            if (this->algoGrid.find(keyConvert(n)) != this->algoGrid.end())
+            {
+                if (herePos.getDistToDocking() + 1 < neighbor->getDistToDocking())
+                {
+                    neighbor->setDistToDocking(n_dist);
+                    neighbor->setDirectionToDocking(n_direction);
+                }
+            }
+            else
+            {
+                this->algoGrid[keyConvert(n)] = Position(n_dist, n_direction);
+				neighbor = &(this->algoGrid[keyConvert(n)]);
+            }
+            if (compareDirts(neighbor->getDirtLevel(), best))
+            {
+                best = neighbor->getDirtLevel();
+                bestD = d;
+            }
+        }
+    }
+    return bestD;
 }
