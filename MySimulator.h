@@ -28,8 +28,8 @@ public:
 			return maxSteps + dirtLeft * 300 + 3000;
 		}
 		return numSteps + dirtLeft * 300 + (inDock ? 0 : 1000);
-		
 	}
+	
 
 private:
     AbstractAlgorithm* algorithm;

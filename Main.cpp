@@ -2,6 +2,7 @@
 #include <iostream>
 #include "MyAlgorithm.h"
 #include "RandomizedStepAlgorithm.h"
+#include "BFSAlgorithm.h"
 
 #include <boost/program_options.hpp>
 #include <iostream>
@@ -93,10 +94,16 @@ int main(int argc, char* argv[]) {
 		// simulator.run();
 
 		//RandomizedStepAlgorithm
+		MySimulator simulator;
+		simulator.readHouseFile(houseFilePath);
+		RandomizedStepAlgorithm algoRand;
+		simulator.setAlgorithm(algoRand);
+		simulator.run();
+
 		MySimulator simulator2;
 		simulator2.readHouseFile(houseFilePath);
-		RandomizedStepAlgorithm algo;
-		simulator2.setAlgorithm(algo);
+		BFSAlgorithm algoBFS;
+		simulator2.setAlgorithm(algoBFS);
 		simulator2.run();
 
 	}

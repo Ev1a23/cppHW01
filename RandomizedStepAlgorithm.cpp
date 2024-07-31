@@ -3,9 +3,6 @@
 #include "House.h"
 #include <utility>
 #include <random>
-#include <algorithm>
-#include <unordered_map>
-#include <limits>
 
 RandomizedStepAlgorithm::RandomizedStepAlgorithm() {}
 
