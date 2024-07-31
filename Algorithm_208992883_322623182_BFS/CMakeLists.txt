@@ -1,3 +1,14 @@
+cmake_minimum_required(VERSION 3.16)
+set(CMAKE_CXX_STANDARD 20)
+
 project(Algorithm_208992883_322623182_BFS)
-add_library(${PROJECT_NAME} SHARED Algorithm_208992883_322623182_BFS.cpp)
-target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/../algorithm)
+
+set(INCLUDES    /Users/orshemesh/University/ThirdYear/CSTopics/cppHW01/algorithm
+                ${PROJECT_SOURCE_DIR}/../common/)
+
+set(SOURCES     ${PROJECT_SOURCE_DIR}/../algorithm/MyAlgorithm.cpp
+                Algorithm_208992883_322623182_BFS.cpp)
+
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
+
+target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDES})

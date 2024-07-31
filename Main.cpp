@@ -1,9 +1,9 @@
-#include "./common/AlgorithmRegistrar.h"
+#include "AlgorithmRegistrar.h"
 #include "MySimulator.h"
 #include <iostream>
-#include "MyAlgorithm.h"
-#include "RandomizedStepAlgorithm.h"
-#include "BFSAlgorithm.h"
+// #include "MyAlgorithm.h"
+// #include "RandomizedStepAlgorithm.h"
+// #include "BFSAlgorithm.h"
 
 //#include <boost/program_options.hpp>
 #include <iostream>
@@ -56,14 +56,14 @@ bool validateAlgoFile(MySimulator &sim, const fs::path &algoFilePath)
         }
         else if (algoCountBefore == AlgorithmRegistrar::getAlgorithmRegistrar().count())
         {
-            throw std::runtime_error("Algorithm " + algoFilePath.string() + "failed to regiter, make sure you call REGISTER_ALGORITHM("+algoFilePath.string()+") in it.");
+            throw std::runtime_error("Algorithm " + algoFilePath.string() + " failed to regiter, make sure you call REGISTER_ALGORITHM("+algoFilePath.string()+") in it.");
         }
         else
         {
             auto algoPtr = AlgorithmRegistrar::getAlgorithmRegistrar().begin()->create();
             if (algoPtr == NULL)
             {
-                throw std::runtime_error("Algorithm " + algoFilePath.string() + "is invalid." + std::endl);
+                throw std::runtime_error("Algorithm " + algoFilePath.string() + " is invalid.");
             }
             sim.setAlgorithm(*algoPtr);
         }

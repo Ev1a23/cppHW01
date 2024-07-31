@@ -1,4 +1,4 @@
-#include "../abstract_algorithm.h"
+#include "abstract_algorithm.h"
 #include <functional>
 #include <string>
 #include <vector>

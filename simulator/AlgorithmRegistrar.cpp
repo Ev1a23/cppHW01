@@ -1,3 +1,4 @@
+#include "AlgorithmRegistrar.h"
 //-----------------------------------
 // simulator/AlgorithmRegistrar.cpp
 //-----------------------------------
