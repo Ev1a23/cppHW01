@@ -13,7 +13,7 @@ public:
 	void setWallsSensor(const WallsSensor&);
 	void setDirtSensor(const DirtSensor&);
 	void setBatteryMeter(const BatteryMeter&);
-    Step nextStep();
+    virtual Step nextStep();
 
     class Position {
     public:
