@@ -59,6 +59,10 @@ bool validateAlgoFile(MySimulator &sim, const fs::path &algoFilePath)
         else
         {
             auto algoPtr = AlgorithmRegistrar::getAlgorithmRegistrar().begin()->create();
+            if (algoPtr == NULL)
+            {
+                throw std::runtime_error("Algorithm " + algoFilePath.string() + "is invalid." + std::endl);
+            }
             sim.setAlgorithm(*algoPtr);
         }
     }
