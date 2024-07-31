@@ -13,7 +13,6 @@ public:
 	void setWallsSensor(const WallsSensor&);
 	void setDirtSensor(const DirtSensor&);
 	void setBatteryMeter(const BatteryMeter&);
-    Step nextStep();
 
     class Position {
     public:
@@ -32,7 +31,37 @@ public:
         Direction directionToDocking = Direction::North;
     };
 
-private:
+	static size_t keyConvert(std::pair<int,int> pos)
+	{
+		int i = pos.first;
+		int j = pos.second;
+		return ((size_t)i) << 32 | (unsigned int) j;
+	}
+
+	static bool compareDirts(int a, int b)
+	{
+		if (a == -3 || b == -3) // one of them is the docking station
+		{
+			return b == -3;
+		}
+		if (a == 0) // a is clean
+		{
+			return false;
+		}
+		else
+		{
+			if (a > 0) // a has dirt
+			{
+				return b == -2 ? true : a > b; 
+			}
+			else // a is unknown
+			{
+				return b == 0;
+			}
+		}
+	}
+
+protected:
     std::size_t maxSteps;
 	std::size_t totalSteps = 0;
     const WallsSensor* wallsSensor;
@@ -40,6 +69,7 @@ private:
     const BatteryMeter* batteryMeter;
     std::pair<int, int> dockingStation = {0,0};
     std::size_t maxBatteryLevel;
+	double rechargeAmount;
     std::pair<int,int> here;
     std::unordered_map<size_t, MyAlgorithm::Position> algoGrid;
     void updateHere();

@@ -2,6 +2,8 @@
 #include "MySimulator.h"
 #include <iostream>
 #include "MyAlgorithm.h"
+#include "RandomizedStepAlgorithm.h"
+#include "BFSAlgorithm.h"
 
 //#include <boost/program_options.hpp>
 #include <iostream>
@@ -124,8 +126,14 @@ void process_pairs(const std::string& house_path, const std::string& algo_path, 
 }
 
 int main(int argc, char* argv[]) {
-    // if (argc != 2) {
-    //     std::cerr << "Usage: " << argv[0] << " <house_input_file>" << std::endl;
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " <house_input_file>" << std::endl;
+        return 1;
+    }
+     std::string houseFilePath = argv[1];
+    // Options options;
+
+    // if (!parseInput(argc, argv, options)) {
     //     return 1;
     // }
     // std::string houseFilePath = argv[1];

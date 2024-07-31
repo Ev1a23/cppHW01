@@ -15,7 +15,7 @@ $(TARGET): $(OBJ)
 main.o: main.cpp MySimulator.o
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-MySimulator.o: MySimulator.cpp House.o MyAlgorithm.o
+MySimulator.o: MySimulator.cpp House.o MyAlgorithm.o RandomizedStepAlgorithm.o BFSAlgorithm.o
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 House.o: House.cpp
@@ -31,6 +31,12 @@ my_dirt_sensor.o: my_dirt_sensor.cpp dirt_sensor.h enums.h
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 my_battery_meter.o: my_battery_meter.cpp battery_meter.h enums.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+RandomizedStepAlgorithm.o: RandomizedStepAlgorithm.cpp MyAlgorithm.o
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+BFSAlgorithm.o: BFSAlgorithm.cpp MyAlgorithm.o
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:

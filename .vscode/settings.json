@@ -70,6 +70,17 @@
 		"random": "cpp",
 		"type_traits": "cpp",
 		"utility": "cpp",
-		"numbers": "cpp"
+		"numbers": "cpp",
+		"map": "cpp",
+		"strstream": "cpp",
+		"chrono": "cpp",
+		"list": "cpp",
+		"semaphore": "cpp",
+		"stop_token": "cpp",
+		"thread": "cpp",
+		"cfenv": "cpp",
+		"cinttypes": "cpp",
+		"typeindex": "cpp",
+		"unordered_set": "cpp"
 	}
 }

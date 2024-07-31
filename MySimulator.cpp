@@ -75,22 +75,24 @@ void MySimulator::run()
     }
 	std::pair<int, int> curPos = cleaner.getPosition();
 	std::string status = "";
-	if(curPos == house.getDockingStation() && nextMove == Step::Finish)
+	if(nextMove == Step::Finish || curPos == house.getDockingStation())
 	{
 		status = "FINISHED";
 	}
-	else if(cnt == cleaner.getMaxAllowedSteps())
-	{
-		status = "WORKING";
-	}
-	else
+	else if(curPos != house.getDockingStation() && this->batteryMeter.getBatteryState() == 0)
 	{
 		status = "DEAD"; //Should not reach here
 	}
+	else
+	{
+		status = "WORKING"; 
+	}
+	std::string inDock = (curPos == house.getDockingStation()) ? "TRUE" : "FALSE";
+	 int score = calcScore(cleaner.getMaxAllowedSteps(), cnt, house.totalDirt(), status, (curPos == house.getDockingStation()));
 	//TODO Change format to include steps at the bottom instead of after every step
 	std::cout << "Simulation completed\n";
 	std::ostringstream logStream;
-	logStream << "NumSteps = " << cnt << "\nDirtLeft = " << house.totalDirt() << "\nStatus = " << status << "\nSteps:\n" << steps_log;
+	logStream << "NumSteps = " << cnt << "\nDirtLeft = " << house.totalDirt() << "\nStatus = " << status << "\nInDock = " << inDock << "\nScore = " << score <<"\nSteps:\n" << steps_log;
 	msgLog(outputFile, logStream.str());
 
 	outputFile.close();
