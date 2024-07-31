@@ -70,6 +70,8 @@ int main(int argc, char* argv[]) {
     std::cout << "Summary only: " << std::boolalpha << options.summary_only << "\n";
 
     // generate the cartesian product of algos x houses:
+        // list of all house files
+        // list of all .so files
         // 1. house file path
         // 2. algorithm instance of some form (.so file)
         // 3. simulator to run this algo on this file
