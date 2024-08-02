@@ -1,17 +1,13 @@
 cmake_minimum_required(VERSION 3.16)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
+SET(CMAKE_EXE_LINKER_FLAGS  "-rdynamic")
 
 project(my_robot)
 message(${PROJECT_SOURCE_DIR})
 
 add_subdirectory(Algorithm_208992883_322623182_BFS)
 add_subdirectory(Algorithm_208992883_322623182_randomized_DFS)
-
-set(INCLUDES    ${PROJECT_SOURCE_DIR}/simulator)
-
-set(SOURCES     ${PROJECT_SOURCE_DIR}/../algorithm/MyAlgorithm.cpp
-                Algorithm_208992883_322623182_BFS.cpp)
 
 set(SIM_DIR     ${PROJECT_SOURCE_DIR}/simulator)
 set(COMMON_DIR  ${PROJECT_SOURCE_DIR}/common)
@@ -31,7 +27,7 @@ target_include_directories  (${PROJECT_NAME} PRIVATE
                                             ${COMMON_DIR}
                             )
 
-target_link_libraries   (${PROJECT_NAME} PRIVATE
+target_link_libraries   (${PROJECT_NAME}
                                         Algorithm_208992883_322623182_BFS
                                         Algorithm_208992883_322623182_randomized_DFS
                                         dl

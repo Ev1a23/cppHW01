@@ -110,7 +110,7 @@ void House::loadHouse(const std::string& path) {
     int cols = getValue(file, "Cols");
 
 
-    std::cout << "Max steps: " << maxSteps << " MaxBattery: " << maxBattery << " Rows: " << rows << " Cols" << cols << "\n";
+    // std::cout << "Max steps: " << maxSteps << " MaxBattery: " << maxBattery << " Rows: " << rows << " Cols" << cols << "\n";
     
     int x = 0;
     // int maxWidth = 0;
@@ -170,12 +170,12 @@ void House::loadHouse(const std::string& path) {
     }
 	grid.push_back(wallRow); // Bottom wall
 
-    for (const auto& row : grid) {
-        for (int val : row) {
-            std::cout << val << " ";
-        }
-        std::cout << std::endl;
-    }
+    // for (const auto& row : grid) {
+    //     for (int val : row) {
+    //         std::cout << val << " ";
+    //     }
+    //     std::cout << std::endl;
+    // }
 
 	if(dockingStation.first == -1 && dockingStation.second == -1) {
 		throw std::runtime_error("No docking station found");

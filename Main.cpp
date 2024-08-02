@@ -111,12 +111,13 @@ void process_pairs(const std::string& house_path, const std::string& algo_path, 
         if (house_entry.is_regular_file() && house_entry.path().extension() == ".house") {
             for (const auto& algo_entry : fs::directory_iterator(algo_path)) {
                 if (algo_entry.is_regular_file() && algo_entry.path().extension() == ".so") {
-                    std::cout << "Found pair: "
-                              << house_entry.path() << " and "
-                              << algo_entry.path() << std::endl;
+                    std::cout << "Found pair: \t("
+                              << house_entry.path().filename() << " , "
+                              << algo_entry.path().filename() << ")\n" << std::endl;
                     MySimulator sim;
                     if (validateHouseFile(sim, house_entry.path()) && validateAlgoFile(sim, algo_entry.path()))
                     {
+                        std::cout << "Simulation created with:\n house: " << house_entry.path() << "\nalgorithm: " << algo_entry.path() << std::endl;
                         simulators.push_back(sim);
                     }
                 }
