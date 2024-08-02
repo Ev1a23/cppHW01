@@ -27,7 +27,7 @@ target_include_directories  (${PROJECT_NAME} PRIVATE
                                             ${COMMON_DIR}
                             )
 
-target_link_libraries   (${PROJECT_NAME}
+target_link_libraries   (${PROJECT_NAME} PRIVATE
                                         Algorithm_208992883_322623182_BFS
                                         Algorithm_208992883_322623182_randomized_DFS
                                         dl

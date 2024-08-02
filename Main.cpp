@@ -45,27 +45,20 @@ bool validateHouseFile(MySimulator &sim, const fs::path &houseFilePath)
     return true;
 }
 
-bool validateAlgoFile(MySimulator &sim, const fs::path &algoFilePath)
+bool validateAlgoFile(const fs::path &algoFilePath)
 {
     size_t algoCountBefore = AlgorithmRegistrar::getAlgorithmRegistrar().count(); // how many algorithm are registered so far
+    void *algoFilePtr;
     try
     {
-        if (!(dlopen(algoFilePath.string().c_str(), RTLD_LAZY)))
+        algoFilePtr = dlopen(algoFilePath.string().c_str(), RTLD_LAZY);
+        if (!(algoFilePtr))
         {
             throw std::runtime_error("dlopen failed openning " + algoFilePath.string());
         }
         else if (algoCountBefore == AlgorithmRegistrar::getAlgorithmRegistrar().count())
         {
             throw std::runtime_error("Algorithm " + algoFilePath.string() + " failed to regiter, make sure you call REGISTER_ALGORITHM("+algoFilePath.string()+") in it.");
-        }
-        else
-        {
-            auto algoPtr = AlgorithmRegistrar::getAlgorithmRegistrar().begin()->create();
-            if (algoPtr == NULL)
-            {
-                throw std::runtime_error("Algorithm " + algoFilePath.string() + " is invalid.");
-            }
-            sim.setAlgorithm(*algoPtr);
         }
     }
     catch (const std::exception& e)
@@ -115,10 +108,13 @@ void process_pairs(const std::string& house_path, const std::string& algo_path, 
                               << house_entry.path().filename() << " , "
                               << algo_entry.path().filename() << ")\n" << std::endl;
                     MySimulator sim;
-                    if (validateHouseFile(sim, house_entry.path()) && validateAlgoFile(sim, algo_entry.path()))
+                    if (validateHouseFile(sim, house_entry.path()))
                     {
-                        std::cout << "Simulation created with:\n house: " << house_entry.path() << "\nalgorithm: " << algo_entry.path() << std::endl;
-                        simulators.push_back(sim);
+                        std::cout << "Simulation created with house: " << house_entry.path().filename() << std::endl;
+                        if (validateAlgoFile(algo_entry.path()))
+                        {
+                            simulators.push_back(sim);
+                        }
                     }
                 }
             }
@@ -148,14 +144,36 @@ int main(int argc, char* argv[]) {
         std::cout << "Summary Only: " << (config.summary_only ? "true" : "false") << std::endl;
 
         std::vector<MySimulator> simulators;
+        std::vector<std::unique_ptr<AbstractAlgorithm>> algorithms;  // this is here just to make the algorithms local of main
+                                                    // so they will be available to simualtors the whole run
         process_pairs(config.house_path, config.algo_path, simulators);
 
+        // here should be: simulators.size() == AlgorithmRegistrar::getAlgorithmRegistrar().count()
 
         // simple running with no concurrent simulations:
+        for (int i = 0; i < simulators.size(); i++)
+        {
+            std::string algoName = (AlgorithmRegistrar::getAlgorithmRegistrar().begin() + i)->name();
+            try
+            {
+                algorithms.push_back((AlgorithmRegistrar::getAlgorithmRegistrar().begin() + i)->create());
+                if (algorithms.back() == NULL)
+                {
+                    throw std::runtime_error("algorithm is not valid: " + algoName); 
+                }
+                std::cout << "Setting algorithm ti simulation: " << algoName << std::endl;
+                simulators[i].setAlgorithm(*algorithms.back());
+            }
+            catch (const std::exception& e)
+            {
+                handleInvalidFileException(e, fs::path(algoName));
+            }
+        }
+
         for (MySimulator sim : simulators)
         {
-            sim.run();
-        }
+            sim.run()
+;        }
 
 
         // generate the cartesian product of algos x houses:

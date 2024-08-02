@@ -45,6 +45,7 @@ void MySimulator::run()
     {
         cnt++;
         std::pair<int, int> curPos = cleaner.getPosition();
+		std::cout << "Calling nextStep from MySimulator (algo addr = " << algorithm << ")" << std::endl;
         nextMove = algorithm->nextStep();
 		std :: cout << "nextMove: " << (int)nextMove << "\n";
 		std::pair <int,int> moveTranslation = house.moveTranslation(nextMove);

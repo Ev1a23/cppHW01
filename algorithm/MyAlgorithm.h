@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <utility>
-#include "abstract_algorithm.h"
+#include "../common/abstract_algorithm.h"
 #include <unordered_map>
 
 class MyAlgorithm : public AbstractAlgorithm  {
@@ -13,6 +13,7 @@ public:
 	void setWallsSensor(const WallsSensor&);
 	void setDirtSensor(const DirtSensor&);
 	void setBatteryMeter(const BatteryMeter&);
+
 
     class Position {
     public:
