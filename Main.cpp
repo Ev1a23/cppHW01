@@ -98,26 +98,28 @@ Config parse_args(int argc, char* argv[]) {
     return config;
 }
 
-void process_pairs(const std::string& house_path, const std::string& algo_path, std::vector<MySimulator> &simulators) {
-    std::cout << "\nprocess_pairs\n";
-    for (const auto& house_entry : fs::directory_iterator(house_path)) {
-        if (house_entry.is_regular_file() && house_entry.path().extension() == ".house") {
-            for (const auto& algo_entry : fs::directory_iterator(algo_path)) {
-                if (algo_entry.is_regular_file() && algo_entry.path().extension() == ".so") {
-                    std::cout << "Found pair: \t("
-                              << house_entry.path().filename() << " , "
-                              << algo_entry.path().filename() << ")\n" << std::endl;
-                    MySimulator sim;
-                    if (validateHouseFile(sim, house_entry.path()))
-                    {
-                        std::cout << "Simulation created with house: " << house_entry.path().filename() << std::endl;
-                        if (validateAlgoFile(algo_entry.path()))
-                        {
-                            simulators.push_back(sim);
-                        }
-                    }
-                }
+void process_houses(const std::string& house_path, std::vector<std::vector<MySimulator>> &simulators)
+{
+    for (const auto& house_entry : fs::directory_iterator(house_path)) 
+    {
+        if (house_entry.is_regular_file() && house_entry.path().extension() == ".house") 
+        {
+            MySimulator sim;
+            simulators.push_back(sim);
+            if (!validateHouseFile(simulators.back(), house_entry.path()))
+            {
+                simulators.pop_back();
             }
+        }
+    }
+}
+
+void process_algos(const std::string& algo_path) 
+{
+    for (const auto& algo_entry : fs::directory_iterator(algo_path)) 
+    {
+        if (algo_entry.is_regular_file() && algo_entry.path().extension() == ".so") {
+            validateAlgoFile(algo_entry.path);
         }
     }
 }
@@ -146,13 +148,29 @@ int main(int argc, char* argv[]) {
         std::vector<MySimulator> simulators;
         std::vector<std::unique_ptr<AbstractAlgorithm>> algorithms;  // this is here just to make the algorithms local of main
                                                     // so they will be available to simualtors the whole run
-        process_pairs(config.house_path, config.algo_path, simulators);
-
-        // here should be: simulators.size() == AlgorithmRegistrar::getAlgorithmRegistrar().count()
+        process_houses(config.house_path, simulators);
+        process_algos(config.algo_path);
 
         // simple running with no concurrent simulations:
         for (int i = 0; i < simulators.size(); i++)
         {
+            for (algo : AlgorithmRegistrar::getAlgorithmRegistrar())
+            {
+                try
+                {
+                    algorithms.push_back(algo->create());
+                    if (algorithms.back() == NULL)
+                    {
+                        throw std::runtime_error("algorithm is not valid: " + algo->name()); 
+                    }
+                    std::cout << "Setting algorithm ti simulation: " << algo->name() << std::endl;
+                    simulators[i].setAlgorithm(*algorithms.back());
+                }
+                catch (const std::exception& e)
+                {
+                    handleInvalidFileException(e, fs::path(algoName));
+                }
+            }
             std::string algoName = (AlgorithmRegistrar::getAlgorithmRegistrar().begin() + i)->name();
             try
             {
@@ -172,8 +190,9 @@ int main(int argc, char* argv[]) {
 
         for (MySimulator sim : simulators)
         {
-            sim.run()
-;        }
+            std::cout << "house addr in main: " << &(sim.house) << std::endl;
+            sim.run();
+        }
 
 
         // generate the cartesian product of algos x houses:
