@@ -13,6 +13,14 @@
 class MySimulator {
 public:
     MySimulator();
+	// Copy constructor
+    MySimulator(const MySimulator& other, AbstractAlgorithm *algo)
+        : house(other.house),
+          algorithm(algo),
+          dirtSensor(other.dirtSensor),
+          wallsSensor(other.wallsSensor),
+          batteryMeter(other.batteryMeter) {
+    }
     void run();
 	void readHouseFile(std::string& houseFilePath);
     void setAlgorithm(AbstractAlgorithm& algorithm);
