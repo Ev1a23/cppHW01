@@ -1,0 +1,807 @@
+Max steps: 100 MaxBattery: 20 Rows: 4 Cols12
+-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 
+-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 
+-1 -1 0 0 0 0 0 0 0 0 0 0 -1 -1 
+-1 -1 0 1 2 3 4 5 6 7 8 9 -1 -1 
+-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 
+-1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 
+Simulation started
+First step of algo, initializing docking station in algoGrid
+totalSteps = 0
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 1
+Algo decision: Moving towards target
+nextMove: 1
+Moving
+totalSteps = 1
+here = (0, 1)
+distToDocking = 1
+current_battery = 19
+Total Visited: 1
+Algo decision: returning to docking
+nextMove: 3
+Moving
+totalSteps = 2
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 2
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 18)
+totalSteps = 3
+here = (0, 0)
+distToDocking = 0
+current_battery = 19
+Total Visited: 2
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 19)
+totalSteps = 4
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 2
+Algo decision: Moving towards target
+nextMove: 2
+Moving
+totalSteps = 5
+here = (1, 0)
+distToDocking = 1
+current_battery = 19
+Total Visited: 2
+Algo decision: Cleaning
+nextMove: 4
+Cleaning at current location
+totalSteps = 6
+here = (1, 0)
+distToDocking = 1
+current_battery = 18
+Total Visited: 3
+Algo decision: returning to docking
+nextMove: 0
+Moving
+totalSteps = 7
+here = (0, 0)
+distToDocking = 0
+current_battery = 17
+Total Visited: 3
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 17)
+totalSteps = 8
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 3
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 18)
+totalSteps = 9
+here = (0, 0)
+distToDocking = 0
+current_battery = 19
+Total Visited: 3
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 19)
+totalSteps = 10
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 3
+Algo decision: Moving towards target
+nextMove: 3
+Moving
+totalSteps = 11
+here = (0, -1)
+distToDocking = 1
+current_battery = 19
+Total Visited: 3
+Algo decision: Moving towards target
+nextMove: 2
+Moving
+totalSteps = 12
+here = (1, -1)
+distToDocking = 2
+current_battery = 18
+Total Visited: 4
+Algo decision: returning to docking
+nextMove: 1
+Moving
+totalSteps = 13
+here = (1, 0)
+distToDocking = 1
+current_battery = 17
+Total Visited: 5
+Algo decision: Moving towards target
+nextMove: 1
+Moving
+totalSteps = 14
+here = (1, 1)
+distToDocking = 2
+current_battery = 16
+Total Visited: 5
+Algo decision: Cleaning
+nextMove: 4
+Cleaning at current location
+totalSteps = 15
+here = (1, 1)
+distToDocking = 2
+current_battery = 15
+Total Visited: 6
+Algo decision: Cleaning
+nextMove: 4
+Cleaning at current location
+totalSteps = 16
+here = (1, 1)
+distToDocking = 2
+current_battery = 14
+Total Visited: 6
+Algo decision: Moving towards target
+nextMove: 1
+Moving
+totalSteps = 17
+here = (1, 2)
+distToDocking = 3
+current_battery = 13
+Total Visited: 6
+Algo decision: Cleaning
+nextMove: 4
+Cleaning at current location
+totalSteps = 18
+here = (1, 2)
+distToDocking = 3
+current_battery = 12
+Total Visited: 7
+Algo decision: Cleaning
+nextMove: 4
+Cleaning at current location
+totalSteps = 19
+here = (1, 2)
+distToDocking = 3
+current_battery = 11
+Total Visited: 7
+Algo decision: Cleaning
+nextMove: 4
+Cleaning at current location
+totalSteps = 20
+here = (1, 2)
+distToDocking = 3
+current_battery = 10
+Total Visited: 7
+Algo decision: Moving towards target
+nextMove: 0
+Moving
+totalSteps = 21
+here = (0, 2)
+distToDocking = 2
+current_battery = 9
+Total Visited: 7
+Algo decision: returning to docking
+nextMove: 3
+Moving
+totalSteps = 22
+here = (0, 1)
+distToDocking = 1
+current_battery = 8
+Total Visited: 8
+Algo decision: returning to docking
+nextMove: 3
+Moving
+totalSteps = 23
+here = (0, 0)
+distToDocking = 0
+current_battery = 7
+Total Visited: 8
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 7)
+totalSteps = 24
+here = (0, 0)
+distToDocking = 0
+current_battery = 8
+Total Visited: 8
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 8)
+totalSteps = 25
+here = (0, 0)
+distToDocking = 0
+current_battery = 9
+Total Visited: 8
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 9)
+totalSteps = 26
+here = (0, 0)
+distToDocking = 0
+current_battery = 10
+Total Visited: 8
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 10)
+totalSteps = 27
+here = (0, 0)
+distToDocking = 0
+current_battery = 11
+Total Visited: 8
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 11)
+totalSteps = 28
+here = (0, 0)
+distToDocking = 0
+current_battery = 12
+Total Visited: 8
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 12)
+totalSteps = 29
+here = (0, 0)
+distToDocking = 0
+current_battery = 13
+Total Visited: 8
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 13)
+totalSteps = 30
+here = (0, 0)
+distToDocking = 0
+current_battery = 14
+Total Visited: 8
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 14)
+totalSteps = 31
+here = (0, 0)
+distToDocking = 0
+current_battery = 15
+Total Visited: 8
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 15)
+totalSteps = 32
+here = (0, 0)
+distToDocking = 0
+current_battery = 16
+Total Visited: 8
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 16)
+totalSteps = 33
+here = (0, 0)
+distToDocking = 0
+current_battery = 17
+Total Visited: 8
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 17)
+totalSteps = 34
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 8
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 18)
+totalSteps = 35
+here = (0, 0)
+distToDocking = 0
+current_battery = 19
+Total Visited: 8
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 19)
+totalSteps = 36
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 8
+Algo decision: returning to docking
+nextMove: 0
+Moving
+totalSteps = 37
+here = (-1, 0)
+distToDocking = 10000000
+current_battery = 19
+Total Visited: 8
+Algo decision: returning to docking
+nextMove: 2
+Moving
+totalSteps = 38
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 18)
+totalSteps = 39
+here = (0, 0)
+distToDocking = 0
+current_battery = 19
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 19)
+totalSteps = 40
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 0
+Moving
+totalSteps = 41
+here = (-1, 0)
+distToDocking = 1
+current_battery = 19
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 2
+Moving
+totalSteps = 42
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 18)
+totalSteps = 43
+here = (0, 0)
+distToDocking = 0
+current_battery = 19
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 19)
+totalSteps = 44
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 0
+Moving
+totalSteps = 45
+here = (-1, 0)
+distToDocking = 1
+current_battery = 19
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 2
+Moving
+totalSteps = 46
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 18)
+totalSteps = 47
+here = (0, 0)
+distToDocking = 0
+current_battery = 19
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 19)
+totalSteps = 48
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 0
+Moving
+totalSteps = 49
+here = (-1, 0)
+distToDocking = 1
+current_battery = 19
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 2
+Moving
+totalSteps = 50
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 18)
+totalSteps = 51
+here = (0, 0)
+distToDocking = 0
+current_battery = 19
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 19)
+totalSteps = 52
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 0
+Moving
+totalSteps = 53
+here = (-1, 0)
+distToDocking = 1
+current_battery = 19
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 2
+Moving
+totalSteps = 54
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 18)
+totalSteps = 55
+here = (0, 0)
+distToDocking = 0
+current_battery = 19
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 19)
+totalSteps = 56
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 0
+Moving
+totalSteps = 57
+here = (-1, 0)
+distToDocking = 1
+current_battery = 19
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 2
+Moving
+totalSteps = 58
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 18)
+totalSteps = 59
+here = (0, 0)
+distToDocking = 0
+current_battery = 19
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 19)
+totalSteps = 60
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 0
+Moving
+totalSteps = 61
+here = (-1, 0)
+distToDocking = 1
+current_battery = 19
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 2
+Moving
+totalSteps = 62
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 18)
+totalSteps = 63
+here = (0, 0)
+distToDocking = 0
+current_battery = 19
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 19)
+totalSteps = 64
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 0
+Moving
+totalSteps = 65
+here = (-1, 0)
+distToDocking = 1
+current_battery = 19
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 2
+Moving
+totalSteps = 66
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 18)
+totalSteps = 67
+here = (0, 0)
+distToDocking = 0
+current_battery = 19
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 19)
+totalSteps = 68
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 0
+Moving
+totalSteps = 69
+here = (-1, 0)
+distToDocking = 1
+current_battery = 19
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 2
+Moving
+totalSteps = 70
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 18)
+totalSteps = 71
+here = (0, 0)
+distToDocking = 0
+current_battery = 19
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 19)
+totalSteps = 72
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 0
+Moving
+totalSteps = 73
+here = (-1, 0)
+distToDocking = 1
+current_battery = 19
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 2
+Moving
+totalSteps = 74
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 18)
+totalSteps = 75
+here = (0, 0)
+distToDocking = 0
+current_battery = 19
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 19)
+totalSteps = 76
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 0
+Moving
+totalSteps = 77
+here = (-1, 0)
+distToDocking = 1
+current_battery = 19
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 2
+Moving
+totalSteps = 78
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 18)
+totalSteps = 79
+here = (0, 0)
+distToDocking = 0
+current_battery = 19
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 19)
+totalSteps = 80
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 0
+Moving
+totalSteps = 81
+here = (-1, 0)
+distToDocking = 1
+current_battery = 19
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 2
+Moving
+totalSteps = 82
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 18)
+totalSteps = 83
+here = (0, 0)
+distToDocking = 0
+current_battery = 19
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 19)
+totalSteps = 84
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 0
+Moving
+totalSteps = 85
+here = (-1, 0)
+distToDocking = 1
+current_battery = 19
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 2
+Moving
+totalSteps = 86
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 18)
+totalSteps = 87
+here = (0, 0)
+distToDocking = 0
+current_battery = 19
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 19)
+totalSteps = 88
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 0
+Moving
+totalSteps = 89
+here = (-1, 0)
+distToDocking = 1
+current_battery = 19
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 2
+Moving
+totalSteps = 90
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 18)
+totalSteps = 91
+here = (0, 0)
+distToDocking = 0
+current_battery = 19
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 19)
+totalSteps = 92
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 0
+Moving
+totalSteps = 93
+here = (-1, 0)
+distToDocking = 1
+current_battery = 19
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 2
+Moving
+totalSteps = 94
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 18)
+totalSteps = 95
+here = (0, 0)
+distToDocking = 0
+current_battery = 19
+Total Visited: 9
+Algo decision: Charging
+nextMove: 4
+Charging at docking station (battery level = 19)
+totalSteps = 96
+here = (0, 0)
+distToDocking = 0
+current_battery = 20
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 0
+Moving
+totalSteps = 97
+here = (-1, 0)
+distToDocking = 1
+current_battery = 19
+Total Visited: 9
+Algo decision: returning to docking
+nextMove: 2
+Moving
+totalSteps = 98
+here = (0, 0)
+distToDocking = 0
+current_battery = 18
+Total Visited: 9
+nextMove: 5
+Simulation completed
+NumSteps = 99
+DirtLeft = 39
+Status = FINISHED
+InDock = TRUE
+Score = 11799
+Steps:
+EWssSsNsssWSEEssEsssNWWsssssssssssssNSssNSssNSssNSssNSssNSssNSssNSssNSssNSssNSssNSssNSssNSssNSssNSF
