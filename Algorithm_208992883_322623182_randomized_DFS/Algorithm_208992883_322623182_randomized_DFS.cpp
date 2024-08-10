@@ -40,9 +40,6 @@ Step Algorithm_208992883_322623182_randomized_DFS::nextStep() {
     std::cout << "here = (" << here.first << ", " << here.second << ")\n";
     std::cout << "distToDocking = " << algoGrid[keyConvert(here)].getDistToDocking() << "\n";
     std::cout << "current_battery = " << this->batteryMeter->getBatteryState() << "\n";
-    std::cout << "AAAAAA\n";
-    (dirtSensor->dirtLevel());
-    std::cout << "BBBBBB\n";
     this->algoGrid[keyConvert(here)].setDirtLevel(dirtSensor->dirtLevel());
     Position here_p = this->algoGrid[keyConvert(here)];
     
