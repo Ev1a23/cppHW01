@@ -1,2 +1,3 @@
 *.o
 build/
+build/common_run.sh
