@@ -13,10 +13,23 @@
 #include <iostream>
 #include <string>
 #include <filesystem>
+#include <chrono>
 
 #include <dlfcn.h>
 
+#include <thread>
+#include <condition_variable>
+#include <queue>
+
 namespace fs = std::filesystem;
+
+std::mutex m;
+std::condition_variable Q_not_full;
+std::condition_variable Q_not_empty;
+std::deque<std::pair<std::string, AbstractAlgorithm*>> Q;
+std::atomic<int> done;
+
+
 
 void handleInvalidFileException(const std::exception &e, const fs::path &invalidFilePath)
 {
@@ -130,26 +143,38 @@ void process_algos(const std::string& algo_path)
     }
 }
 
-void run_sim(std::string house, AbstractAlgorithm &algo)
+MySimulator run_sim(std::string house, AbstractAlgorithm *algo)
 {
     MySimulator simulator;
     simulator.readHouseFile(house);
-    simulator.setAlgorithm(algo);
+    simulator.setAlgorithm(*algo);
     simulator.run();
 }
 
-int main(int argc, char* argv[]) {
-//     if (argc != 2) {
-//         std::cerr << "Usage: " << argv[0] << " <house_input_file>" << std::endl;
-//         return 1;
-//     }
-//      std::string houseFilePath = argv[1];
-    // Options options;
+void start_task()
+{
+    std::cout << "Thread started, id: " << std::this_thread::get_id() << std::endl;
+    while (done == 0)
+    {
+        std::unique_lock<std::mutex> lk(m);
+        Q_not_empty.wait(lk, []{return (!Q.empty() || done);});     // practically waits until 
+                                                                    // there's an available task or all tasks are done
+        if (!Q.empty())
+        {
+            std::pair<std::string, AbstractAlgorithm*> task = Q.front();
+            Q.pop_front();
+            Q_not_full.notify_one(); // awake main's thread to add a task to thread
+            lk.unlock();
+            run_sim(task.first, task.second);
+            std::cout << "Thread " << std::this_thread::get_id() << " ran sim on " << task.first << std::endl;
+        }
+    }
+    std::cout << "Thread finished, id: " << std::this_thread::get_id() << std::endl;
+}
 
-    // if (!parseInput(argc, argv, options)) {
-    //     return 1;
-    // }
-    // std::string houseFilePath = argv[1];
+
+int main(int argc, char* argv[]) {
+
     try
     {
         Config config = parse_args(argc, argv);
@@ -162,9 +187,20 @@ int main(int argc, char* argv[]) {
         std::vector<fs::path> valid_houses;
         std::vector<std::unique_ptr<AbstractAlgorithm>> algorithms; // this is here just to make the algorithms local of main
                                                                     // so they will be available to simualtors the whole run
+        std::vector<std::unique_ptr<std::thread>> threads;
+        
         process_algos(config.algo_path);
         process_houses(config.house_path, valid_houses);
-        // simple running with no concurrent simulations:
+        done = 0;
+        // create threads with function start_task(house, algo)
+        for (int i = 0; i < config.num_threads; i++)
+        {
+            // start a thread with start_task()
+            threads.push_back(std::make_unique<std::thread>(start_task));
+            // threads.back()->detach();
+        }
+        std::cout << "Finished creating threads" << std::endl;
+
         for (fs::path house : valid_houses)
         {
             for (auto algo : AlgorithmRegistrar::getAlgorithmRegistrar())
@@ -172,37 +208,22 @@ int main(int argc, char* argv[]) {
                 // algo_name = algo.name()
                 // house_name = house.file_name()
                 algorithms.push_back(algo.create()); // has to save unique ptr here so memory will not be freed
-                run_sim(house.string(), *(algorithms.back()));
+                std::unique_lock lk(m);
+                Q_not_full.wait(lk, [&]{return Q.size() < config.num_threads;}); // practically waits until 
+                                                                             // there's an available thread
+                Q.push_back(std::make_pair(std::string(house.string()), algorithms.back().get())); // add task to Q
+                lk.unlock();
+                Q_not_empty.notify_one(); // awake a thread waiting for q to be non-empty
             }
         }
-
-        // generate the cartesian product of algos x houses:
-            // list of all house files
-            // list of all .so files
-            // 1. house file path
-            // 2. algorithm instance of some form (.so file)
-            // 3. simulator to run this algo on this file
-
-        // generate <num_threads> threads
-        // send each pair (its simulator.run()) to a thread
-        // when a thread ends, use ot again or replace it and send it the next pair, until all pairs were processed
-        // 
-
-
-        // try
-        // {
-        // 	MySimulator simulator;
-        // 	simulator.readHouseFile(houseFilePath);
-        // 	MyAlgorithm algo;
-        // 	simulator.setAlgorithm(algo);
-        // 	simulator.run();
-        // }
-        // catch(const std::exception& e)
-        // {
-        // 	std::cerr << e.what() << '\n';
-        // 	return 1;
-        // }
+        done = 1;
+        Q_not_empty.notify_all();
+        for (int i =0; i < threads.size(); i++)
+        {
+            threads[i]->join();
+        }
     }
+    
     catch(const std::exception& e)
     {
         std::cerr << e.what() << '\n';

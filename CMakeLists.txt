@@ -31,4 +31,5 @@ target_link_libraries   (${PROJECT_NAME} PRIVATE
                                         Algorithm_208992883_322623182_BFS
                                         Algorithm_208992883_322623182_randomized_DFS
                                         dl
+                                        pthread
                         )
