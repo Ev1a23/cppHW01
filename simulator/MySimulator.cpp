@@ -28,10 +28,10 @@ static std::string step2char(Step step)
 	}
 }
 
-void MySimulator::run()
+void MySimulator::run(const std::string &outputFile_)
 {
 	std::string steps_log;
-	std::ofstream outputFile("output.txt");
+	std::ofstream outputFile(outputFile_);
 	if(!outputFile.is_open())
 	{
 		throw std::runtime_error("Failed to open output file.");
@@ -89,7 +89,7 @@ void MySimulator::run()
 		status = "WORKING"; 
 	}
 	std::string inDock = (curPos == house.getDockingStation()) ? "TRUE" : "FALSE";
-	 int score = calcScore(cleaner.getMaxAllowedSteps(), cnt, house.totalDirt(), status, (curPos == house.getDockingStation()));
+	int score = calcScore(cleaner.getMaxAllowedSteps(), cnt, house.totalDirt(), status, (curPos == house.getDockingStation()));
 	//TODO Change format to include steps at the bottom instead of after every step
 	std::cout << "Simulation completed\n";
 	std::ostringstream logStream;
