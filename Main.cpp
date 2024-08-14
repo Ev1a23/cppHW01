@@ -33,16 +33,20 @@ struct Config {
 
 struct SimArgs {
     fs::path housePath;
+    int house_ind;
     AbstractAlgorithm *algo;
+    int algo_ind;
     std::string algoName;
 };
 
 Config config;
-std::mutex m;
+std::mutex Q_lock;
 std::condition_variable Q_not_full;
 std::condition_variable Q_not_empty;
 std::deque<SimArgs> Q;
 std::atomic<int> done;
+std::mutex summary_lock;
+std::vector<std:vector<std::string>> summary;
 
 void handleInvalidFileException(const std::exception &e, const fs::path &invalidFilePath)
 {
@@ -170,15 +174,38 @@ MySimulator run_sim(SimArgs &simArgs)
         }
         outputFile << output << std::endl;
     }
-
+    std::lock_guard<std::mutex> guard(summary_lock);
+    scores[][]
 }
+
+void init_scores(std::vector<std::unique_ptr<AbstractAlgorithm>> algorithms, std::vector<fs::path> &valid_houses)
+{
+    std::vector<std::string>> houses;
+    houses.push_back("");
+    for (auto house: valid_houses)
+    {
+        houses.push_back(house.filename.replace_extension(""));
+    }
+    scores.push_back(houses);
+}
+
+void add_algo_row(std::string algoName, int col_num)
+{
+    std::vector<std::string> row;
+    row.push_back(algoName);
+    for (int i = 0; i < col_num; i++)
+    {
+        row.push_back("");
+    }
+}
+
 
 void start_task()
 {
     std::cout << "Thread started, id: " << std::this_thread::get_id() << std::endl;
     while (done == 0)
     {
-        std::unique_lock<std::mutex> lk(m);
+        std::unique_lock<std::mutex> lk(Q_lock);
         Q_not_empty.wait(lk, []{return (!Q.empty() || done);});     // practically waits until 
                                                                     // there's an available task or all tasks are done
         std::cout << "Thread " << std::this_thread::get_id() << " is awake" << std::endl;
@@ -221,6 +248,7 @@ int main(int argc, char* argv[]) {
         std::vector<std::unique_ptr<AbstractAlgorithm>> algorithms;        
         process_algos(config.algo_path);
         process_houses(config.house_path, valid_houses);
+        init_scores();
 
         done = 0; // set before starting threads
         //////////////////////////////////////////////////////////////////////
@@ -237,17 +265,22 @@ int main(int argc, char* argv[]) {
         //////////////////////////////////////////////////////////////////////
         //          Fill Q with tasks - one per <house, algo> pair          //
         //////////////////////////////////////////////////////////////////////
-        for (fs::path house : valid_houses)
+        algo_ind = 0;
+        for (auto algo : AlgorithmRegistrar::getAlgorithmRegistrar())
         {
-            for (auto algo : AlgorithmRegistrar::getAlgorithmRegistrar())
+            house_ind = 0;
+            add_algo_row(algo.name());
+            for (fs::path house : valid_houses)
             {
                 algorithms.push_back(algo.create()); // save unique ptr in main's stack so algo object won't be freed
-                std::unique_lock lk(m);
+                std::unique_lock lk(Q_lock);
                 Q_not_full.wait(lk, [&]{return Q.size() < config.num_threads;});    // practically waits until there's an available thread
-                Q.push_back(SimArgs{config.summary_only, house, algorithms.back().get(), algo.name()}); //std::make_pair(house, algorithms.back().get())); // add task to Q
+                Q.push_back(SimArgs{house, house_ind, algorithms.back().get(), algo_ind, algo.name()}); //std::make_pair(house, algorithms.back().get())); // add task to Q
                 lk.unlock();
                 Q_not_empty.notify_one(); // awake a waiting thread
+                ++house_ind;
             }
+            ++algo_ind;
         }
         done = 1;   // set before notifying all - 
                     // threads won't start another loop, but if there's a task in Q they will handle it

@@ -32,7 +32,7 @@ public:
 		return summary.numSteps + summary.dirtLeft * 300 + (summary.inDock ? 0 : 1000);
 	}
 	int getScore() {return summary.score;}
-	struct SimSummary
+	struct SimResults
 	{
 		size_t numSteps;
 		int dirtLeft;
@@ -68,7 +68,7 @@ private:
     const MyDirtSensor dirtSensor;
     const MyWallsSensor wallsSensor;
     const MyBatteryMeter batteryMeter;
-	SimSummary summary = {};
+	SimResults summary = {};
     void msgLog(std::ofstream & outputFile, const std::string& msg) const;
 };
 
