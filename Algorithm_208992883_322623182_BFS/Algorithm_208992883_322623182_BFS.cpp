@@ -13,11 +13,11 @@ Step Algorithm_208992883_322623182_BFS::nextStep() {
         initializeGrid();
     }
 
-    std::cout << "totalSteps = " << this->totalSteps << "\n";
-    std::cout << "here = (" << here.first << ", " << here.second << ")\n";
-    std::cout << "distToDocking = " << algoGrid[keyConvert(here)].getDistToDocking() << "\n";
-    std::cout << "current_battery = " << this->batteryMeter->getBatteryState() << "\n";
-	std::cout << "Total Visited: " << visited.size() << "\n";	
+    // std::cout << "totalSteps = " << this->totalSteps << "\n";
+    // std::cout << "here = (" << here.first << ", " << here.second << ")\n";
+    // std::cout << "distToDocking = " << algoGrid[keyConvert(here)].getDistToDocking() << "\n";
+    // std::cout << "current_battery = " << this->batteryMeter->getBatteryState() << "\n";
+	// std::cout << "Total Visited: " << visited.size() << "\n";	
 
     this->algoGrid[keyConvert(here)].setDirtLevel(dirtSensor->dirtLevel());
     Position& here_p = this->algoGrid[keyConvert(here)];

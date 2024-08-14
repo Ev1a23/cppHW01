@@ -37,14 +37,12 @@ struct SimArgs {
     std::string algoName;
 };
 
-
+Config config;
 std::mutex m;
 std::condition_variable Q_not_full;
 std::condition_variable Q_not_empty;
 std::deque<SimArgs> Q;
 std::atomic<int> done;
-
-
 
 void handleInvalidFileException(const std::exception &e, const fs::path &invalidFilePath)
 {
@@ -157,11 +155,22 @@ MySimulator run_sim(SimArgs &simArgs)
     std::string houseName = simArgs.housePath.filename().replace_extension("");
     std::string algoName = simArgs.algoName;
     AbstractAlgorithm *algo = simArgs.algo;
-    std::string outputFile = houseName + "-" + algoName + ".txt";
+    std::string outputFileName = houseName + "-" + algoName + ".txt";
     MySimulator simulator;
     simulator.readHouseFile(housePath);
     simulator.setAlgorithm(*algo);
-    simulator.run(outputFile);
+    int score = simulator.run();
+    if (!config.summary_only)
+    {
+        std::string output(simulator.getSummaryString());
+        std::ofstream outputFile(outputFileName);
+        if(!outputFile.is_open())
+        {
+            throw std::runtime_error("Failed to open output file.");
+        }
+        outputFile << output << std::endl;
+    }
+
 }
 
 void start_task()
@@ -172,6 +181,7 @@ void start_task()
         std::unique_lock<std::mutex> lk(m);
         Q_not_empty.wait(lk, []{return (!Q.empty() || done);});     // practically waits until 
                                                                     // there's an available task or all tasks are done
+        std::cout << "Thread " << std::this_thread::get_id() << " is awake" << std::endl;
         if (!Q.empty())
         {
             SimArgs simArgs = Q.front();
@@ -196,7 +206,7 @@ int main(int argc, char* argv[]) {
         //////////////////////////////////////////////////////////////////////
         //                       Parsing Arguments                          //
         //////////////////////////////////////////////////////////////////////
-        Config config = parse_args(argc, argv);
+        config = parse_args(argc, argv);
 
         std::cout << "House Path: " << config.house_path << std::endl;
         std::cout << "Algo Path: " << config.algo_path << std::endl;
@@ -212,7 +222,7 @@ int main(int argc, char* argv[]) {
         process_algos(config.algo_path);
         process_houses(config.house_path, valid_houses);
 
-
+        done = 0; // set before starting threads
         //////////////////////////////////////////////////////////////////////
         //                          Start Threads                           //
         //////////////////////////////////////////////////////////////////////
@@ -227,7 +237,6 @@ int main(int argc, char* argv[]) {
         //////////////////////////////////////////////////////////////////////
         //          Fill Q with tasks - one per <house, algo> pair          //
         //////////////////////////////////////////////////////////////////////
-        done = 0;
         for (fs::path house : valid_houses)
         {
             for (auto algo : AlgorithmRegistrar::getAlgorithmRegistrar())
@@ -235,12 +244,13 @@ int main(int argc, char* argv[]) {
                 algorithms.push_back(algo.create()); // save unique ptr in main's stack so algo object won't be freed
                 std::unique_lock lk(m);
                 Q_not_full.wait(lk, [&]{return Q.size() < config.num_threads;});    // practically waits until there's an available thread
-                Q.push_back(SimArgs{house, algorithms.back().get(), algo.name()}); //std::make_pair(house, algorithms.back().get())); // add task to Q
+                Q.push_back(SimArgs{config.summary_only, house, algorithms.back().get(), algo.name()}); //std::make_pair(house, algorithms.back().get())); // add task to Q
                 lk.unlock();
                 Q_not_empty.notify_one(); // awake a waiting thread
             }
         }
-        done = 1; // threads won't start another loop, but if there's a task in Q they will handle it
+        done = 1;   // set before notifying all - 
+                    // threads won't start another loop, but if there's a task in Q they will handle it
         Q_not_empty.notify_all(); // awake sleeping all threads
 
 

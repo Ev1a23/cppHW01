@@ -1,5 +1,5 @@
 #include "MySimulator.h"
-#include <iostream>	
+// #include <iostream>	
 #include <fstream>
 #include <sstream>
 #include "enums.h"
@@ -28,7 +28,7 @@ static std::string step2char(Step step)
 	}
 }
 
-void MySimulator::run(const std::string &outputFile_)
+int MySimulator::run(const std::string &outputFile_)
 {
 	std::string steps_log;
 	std::ofstream outputFile(outputFile_);
@@ -45,9 +45,8 @@ void MySimulator::run(const std::string &outputFile_)
     {
         cnt++;
         std::pair<int, int> curPos = cleaner.getPosition();
-		std::cout << "Calling nextStep from MySimulator (algo addr = " << algorithm << ")" << std::endl;
         nextMove = algorithm->nextStep();
-		std :: cout << "nextMove: " << (int)nextMove << "\n";
+		// std :: cout << "nextMove: " << (int)nextMove << "\n";
 		std::pair <int,int> moveTranslation = house.moveTranslation(nextMove);
 		steps_log += step2char(nextMove);
 		if (nextMove == Step::Finish)
@@ -58,18 +57,18 @@ void MySimulator::run(const std::string &outputFile_)
 		{
 			if (curPos == house.getDockingStation())
         	{
-				std::cout << "Charging at docking station (battery level = " << cleaner.batteryLevel() << ")\n";
+				// std::cout << "Charging at docking station (battery level = " << cleaner.batteryLevel() << ")\n";
                 cleaner.charge();
 			}
 			else
 			{
-				std::cout << "Cleaning at current location\n";
+				// std::cout << "Cleaning at current location\n";
                 house.clean();
 			}
 		}
 		else
 		{
-			std::cout << "Moving\n";
+			// std::cout << "Moving\n";
 			cleaner.move(moveTranslation.first, moveTranslation.second);
 		}
 
@@ -93,9 +92,10 @@ void MySimulator::run(const std::string &outputFile_)
 	//TODO Change format to include steps at the bottom instead of after every step
 	std::cout << "Simulation completed\n";
 	std::ostringstream logStream;
-	logStream << "NumSteps = " << cnt << "\nDirtLeft = " << house.totalDirt() << "\nStatus = " << status << "\nInDock = " << inDock << "\nScore = " << score <<"\nSteps:\n" << steps_log;
-	msgLog(outputFile, logStream.str());
-
+	summary.setValues(cnt, house.totalDirt(), status, inDock, score, steps_log);
+	//logStream << "NumSteps = " << cnt << "\nDirtLeft = " << house.totalDirt() << "\nStatus = " << status << "\nInDock = " << inDock << "\nScore = " << score <<"\nSteps:\n" << steps_log;
+	//msgLog(outputFile, logStream.str());
+	return score;
 	outputFile.close();
 
 }

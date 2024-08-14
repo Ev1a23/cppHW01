@@ -26,7 +26,7 @@ Step Algorithm_208992883_322623182_randomized_DFS::nextStep() {
                 // 2. prefer dirty neighbor (if known)
                 // 3. otherwise - prefer unknown location over location that you know is cleaned
                 // generally if there are two equal choises - prioritize by Direction enum
-    std::cout << "Strting nextStep in Algorithm_208992883_322623182_randomized_DFS\n";
+    // std::cout << "Strting nextStep in Algorithm_208992883_322623182_randomized_DFS\n";
     if (this->algoGrid.empty())
     {
         std::cout << "First step of algo, intializing docking station in algoGrid\n";
@@ -35,11 +35,11 @@ Step Algorithm_208992883_322623182_randomized_DFS::nextStep() {
         this->algoGrid[keyConvert(this->dockingStation)] = dock;
         here = this->dockingStation;
     }
-	std::cout << "totalSteps = " << this->totalSteps << "\n";
+	// std::cout << "totalSteps = " << this->totalSteps << "\n";
 	
-    std::cout << "here = (" << here.first << ", " << here.second << ")\n";
-    std::cout << "distToDocking = " << algoGrid[keyConvert(here)].getDistToDocking() << "\n";
-    std::cout << "current_battery = " << this->batteryMeter->getBatteryState() << "\n";
+    // std::cout << "here = (" << here.first << ", " << here.second << ")\n";
+    // std::cout << "distToDocking = " << algoGrid[keyConvert(here)].getDistToDocking() << "\n";
+    // std::cout << "current_battery = " << this->batteryMeter->getBatteryState() << "\n";
     this->algoGrid[keyConvert(here)].setDirtLevel(dirtSensor->dirtLevel());
     Position here_p = this->algoGrid[keyConvert(here)];
     
