@@ -46,7 +46,7 @@ std::condition_variable Q_not_empty;
 std::deque<SimArgs> Q;
 std::atomic<int> done;
 std::mutex summary_lock;
-std::vector<std:vector<std::string>> summary;
+std::vector<std::vector<std::string>> summary;
 
 void handleInvalidFileException(const std::exception &e, const fs::path &invalidFilePath)
 {
@@ -153,6 +153,48 @@ void process_algos(const std::string& algo_path)
     }
 }
 
+
+void init_scores(std::vector<fs::path> &valid_houses)
+{
+    std::vector<std::string> houses;
+    houses.push_back("");
+    for (auto house: valid_houses)
+    {
+        houses.push_back(house.filename().replace_extension(""));
+    }
+    summary.push_back(houses);
+}
+
+void add_algo_row(std::string algoName, int col_num)
+{
+    std::vector<std::string> row;
+    row.push_back(algoName);
+    for (int i = 0; i < col_num; i++)
+    {
+        row.push_back("");
+    }
+    summary.push_back(row);
+}
+
+void write_summary()
+{
+    std::ofstream summaryFile("summary.csv");
+	if(!summaryFile.is_open())
+	{
+		throw std::runtime_error("Failed to open output file.");
+	}
+    for (auto row : summary)
+    {
+        int i;
+        for (i = 0; i < row.size() - 1; i++)
+        {
+            summaryFile << row[i] << ",";
+        }
+        summaryFile << row[i] << "\n";
+    }
+    summaryFile.close();
+}
+
 MySimulator run_sim(SimArgs &simArgs)
 {
     std::string housePath = std::string(simArgs.housePath.string());
@@ -175,30 +217,9 @@ MySimulator run_sim(SimArgs &simArgs)
         outputFile << output << std::endl;
     }
     std::lock_guard<std::mutex> guard(summary_lock);
-    scores[][]
+    summary[simArgs.algo_ind + 1][simArgs.house_ind + 1] = std::to_string(score);   // +1 because first row and first 
+                                                                                    // col are for algos and houses names
 }
-
-void init_scores(std::vector<std::unique_ptr<AbstractAlgorithm>> algorithms, std::vector<fs::path> &valid_houses)
-{
-    std::vector<std::string>> houses;
-    houses.push_back("");
-    for (auto house: valid_houses)
-    {
-        houses.push_back(house.filename.replace_extension(""));
-    }
-    scores.push_back(houses);
-}
-
-void add_algo_row(std::string algoName, int col_num)
-{
-    std::vector<std::string> row;
-    row.push_back(algoName);
-    for (int i = 0; i < col_num; i++)
-    {
-        row.push_back("");
-    }
-}
-
 
 void start_task()
 {
@@ -248,7 +269,7 @@ int main(int argc, char* argv[]) {
         std::vector<std::unique_ptr<AbstractAlgorithm>> algorithms;        
         process_algos(config.algo_path);
         process_houses(config.house_path, valid_houses);
-        init_scores();
+        init_scores(valid_houses);
 
         done = 0; // set before starting threads
         //////////////////////////////////////////////////////////////////////
@@ -265,11 +286,11 @@ int main(int argc, char* argv[]) {
         //////////////////////////////////////////////////////////////////////
         //          Fill Q with tasks - one per <house, algo> pair          //
         //////////////////////////////////////////////////////////////////////
-        algo_ind = 0;
+        int algo_ind = 0;
         for (auto algo : AlgorithmRegistrar::getAlgorithmRegistrar())
         {
-            house_ind = 0;
-            add_algo_row(algo.name());
+            int house_ind = 0;
+            add_algo_row(algo.name(), valid_houses.size());
             for (fs::path house : valid_houses)
             {
                 algorithms.push_back(algo.create()); // save unique ptr in main's stack so algo object won't be freed
@@ -294,6 +315,9 @@ int main(int argc, char* argv[]) {
         {
             threads[i]->join();
         }
+
+
+        write_summary();
     }
     
     catch(const std::exception& e)
@@ -301,5 +325,6 @@ int main(int argc, char* argv[]) {
         std::cerr << e.what() << '\n';
         return 1;
     }
+
     return 0;
 }

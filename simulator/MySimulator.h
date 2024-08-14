@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include <iostream>
+#include <sstream>
 #include "my_dirt_sensor.h"
 #include "my_wall_sensor.h"
 #include "my_battery_meter.h"
@@ -15,21 +15,22 @@
 class MySimulator {
 public:
     MySimulator();
-    void run();
+    int run();
 	void readHouseFile(std::string& houseFilePath);
     void setAlgorithm(AbstractAlgorithm& algorithm);
+	std::string getSummaryString() {return summary.str();}
     House house;
 	int calcScore(std::size_t maxSteps, std::size_t numSteps,  int dirtLeft, std::string status, bool inDock)
 	{
-		if (summary.status == "DEAD")
+		if (status == "DEAD")
 		{
-			return maxSteps + summary.dirtLeft * 300 + 2000;
+			return maxSteps + dirtLeft * 300 + 2000;
 		}
-		else if(summary.status == "FINISHED" && !summary.inDock)
+		else if(status == "FINISHED" && !inDock)
 		{
-			return maxSteps + summary.dirtLeft * 300 + 3000;
+			return maxSteps + dirtLeft * 300 + 3000;
 		}
-		return summary.numSteps + summary.dirtLeft * 300 + (summary.inDock ? 0 : 1000);
+		return numSteps + dirtLeft * 300 + (inDock ? 0 : 1000);
 	}
 	int getScore() {return summary.score;}
 	struct SimResults
@@ -48,17 +49,14 @@ public:
 			inDock = inDock_;
 			score = score_;
 			stepsLog = stepsLog_;
-			a = aValue;
-			b = bValue;
-			c = cValue;
 		}
 
-		std::string getSummaryString(){
+		std::string str(){
 			std::ostringstream logStream;
-			logStream << "NumSteps = " << cnt << "\nDirtLeft = " << house.totalDirt() << "\nStatus = " << status << "\nInDock = " << inDock << "\nScore = " << score <<"\nSteps:\n" << steps_log;
+			logStream << "NumSteps = " << numSteps << "\nDirtLeft = " << dirtLeft << "\nStatus = " << status << "\nInDock = " << inDock << "\nScore = " << score <<"\nSteps:\n" << stepsLog;
 			return logStream.str();
 		}
-	}
+	};
 
 
 	

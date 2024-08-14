@@ -2,6 +2,7 @@
 // #include <iostream>	
 #include <fstream>
 #include <sstream>
+#include <iostream>
 #include "enums.h"
 
 
@@ -28,15 +29,15 @@ static std::string step2char(Step step)
 	}
 }
 
-int MySimulator::run(const std::string &outputFile_)
+int MySimulator::run()
 {
 	std::string steps_log;
-	std::ofstream outputFile(outputFile_);
-	if(!outputFile.is_open())
-	{
-		throw std::runtime_error("Failed to open output file.");
-	}
-	std::ostringstream msgStream;
+	// std::ofstream outputFile(outputFile_);
+	// if(!outputFile.is_open())
+	// {
+	// 	throw std::runtime_error("Failed to open output file.");
+	// }
+	// std::ostringstream msgStream;
 	std::cout << "Simulation started\n";
     House::VacuumCleaner& cleaner = house.getCleaner();
     size_t cnt = 0;
@@ -91,12 +92,12 @@ int MySimulator::run(const std::string &outputFile_)
 	int score = calcScore(cleaner.getMaxAllowedSteps(), cnt, house.totalDirt(), status, (curPos == house.getDockingStation()));
 	//TODO Change format to include steps at the bottom instead of after every step
 	std::cout << "Simulation completed\n";
-	std::ostringstream logStream;
+	// std::ostringstream logStream;
 	summary.setValues(cnt, house.totalDirt(), status, inDock, score, steps_log);
 	//logStream << "NumSteps = " << cnt << "\nDirtLeft = " << house.totalDirt() << "\nStatus = " << status << "\nInDock = " << inDock << "\nScore = " << score <<"\nSteps:\n" << steps_log;
 	//msgLog(outputFile, logStream.str());
 	return score;
-	outputFile.close();
+	// outputFile.close();
 
 }
 
