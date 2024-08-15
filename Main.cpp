@@ -21,6 +21,15 @@
 #include <condition_variable>
 #include <queue>
 
+#define THREAD_PRINT (1)
+
+#if THREAD_PRINT
+#define THREADING_LOG(x, y, z) thread_print(x, y, z)
+#else
+#define THREADING_LOG(x, y, z) {}
+#endif
+
+
 namespace fs = std::filesystem;
 
 struct Config {
@@ -221,19 +230,32 @@ MySimulator run_sim(SimArgs &simArgs)
                                                                                     // col are for algos and houses names
 }
 
+void thread_print(auto thread_id, fs::path house, std::string algo) {
+    std::cout << "Thread " << thread_id << " handles (add / remove) a new task" << std::endl;
+    std::cout << "\t house: " << house << std::endl;
+    std::cout << "\t algo: " << algo << std::endl;
+    std::cout << "\t #task_remained = " << Q.size() << std::endl;
+}
+
 void start_task()
 {
     std::cout << "Thread started, id: " << std::this_thread::get_id() << std::endl;
-    while (done == 0)
+     // lock here because while condition access Q
+    while (!Q.empty() || done == 0)
     {
         std::unique_lock<std::mutex> lk(Q_lock);
+        std::cout << "Thread " << std::this_thread::get_id() << " is waiting" << std::endl;
         Q_not_empty.wait(lk, []{return (!Q.empty() || done);});     // practically waits until 
                                                                     // there's an available task or all tasks are done
-        std::cout << "Thread " << std::this_thread::get_id() << " is awake" << std::endl;
         if (!Q.empty())
         {
             SimArgs simArgs = Q.front();
             Q.pop_front();
+            // THREADING_LOG(std::this_thread::get_id(), simArgs.housePath, simArgs.algoName);
+            // std::cout << "Thread " << std::this_thread::get_id() << " has got a new task" << std::endl;
+            // std::cout << "\t house: " << simArgs.housePath.filename() << std::endl;
+            // std::cout << "\t algo: " << simArgs.algoName << std::endl;
+            // std::cout << "\t #task_remained = " << Q.size() << std::endl;
             lk.unlock();
             Q_not_full.notify_one(); // awake main's thread to add a task to thread
             run_sim(simArgs);
@@ -297,6 +319,11 @@ int main(int argc, char* argv[]) {
                 std::unique_lock lk(Q_lock);
                 Q_not_full.wait(lk, [&]{return Q.size() < config.num_threads;});    // practically waits until there's an available thread
                 Q.push_back(SimArgs{house, house_ind, algorithms.back().get(), algo_ind, algo.name()}); //std::make_pair(house, algorithms.back().get())); // add task to Q
+                // THREADING_LOG("main", house, algo.name());
+                // std::cout << "Main added a task" << std::endl;
+                // std::cout << "\t house: " << house.filename() << std::endl;
+                // std::cout << "\t algo: " << algo.name() << std::endl;
+                // std::cout << "\t #task_remained = " << Q.size() << std::endl;
                 lk.unlock();
                 Q_not_empty.notify_one(); // awake a waiting thread
                 ++house_ind;
@@ -307,7 +334,7 @@ int main(int argc, char* argv[]) {
                     // threads won't start another loop, but if there's a task in Q they will handle it
         Q_not_empty.notify_all(); // awake sleeping all threads
 
-
+        // std::cout << "AAAAAAA\n";
         //////////////////////////////////////////////////////////////////////
         //                          Join Threads                            //
         //////////////////////////////////////////////////////////////////////
