@@ -4,7 +4,12 @@
 #include <string>
 #include <vector>
 #include <utility>
+#include <filesystem>
 #include "enums.h"
+
+#include <iostream>
+
+namespace fs = std::filesystem;
 
 class House {
 
@@ -33,7 +38,7 @@ public:
     };
 
     House();
-    House(const std::string& inputFile);
+    House(const fs::path inputFile);
 
     std::pair<int, int> getDockingStation() const;
     VacuumCleaner& getCleaner();
@@ -43,15 +48,15 @@ public:
     bool isWall(int x, int y) const;
     void clean();
     int totalDirt();
-
-    
-
+    std::string fileName() {return std::string(file.filename().replace_extension("").string());};
+    std::size_t getMaxSteps() const {return cleaner.getMaxAllowedSteps();};
 
 private:
     std::vector<std::vector<int>> grid;
     std::pair<int, int> dockingStation = std::make_pair(-1, -1);
     VacuumCleaner cleaner;
-    void loadHouse(const std::string& path);
+    fs::path file;
+    void loadHouse(const fs::path& file);
 };
 
 #endif

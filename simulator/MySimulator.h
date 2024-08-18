@@ -16,9 +16,10 @@ class MySimulator {
 public:
     MySimulator();
     int run();
-	void readHouseFile(std::string& houseFilePath);
+	// void readHouseFile(std::string& houseFilePath);
     void setAlgorithm(AbstractAlgorithm& algorithm);
-	std::string getSummaryString() {return summary.str();}
+	void setHouse(House h) {house = h;}
+	// std::string getSummaryString() {return summary.str();}
     House house;
 	int calcScore(std::size_t maxSteps, std::size_t numSteps,  int dirtLeft, std::string status, bool inDock)
 	{
@@ -32,7 +33,7 @@ public:
 		}
 		return numSteps + dirtLeft * 300 + (inDock ? 0 : 1000);
 	}
-	int getScore() {return summary.score;}
+	int getScore() {return results.score;}
 	struct SimResults
 	{
 		size_t numSteps;
@@ -57,8 +58,7 @@ public:
 			return logStream.str();
 		}
 	};
-
-
+	SimResults getResults() {return results;}
 	
 
 private:
@@ -66,7 +66,8 @@ private:
     const MyDirtSensor dirtSensor;
     const MyWallsSensor wallsSensor;
     const MyBatteryMeter batteryMeter;
-	SimResults summary = {};
+	SimResults results = {};
+	std::string outputFile;
     void msgLog(std::ofstream & outputFile, const std::string& msg) const;
 };
 

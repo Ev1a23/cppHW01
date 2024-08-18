@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <pthread.h>
 #include "enums.h"
 
 
@@ -44,6 +45,7 @@ int MySimulator::run()
 	Step nextMove = Step::Stay;
     while (cnt < cleaner.getMaxAllowedSteps() && nextMove != Step::Finish)
     {
+		pthread_testcancel();  // Check for cancellation (in addition to built in cancellation points)
         cnt++;
         std::pair<int, int> curPos = cleaner.getPosition();
         nextMove = algorithm->nextStep();
@@ -93,7 +95,7 @@ int MySimulator::run()
 	//TODO Change format to include steps at the bottom instead of after every step
 	std::cout << "Simulation completed\n";
 	// std::ostringstream logStream;
-	summary.setValues(cnt, house.totalDirt(), status, inDock, score, steps_log);
+	results.setValues(cnt, house.totalDirt(), status, inDock, score, steps_log);
 	//logStream << "NumSteps = " << cnt << "\nDirtLeft = " << house.totalDirt() << "\nStatus = " << status << "\nInDock = " << inDock << "\nScore = " << score <<"\nSteps:\n" << steps_log;
 	//msgLog(outputFile, logStream.str());
 	return score;
@@ -101,10 +103,10 @@ int MySimulator::run()
 
 }
 
-void MySimulator::readHouseFile(std::string& houseFilePath)
-{
-	house = House(houseFilePath);
-}
+// void MySimulator::readHouseFile(std::string& houseFilePath)
+// {
+// 	house = House(houseFilePath);
+// }
 
 void MySimulator::setAlgorithm(AbstractAlgorithm& algorithm)
 {

@@ -18,6 +18,7 @@
 #include <dlfcn.h>
 
 #include <thread>
+#include <pthread.h>
 #include <condition_variable>
 #include <queue>
 
@@ -41,16 +42,24 @@ struct Config {
 
 
 struct SimArgs {
-    fs::path housePath;
+    House &house;
     int house_ind;
     AbstractAlgorithm *algo;
     int algo_ind;
     std::string algoName;
+
+    std::string getOutputFile() {return house.fileName() + "-" + algoName + ".txt";};
+    MySimulator createSim() {
+        MySimulator simulator;
+        simulator.setHouse(house);
+        simulator.setAlgorithm(*algo);
+        return simulator;
+    }
 };
 
 Config config;
 std::mutex Q_lock;
-std::condition_variable Q_not_full;
+// std::condition_variable Q_not_full;
 std::condition_variable Q_not_empty;
 std::deque<SimArgs> Q;
 std::atomic<int> done;
@@ -69,20 +78,17 @@ void handleInvalidFileException(const std::exception &e, const fs::path &invalid
     errorFile <<  e.what() << std::endl;
 }
 
-bool validateHouseFile(const fs::path &houseFilePath)
+void validateHouseFile(const fs::path &houseFilePath, std::vector<House> &valid_houses)
 {
-    MySimulator sim;
     try
     {
-        std::string houseFilePath_str = houseFilePath.string();
-        sim.readHouseFile(houseFilePath_str);
+        House h(houseFilePath);
+        valid_houses.push_back(h);
     }
     catch (const std::exception& e)
     {
         handleInvalidFileException(e, houseFilePath);
-        return false;
     }
-    return true;
 }
 
 bool validateAlgoFile(const fs::path &algoFilePath)
@@ -138,16 +144,13 @@ Config parse_args(int argc, char* argv[]) {
     return config;
 }
 
-void process_houses(const std::string& house_path, std::vector<fs::path> &valid_houses)
+void process_houses(const std::string& house_path, std::vector<House> &valid_houses)
 {
     for (const auto& house_entry : fs::directory_iterator(house_path)) 
     {
         if (house_entry.is_regular_file() && house_entry.path().extension() == ".house") 
         {
-            if (validateHouseFile(house_entry.path()))
-            {
-                valid_houses.push_back(house_entry.path());
-            }
+            validateHouseFile(house_entry.path(), valid_houses);
         }
     }
 }
@@ -163,13 +166,13 @@ void process_algos(const std::string& algo_path)
 }
 
 
-void init_scores(std::vector<fs::path> &valid_houses)
+void init_scores(std::vector<House> &valid_houses)
 {
     std::vector<std::string> houses;
     houses.push_back("");
     for (auto house: valid_houses)
     {
-        houses.push_back(house.filename().replace_extension(""));
+        houses.push_back(house.fileName());
     }
     summary.push_back(houses);
 }
@@ -204,21 +207,52 @@ void write_summary()
     summaryFile.close();
 }
 
-MySimulator run_sim(SimArgs &simArgs)
+void changeThisName(MySimulator *sim, std::atomic<bool> *finished, std::condition_variable *cv_timeout, int *score, std::mutex *m)
 {
-    std::string housePath = std::string(simArgs.housePath.string());
-    std::string houseName = simArgs.housePath.filename().replace_extension("");
-    std::string algoName = simArgs.algoName;
-    AbstractAlgorithm *algo = simArgs.algo;
-    std::string outputFileName = houseName + "-" + algoName + ".txt";
-    MySimulator simulator;
-    simulator.readHouseFile(housePath);
-    simulator.setAlgorithm(*algo);
-    int score = simulator.run();
+    pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, nullptr);
+    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, nullptr);
+    std::unique_lock l(*m);     // make sure the calling thread has started waiting
+    std::cout << "Thread " << std::this_thread::get_id() << " is running a simulation" << std::endl;
+    l.unlock();                 // make sure the calling thread won't block if the simulation blocks
+    *score = sim->run();
+    *finished = true;
+    cv_timeout->notify_one();   // wake up calling thread in case of timeout has not reached yet
+}
+
+
+void run_sim(SimArgs &simArgs)
+{
+    std::string outputFilePath = simArgs.getOutputFile();
+    MySimulator sim = simArgs.createSim();
+    int score;
+    std::size_t initialDirt = simArgs.house.totalDirt();
+    std::size_t maxSteps = simArgs.house.getMaxSteps();
+
+    std::atomic<bool> finished = false;
+    std::condition_variable timeout_cv;
+    std::mutex m;
+    std::unique_lock l(m); // make sure t doesnt start the simulation before we start waiting
+    std::thread t(changeThisName, &sim, &finished, &timeout_cv, &score, &m);
+    std::cout << "Started a thread for simulation sun, thread_id = " << t.get_id() << std::endl;
+    MySimulator::SimResults results;
+    if (!timeout_cv.wait_for(l, std::chrono::milliseconds(maxSteps), [&finished]() { return finished.load(); })) {
+        // Timeout occurred
+        t.detach();
+        pthread_cancel(t.native_handle());
+        std::cout << "Timeout for " << outputFilePath << std::endl;
+        results = sim.getResults();
+        results.score = maxSteps * 2 + initialDirt * 300 + 2000;
+    }
+    else
+    {
+        t.join();
+        std::cout << "Finished sim " << outputFilePath << " within timeout\n";
+        results = sim.getResults();
+    }
     if (!config.summary_only)
     {
-        std::string output(simulator.getSummaryString());
-        std::ofstream outputFile(outputFileName);
+        std::string output(results.str());
+        std::ofstream outputFile(outputFilePath);
         if(!outputFile.is_open())
         {
             throw std::runtime_error("Failed to open output file.");
@@ -240,10 +274,9 @@ void thread_print(auto thread_id, fs::path house, std::string algo) {
 void start_task()
 {
     std::cout << "Thread started, id: " << std::this_thread::get_id() << std::endl;
-     // lock here because while condition access Q
     while (!Q.empty() || done == 0)
     {
-        std::unique_lock<std::mutex> lk(Q_lock);
+        std::unique_lock<std::mutex> lk(Q_lock); // lock here because while condition access Q
         std::cout << "Thread " << std::this_thread::get_id() << " is waiting" << std::endl;
         Q_not_empty.wait(lk, []{return (!Q.empty() || done);});     // practically waits until 
                                                                     // there's an available task or all tasks are done
@@ -251,13 +284,8 @@ void start_task()
         {
             SimArgs simArgs = Q.front();
             Q.pop_front();
-            // THREADING_LOG(std::this_thread::get_id(), simArgs.housePath, simArgs.algoName);
-            // std::cout << "Thread " << std::this_thread::get_id() << " has got a new task" << std::endl;
-            // std::cout << "\t house: " << simArgs.housePath.filename() << std::endl;
-            // std::cout << "\t algo: " << simArgs.algoName << std::endl;
-            // std::cout << "\t #task_remained = " << Q.size() << std::endl;
             lk.unlock();
-            Q_not_full.notify_one(); // awake main's thread to add a task to thread
+            std::cout << "Enqueueing\n";
             run_sim(simArgs);
         }
         else
@@ -287,7 +315,7 @@ int main(int argc, char* argv[]) {
         //////////////////////////////////////////////////////////////////////
         //                        Validating Arguments                      //
         //////////////////////////////////////////////////////////////////////
-        std::vector<fs::path> valid_houses;
+        std::vector<House> valid_houses;
         std::vector<std::unique_ptr<AbstractAlgorithm>> algorithms;        
         process_algos(config.algo_path);
         process_houses(config.house_path, valid_houses);
@@ -313,17 +341,11 @@ int main(int argc, char* argv[]) {
         {
             int house_ind = 0;
             add_algo_row(algo.name(), valid_houses.size());
-            for (fs::path house : valid_houses)
+            for (int i = 0; i < valid_houses.size(); i++)
             {
                 algorithms.push_back(algo.create()); // save unique ptr in main's stack so algo object won't be freed
                 std::unique_lock lk(Q_lock);
-                Q_not_full.wait(lk, [&]{return Q.size() < config.num_threads;});    // practically waits until there's an available thread
-                Q.push_back(SimArgs{house, house_ind, algorithms.back().get(), algo_ind, algo.name()}); //std::make_pair(house, algorithms.back().get())); // add task to Q
-                // THREADING_LOG("main", house, algo.name());
-                // std::cout << "Main added a task" << std::endl;
-                // std::cout << "\t house: " << house.filename() << std::endl;
-                // std::cout << "\t algo: " << algo.name() << std::endl;
-                // std::cout << "\t #task_remained = " << Q.size() << std::endl;
+                Q.push_back(SimArgs{valid_houses[i], house_ind, algorithms.back().get(), algo_ind, algo.name()}); //std::make_pair(house, algorithms.back().get())); // add task to Q
                 lk.unlock();
                 Q_not_empty.notify_one(); // awake a waiting thread
                 ++house_ind;

@@ -35,7 +35,7 @@ static int getValue(std::ifstream& file, const std::string& var_name)
 
 House::House(){}
 
-House::House(const std::string& inputFile) : cleaner(-1, -1, {-1,-1}){
+House::House(const fs::path inputFile) : cleaner(-1, -1, {-1,-1}), file(inputFile){
     loadHouse(inputFile);
 }
 
@@ -72,7 +72,6 @@ std::pair<int,int> House::moveTranslation(Step step) const
 }
 
 
-
 std::pair<int, int> House::getDockingStation() const {
     return dockingStation;
 }
@@ -91,8 +90,8 @@ bool House::isWall(int x, int y) const {
 }
 
 
-void House::loadHouse(const std::string& path) {
-    std::ifstream file(path);
+void House::loadHouse(const fs::path& inputFile) {
+    std::ifstream file(inputFile.string());
     if (!file.is_open()) {
         throw std::runtime_error("Failed to open input file.");
     }
