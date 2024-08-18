@@ -39,7 +39,6 @@ void MySimulator::run()
 	Step nextMove = Step::Stay;
     while (cnt < cleaner.getMaxAllowedSteps() && nextMove != Step::Finish)
     {
-		std::cout << "Testing Cancellation...\n";
 		pthread_testcancel();  // Check for cancellation (in addition to built in cancellation points)
         std::pair<int, int> curPos = cleaner.getPosition();
         nextMove = algorithm->nextStep();

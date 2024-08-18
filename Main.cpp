@@ -277,7 +277,6 @@ void start_task()
     while (!Q.empty() || done == 0)
     {
         std::unique_lock<std::mutex> lk(Q_lock); // lock here because while condition access Q
-        std::cout << "Thread " << std::this_thread::get_id() << " is waiting" << std::endl;
         Q_not_empty.wait(lk, []{return (!Q.empty() || done);});     // practically waits until 
                                                                     // there's an available task or all tasks are done
         if (!Q.empty())
