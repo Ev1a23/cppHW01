@@ -207,14 +207,14 @@ void write_summary()
     summaryFile.close();
 }
 
-void changeThisName(MySimulator *sim, std::atomic<bool> *finished, std::condition_variable *cv_timeout, int *score, std::mutex *m)
+void changeThisName(MySimulator *sim, std::atomic<bool> *finished, std::condition_variable *cv_timeout, std::mutex *m)
 {
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, nullptr);
-    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, nullptr);
+    pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, nullptr);
     std::unique_lock l(*m);     // make sure the calling thread has started waiting
     std::cout << "Thread " << std::this_thread::get_id() << " is running a simulation" << std::endl;
     l.unlock();                 // make sure the calling thread won't block if the simulation blocks
-    *score = sim->run();
+    sim->run();
     *finished = true;
     cv_timeout->notify_one();   // wake up calling thread in case of timeout has not reached yet
 }
@@ -232,13 +232,13 @@ void run_sim(SimArgs &simArgs)
     std::condition_variable timeout_cv;
     std::mutex m;
     std::unique_lock l(m); // make sure t doesnt start the simulation before we start waiting
-    std::thread t(changeThisName, &sim, &finished, &timeout_cv, &score, &m);
+    std::thread t(changeThisName, &sim, &finished, &timeout_cv, &m);
     std::cout << "Started a thread for simulation sun, thread_id = " << t.get_id() << std::endl;
     MySimulator::SimResults results;
     if (!timeout_cv.wait_for(l, std::chrono::milliseconds(maxSteps), [&finished]() { return finished.load(); })) {
         // Timeout occurred
-        t.detach();
         pthread_cancel(t.native_handle());
+        t.detach();
         std::cout << "Timeout for " << outputFilePath << std::endl;
         results = sim.getResults();
         results.score = maxSteps * 2 + initialDirt * 300 + 2000;
@@ -285,7 +285,6 @@ void start_task()
             SimArgs simArgs = Q.front();
             Q.pop_front();
             lk.unlock();
-            std::cout << "Enqueueing\n";
             run_sim(simArgs);
         }
         else
@@ -356,7 +355,6 @@ int main(int argc, char* argv[]) {
                     // threads won't start another loop, but if there's a task in Q they will handle it
         Q_not_empty.notify_all(); // awake sleeping all threads
 
-        // std::cout << "AAAAAAA\n";
         //////////////////////////////////////////////////////////////////////
         //                          Join Threads                            //
         //////////////////////////////////////////////////////////////////////

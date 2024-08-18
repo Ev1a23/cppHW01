@@ -30,31 +30,24 @@ static std::string step2char(Step step)
 	}
 }
 
-int MySimulator::run()
+void MySimulator::run()
 {
-	std::string steps_log;
-	// std::ofstream outputFile(outputFile_);
-	// if(!outputFile.is_open())
-	// {
-	// 	throw std::runtime_error("Failed to open output file.");
-	// }
-	// std::ostringstream msgStream;
+	results.setValues(0, house.totalDirt(), "WORKING", "True", -1, std::string(""));
 	std::cout << "Simulation started\n";
     House::VacuumCleaner& cleaner = house.getCleaner();
     size_t cnt = 0;
 	Step nextMove = Step::Stay;
     while (cnt < cleaner.getMaxAllowedSteps() && nextMove != Step::Finish)
     {
+		std::cout << "Testing Cancellation...\n";
 		pthread_testcancel();  // Check for cancellation (in addition to built in cancellation points)
-        cnt++;
         std::pair<int, int> curPos = cleaner.getPosition();
         nextMove = algorithm->nextStep();
-		// std :: cout << "nextMove: " << (int)nextMove << "\n";
 		std::pair <int,int> moveTranslation = house.moveTranslation(nextMove);
-		steps_log += step2char(nextMove);
 		if (nextMove == Step::Finish)
 		{
-			continue;
+			results.stepsLog += step2char(nextMove);
+			break;
 		}
 		if (nextMove == Step::Stay)
 		{
@@ -73,34 +66,30 @@ int MySimulator::run()
 		{
 			// std::cout << "Moving\n";
 			cleaner.move(moveTranslation.first, moveTranslation.second);
+			results.inDock = (curPos == house.getDockingStation()) ? "TRUE" : "FALSE";
 		}
-
+		results.numSteps ++;
+		results.stepsLog += step2char(nextMove);
+		results.dirtLeft = house.totalDirt();
     }
 	std::pair<int, int> curPos = cleaner.getPosition();
-	std::string status = "";
 	if(nextMove == Step::Finish || curPos == house.getDockingStation())
 	{
-		status = "FINISHED";
+		results.status = "FINISHED";
 	}
 	else if(curPos != house.getDockingStation() && this->batteryMeter.getBatteryState() == 0)
 	{
-		status = "DEAD"; //Should not reach here
+		results.status = "DEAD"; //Should not reach here
 	}
 	else
 	{
-		status = "WORKING"; 
+		results.status = "WORKING"; 
 	}
-	std::string inDock = (curPos == house.getDockingStation()) ? "TRUE" : "FALSE";
-	int score = calcScore(cleaner.getMaxAllowedSteps(), cnt, house.totalDirt(), status, (curPos == house.getDockingStation()));
+	results.inDock = (curPos == house.getDockingStation()) ? "TRUE" : "FALSE";
+	results.score = calcScore(house.getMaxSteps(), results.numSteps, results.dirtLeft, results.status, (curPos == house.getDockingStation()));
 	//TODO Change format to include steps at the bottom instead of after every step
 	std::cout << "Simulation completed\n";
-	// std::ostringstream logStream;
-	results.setValues(cnt, house.totalDirt(), status, inDock, score, steps_log);
-	//logStream << "NumSteps = " << cnt << "\nDirtLeft = " << house.totalDirt() << "\nStatus = " << status << "\nInDock = " << inDock << "\nScore = " << score <<"\nSteps:\n" << steps_log;
-	//msgLog(outputFile, logStream.str());
-	return score;
-	// outputFile.close();
-
+	// return resutls.score;
 }
 
 // void MySimulator::readHouseFile(std::string& houseFilePath)
