@@ -1,7 +1,7 @@
 #ifndef RANDOMIZED_STEP_ALGORITHM_H
 #define RANDOMIZED_STEP_ALGORITHM_H
 
-#include "../algorithm/MyAlgorithm.h"
+#include "../custom_algorithm/MyAlgorithm.h"
 #include "../algorithm/AlgorithmRegistration.h"
 
 class Algorithm_208992883_322623182_randomized_DFS : public MyAlgorithm {

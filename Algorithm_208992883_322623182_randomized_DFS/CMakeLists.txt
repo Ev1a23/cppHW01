@@ -4,10 +4,11 @@ SET(CMAKE_SHARED_LINKER_FLAGS "-fPIC -shared -fvisibility=hidden -fvisibility-in
 
 project(Algorithm_208992883_322623182_randomized_DFS)
 
-set(INCLUDES    /Users/orshemesh/University/ThirdYear/CSTopics/cppHW01/algorithm/
-                ${PROJECT_SOURCE_DIR}/../common/)
+set(INCLUDES    ${PROJECT_SOURCE_DIR}/algorithm/
+                ${PROJECT_SOURCE_DIR}/../common/
+                ${PROJECT_SOURCE_DIR}/custom_algorithm)
 
-set(SOURCES     ${PROJECT_SOURCE_DIR}/../algorithm/MyAlgorithm.cpp
+set(SOURCES     ${PROJECT_SOURCE_DIR}/../custom_algorithm/MyAlgorithm.cpp
                 Algorithm_208992883_322623182_randomized_DFS.cpp)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})

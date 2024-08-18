@@ -1,7 +1,7 @@
 #ifndef BFS_ALGORITHM_H
 #define BFS_ALGORITHM_H
 
-#include "../algorithm/MyAlgorithm.h"
+#include "../custom_algorithm/MyAlgorithm.h"
 #include "../algorithm/AlgorithmRegistration.h"
 #include <queue>
 #include <unordered_set>
