@@ -247,6 +247,7 @@ void beginRunSim(SimArgs &simArgs)
         std::cout << "Timeout for " << outputFilePath << std::endl;
         results = sim.getResults();
         results.score = maxSteps * 2 + initialDirt * 300 + 2000;
+        results.stepsLog += "T";
         l.unlock();
     }
     else
