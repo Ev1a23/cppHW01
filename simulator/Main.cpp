@@ -137,6 +137,8 @@ Config parse_args(int argc, char* argv[]) {
             config.algo_path = arg.substr(strlen("-algo_path="));
         } else if (arg.find("-num_threads=") == 0) {
             config.num_threads = std::stoi(arg.substr(strlen("-num_threads=")));
+            if (config.num_threads < 1)
+                throw std::runtime_error("Illegal num_threads parameter: " + std::to_string(config.num_threads));
         } else if (arg == "-summary_only") {
             config.summary_only = true;
         } else {
