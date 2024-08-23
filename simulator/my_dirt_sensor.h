@@ -1,7 +1,7 @@
 #ifndef MY_DIRT_SENSOR_H_
 #define MY_DIRT_SENSOR_H_
 
-#include "dirt_sensor.h"
+#include "common/DirtSensor.h"
 #include "House.h"
 
 class MyDirtSensor : public DirtSensor {

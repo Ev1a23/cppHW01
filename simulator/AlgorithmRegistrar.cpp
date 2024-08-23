@@ -1,7 +1,4 @@
-#include "AlgorithmRegistrar.h"
-//-----------------------------------
-// simulator/AlgorithmRegistrar.cpp
-//-----------------------------------
+#include "common/AlgorithmRegistrar.h"
 
 AlgorithmRegistrar AlgorithmRegistrar::registrar;
 

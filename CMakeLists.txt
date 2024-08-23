@@ -25,6 +25,8 @@ add_executable  (${PROJECT_NAME}
 target_include_directories  (${PROJECT_NAME} PRIVATE
                                             ${SIM_DIR}
                                             ${COMMON_DIR}
+                                            ${PROJECT_SOURCE_DIR}
+
                             )
 
 target_link_libraries   (${PROJECT_NAME} PRIVATE

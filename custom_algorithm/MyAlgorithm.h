@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <utility>
-#include "../common/abstract_algorithm.h"
+#include "common/AbstractAlgorithm.h"
 #include <unordered_map>
 
 class MyAlgorithm : public AbstractAlgorithm  {

@@ -6,7 +6,8 @@ project(Algorithm_208992883_322623182_randomized_DFS)
 
 set(INCLUDES    ${PROJECT_SOURCE_DIR}/algorithm/
                 ${PROJECT_SOURCE_DIR}/../common/
-                ${PROJECT_SOURCE_DIR}/custom_algorithm)
+                ${PROJECT_SOURCE_DIR}/custom_algorithm
+                ${PROJECT_SOURCE_DIR}/..)
 
 set(SOURCES     ${PROJECT_SOURCE_DIR}/../custom_algorithm/MyAlgorithm.cpp
                 Algorithm_208992883_322623182_randomized_DFS.cpp)

@@ -2,7 +2,7 @@
 #define SIMULATIONCONTROLLER_H
 
 #include "House.h" 
-#include "abstract_algorithm.h"
+#include "common/AbstractAlgorithm.h"
 #include <string>
 #include <vector>
 #include <fstream>
