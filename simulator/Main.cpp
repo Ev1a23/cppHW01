@@ -68,8 +68,11 @@ std::vector<std::vector<std::string>> summary;
 
 void handleInvalidFileException(const std::exception &e, const fs::path &invalidFilePath)
 {
-    fs::path errorPath = invalidFilePath;
-    errorPath = fs::current_path().string() / errorPath.replace_extension("error").filename();
+    std::cout << invalidFilePath.string() << std::endl;
+    fs::path errorFilename = invalidFilePath.filename().replace_extension("error");
+    errorFilename = errorFilename.string().compare(0,3,"lib") == 0 ? fs::path(errorFilename.string().substr(3)) : errorFilename;
+    fs::path errorPath = fs::current_path().string() / errorFilename;
+    std::cout << errorPath.string() << std::endl;
     std::ofstream errorFile(errorPath);
     if (!errorFile) {
         std::cerr << "Failed to open file: " << invalidFilePath << std::endl;
@@ -260,7 +263,7 @@ void run_sim(SimArgs &simArgs)
         outputFile << output << std::endl;
     }
     std::lock_guard<std::mutex> guard(summary_lock);
-    summary[simArgs.algo_ind + 1][simArgs.house_ind + 1] = std::to_string(score);   // +1 because first row and first 
+    summary[simArgs.algo_ind + 1][simArgs.house_ind + 1] = std::to_string(results.score);   // +1 because first row and first 
                                                                                     // col are for algos and houses names
 }
 

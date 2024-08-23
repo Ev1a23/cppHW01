@@ -12,7 +12,7 @@ add_subdirectory(Algorithm_208992883_322623182_randomized_DFS)
 set(SIM_DIR     ${PROJECT_SOURCE_DIR}/simulator)
 set(COMMON_DIR  ${PROJECT_SOURCE_DIR}/common)
 add_executable  (${PROJECT_NAME}  
-                                Main.cpp    
+                                ${SIM_DIR}/Main.cpp    
                                 ${SIM_DIR}/MySimulator.cpp 
                                 ${SIM_DIR}/AlgorithmRegistrar.cpp
                                 ${SIM_DIR}/House.cpp
@@ -28,8 +28,6 @@ target_include_directories  (${PROJECT_NAME} PRIVATE
                             )
 
 target_link_libraries   (${PROJECT_NAME} PRIVATE
-                                        Algorithm_208992883_322623182_BFS
-                                        Algorithm_208992883_322623182_randomized_DFS
                                         dl
                                         pthread
                         )
