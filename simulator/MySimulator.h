@@ -20,17 +20,7 @@ public:
     void setAlgorithm(AbstractAlgorithm& algorithm);
 	void setHouse(House h) {house = h;}
 	// std::string getSummaryString() {return summary.str();}
-	int calcScore(std::size_t maxSteps, std::size_t numSteps,  int dirtLeft, std::string status, bool inDock) {
-		if (status == "DEAD")
-		{
-			return maxSteps + dirtLeft * 300 + 2000;
-		}
-		else if(status == "FINISHED" && !inDock)
-		{
-			return maxSteps + dirtLeft * 300 + 3000;
-		}
-		return numSteps + dirtLeft * 300 + (inDock ? 0 : 1000);
-	}
+	int calcScore(std::size_t maxSteps, std::size_t numSteps,  int dirtLeft, std::string status, bool inDock);
 	int getScore() {return results.score;}
 	struct SimResults {
 		size_t numSteps;

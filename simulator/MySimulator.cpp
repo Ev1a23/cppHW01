@@ -52,18 +52,15 @@ void MySimulator::run()
 		{
 			if (curPos == house.getDockingStation())
         	{
-				// std::cout << "Charging at docking station (battery level = " << cleaner.batteryLevel() << ")\n";
                 cleaner.charge();
 			}
 			else
 			{
-				// std::cout << "Cleaning at current location\n";
                 house.clean();
 			}
 		}
 		else
 		{
-			// std::cout << "Moving\n";
 			cleaner.move(moveTranslation.first, moveTranslation.second);
 			results.inDock = (curPos == house.getDockingStation()) ? "TRUE" : "FALSE";
 		}
@@ -86,15 +83,20 @@ void MySimulator::run()
 	}
 	results.inDock = (curPos == house.getDockingStation()) ? "TRUE" : "FALSE";
 	results.score = calcScore(house.getMaxSteps(), results.numSteps, results.dirtLeft, results.status, (curPos == house.getDockingStation()));
-	//TODO Change format to include steps at the bottom instead of after every step
 	std::cout << "Simulation completed\n";
-	// return resutls.score;
 }
 
-// void MySimulator::readHouseFile(std::string& houseFilePath)
-// {
-// 	house = House(houseFilePath);
-// }
+int MySimulator::calcScore(std::size_t maxSteps, std::size_t numSteps,  int dirtLeft, std::string status, bool inDock) {
+	if (status == "DEAD")
+	{
+		return maxSteps + dirtLeft * 300 + 2000;
+	}
+	else if(status == "FINISHED" && !inDock)
+	{
+		return maxSteps + dirtLeft * 300 + 3000;
+	}
+	return numSteps + dirtLeft * 300 + (inDock ? 0 : 1000);
+}
 
 void MySimulator::setAlgorithm(AbstractAlgorithm& algorithm)
 {

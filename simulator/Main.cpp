@@ -210,7 +210,7 @@ void write_summary()
     summaryFile.close();
 }
 
-void changeThisName(MySimulator *sim, std::atomic<bool> *finished, std::condition_variable *cv_timeout, std::mutex *m)
+void runSim(MySimulator *sim, std::atomic<bool> *finished, std::condition_variable *cv_timeout, std::mutex *m)
 {
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, nullptr);
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, nullptr);
@@ -218,13 +218,16 @@ void changeThisName(MySimulator *sim, std::atomic<bool> *finished, std::conditio
     std::cout << "Thread " << std::this_thread::get_id() << " is running a simulation" << std::endl;
     l.unlock();                 // make sure the calling thread won't block if the simulation blocks
     sim->run();
+    l.lock();
     *finished = true;
+    l.unlock();
     cv_timeout->notify_one();   // wake up calling thread in case of timeout has not reached yet
 }
 
 
-void run_sim(SimArgs &simArgs)
+void beginRunSim(SimArgs &simArgs)
 {
+    MySimulator::SimResults results;
     std::string outputFilePath = simArgs.getOutputFile();
     MySimulator sim = simArgs.createSim();
     int score;
@@ -235,9 +238,8 @@ void run_sim(SimArgs &simArgs)
     std::condition_variable timeout_cv;
     std::mutex m;
     std::unique_lock l(m); // make sure t doesnt start the simulation before we start waiting
-    std::thread t(changeThisName, &sim, &finished, &timeout_cv, &m);
+    std::thread t(runSim, &sim, &finished, &timeout_cv, &m);
     std::cout << "Started a thread for simulation sun, thread_id = " << t.get_id() << std::endl;
-    MySimulator::SimResults results;
     if (!timeout_cv.wait_for(l, std::chrono::milliseconds(maxSteps), [&finished]() { return finished.load(); })) {
         // Timeout occurred
         pthread_cancel(t.native_handle());
@@ -245,6 +247,7 @@ void run_sim(SimArgs &simArgs)
         std::cout << "Timeout for " << outputFilePath << std::endl;
         results = sim.getResults();
         results.score = maxSteps * 2 + initialDirt * 300 + 2000;
+        l.unlock();
     }
     else
     {
@@ -287,7 +290,7 @@ void start_task()
             SimArgs simArgs = Q.front();
             Q.pop_front();
             lk.unlock();
-            run_sim(simArgs);
+            beginRunSim(simArgs);
         }
         else
         {
