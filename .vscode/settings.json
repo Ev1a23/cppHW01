@@ -83,6 +83,7 @@
 		"typeindex": "cpp",
 		"unordered_set": "cpp",
 		"condition_variable": "cpp",
-		"queue": "cpp"
+		"queue": "cpp",
+		"codecvt": "cpp"
 	}
 }
