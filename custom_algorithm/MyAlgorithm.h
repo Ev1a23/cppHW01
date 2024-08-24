@@ -75,6 +75,7 @@ protected:
     std::unordered_map<size_t, MyAlgorithm::Position> algoGrid;
     void updateHere();
     std::pair<int,int> moveTranslation(Direction directionFromEnum) const;
+	std::pair<int,int> locationTranslation(Direction directionFromEnum, std::pair<int,int> location) const;
     std::size_t minDist() const;
     Direction neighborsHandle();
 };

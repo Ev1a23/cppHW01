@@ -54,6 +54,29 @@ std::pair<int,int> MyAlgorithm::moveTranslation(Direction directionFromEnum) con
     return {(this->here).first + diff.first, (this->here).second + diff.second};
 }
 
+std::pair<int,int> MyAlgorithm::locationTranslation(Direction directionFromEnum, std::pair<int,int> location) const
+{
+    std::pair<int,int> diff;
+	switch(directionFromEnum)
+	{
+		case Direction::North:
+			diff = {(-1),0};
+            break;
+		case Direction::East:
+			diff = {0,1};
+            break;
+		case Direction::South:
+			diff = {1,0};
+            break;
+		case Direction::West:
+			diff = {0,-1};
+            break;
+		default:
+			diff = {0,0};
+	}
+    return {location.first + diff.first, location.second + diff.second};
+}
+
 
 void MyAlgorithm::updateHere()
 {
