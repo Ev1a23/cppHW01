@@ -206,6 +206,7 @@ Step Algorithm_208992883_322623182_BFS::moveTowardsTarget() {
 
 std::deque<Step> Algorithm_208992883_322623182_BFS::calculatePath(std::pair<int,int> source, std::pair<int,int> target)
 {
+	std::cout << "------Calculating path between points (" << source.first << ", " << source.second << ") and (" << target.first << ", " << target.second << ")------\n";
 	std::deque<Step> sourcePathToDocking = calculatePathToDocking(source);
 	std::deque<Step> targetPathToDocking = calculatePathToDocking(target);
 	std::cout << "Source path size: " << sourcePathToDocking.size() << " Target path size: " << targetPathToDocking.size() << "\n";
@@ -232,9 +233,10 @@ std::deque<Step> Algorithm_208992883_322623182_BFS::calculatePath(std::pair<int,
 	}
 	while(!sourcePathToDocking.empty() && sourceCurLoc != targetCurLoc)
 	{
-		sourceCurLoc = moveTranslation(static_cast<Direction>(sourcePathToDocking.front()));
+		std::cout << "SourceCurLoc: (" << sourceCurLoc.first << ", " << sourceCurLoc.second << ")" << "TargetCurLoc: (" << targetCurLoc.first << ", " << targetCurLoc.second << ")\n";
+		sourceCurLoc = locationTranslation(static_cast<Direction>(sourcePathToDocking.front()), sourceCurLoc);
 		sourcePathToDocking.pop_front();
-		targetCurLoc = moveTranslation(static_cast<Direction>(targetPathToDocking.front()));
+		targetCurLoc = locationTranslation(static_cast<Direction>(targetPathToDocking.front()), targetCurLoc);
 		targetPathToDocking.pop_front();
 	}
 	std::pair<int,int> ancestor = sourceCurLoc;
@@ -246,19 +248,21 @@ std::deque<Step> Algorithm_208992883_322623182_BFS::calculatePath(std::pair<int,
 	std::deque<Step> path;
 	while(sourceCurLoc != ancestor)
 	{
+		std::cout << "SourceCurLoc: (" << sourceCurLoc.first << ", " << sourceCurLoc.second << ")\n";
 		Step s = pathToDocking.front();
 		path.push_back(s);
+		pathToDocking.pop_front();
 		sourceCurLoc = locationTranslation(static_cast<Direction>(s), sourceCurLoc);
-
 	}
 	std::cout << "Source added " << path.size() << " steps\n";
-	while(targetCurLoc != ancestor)
+	while(!pathFromAncestor.empty())
 	{
 		std::cout << "TargetCurLoc: (" << targetCurLoc.first << ", " << targetCurLoc.second << ")\n";
 		Step s = pathFromAncestor.front();
 		path.push_back(s);
 		pathFromAncestor.pop_front();
 		targetCurLoc = locationTranslation(static_cast<Direction>((static_cast<int>(s)+2)%4), targetCurLoc);
+		std::cout << "TargetCurLoc: (" << targetCurLoc.first << ", " << targetCurLoc.second << ")\n";
 	}
 	std::cout << "Path size between points " << path.size() << "\n";
 	return path;
