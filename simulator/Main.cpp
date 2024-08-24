@@ -94,13 +94,18 @@ void validateHouseFile(const fs::path &houseFilePath, std::vector<House> &valid_
     }
 }
 
-bool validateAlgoFile(const fs::path &algoFilePath)
+bool validateAlgoFile(const fs::path &algoFilePath, std::vector<void*> &algoPointers)
 {
+
     size_t algoCountBefore = AlgorithmRegistrar::getAlgorithmRegistrar().count(); // how many algorithm are registered so far
     void *algoFilePtr;
     try
     {
         algoFilePtr = dlopen(algoFilePath.string().c_str(), RTLD_LAZY);
+		if(algoFilePtr)
+		{
+			algoPointers.push_back(algoFilePtr);
+		}
         if (!(algoFilePtr))
         {
             throw std::runtime_error("dlopen failed openning " + algoFilePath.string());
@@ -160,12 +165,12 @@ void process_houses(const std::string& house_path, std::vector<House> &valid_hou
     }
 }
 
-void process_algos(const std::string& algo_path) 
+void process_algos(const std::string& algo_path, std::vector<void*> &algoPointers) 
 {
     for (const auto& algo_entry : fs::directory_iterator(algo_path)) 
     {
         if (algo_entry.is_regular_file() && algo_entry.path().extension() == ".so") {
-            validateAlgoFile(algo_entry.path());
+            validateAlgoFile(algo_entry.path(), algoPointers);
         }
     }
 }
@@ -323,8 +328,9 @@ int main(int argc, char* argv[]) {
         //                        Validating Arguments                      //
         //////////////////////////////////////////////////////////////////////
         std::vector<House> valid_houses;
-        std::vector<std::unique_ptr<AbstractAlgorithm>> algorithms;        
-        process_algos(config.algo_path);
+        std::vector<std::unique_ptr<AbstractAlgorithm>> algorithms;
+		std::vector<void*> algoPointers = {};
+        process_algos(config.algo_path, algoPointers);
         process_houses(config.house_path, valid_houses);
         init_scores(valid_houses);
 
@@ -373,6 +379,16 @@ int main(int argc, char* argv[]) {
 
 
         write_summary();
+		//////////////////////////////////////////////////////////////////////
+        //                          Dlclose on opened algos                 //
+        //////////////////////////////////////////////////////////////////////
+		algorithms.clear();
+		AlgorithmRegistrar::getAlgorithmRegistrar().clear();
+		for (auto p : algoPointers)
+		{
+			dlclose(p);
+		}
+		std::cout<<"Finished closing all algo handles"<<"\n";
     }
     
     catch(const std::exception& e)
