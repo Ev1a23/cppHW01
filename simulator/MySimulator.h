@@ -10,12 +10,13 @@
 #include "my_dirt_sensor.h"
 #include "my_wall_sensor.h"
 #include "my_battery_meter.h"
+#include <mutex>
 
 
 class MySimulator {
 public:
     MySimulator();
-    void run();
+    void run(std::mutex & result_mtx);
 	// void readHouseFile(std::string& houseFilePath);
     void setAlgorithm(AbstractAlgorithm& algorithm);
 	void setHouse(House h) {house = h;}

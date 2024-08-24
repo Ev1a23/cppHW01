@@ -30,9 +30,11 @@ static std::string step2char(Step step)
 	}
 }
 
-void MySimulator::run()
+void MySimulator::run(std::mutex& result_mtx)
 {
+	std::unique_lock<std::mutex> lock(result_mtx);
 	results.setValues(0, house.totalDirt(), "WORKING", "True", -1, std::string(""));
+	lock.unlock();
 	std::cout << "Simulation started\n";
     House::VacuumCleaner& cleaner = house.getCleaner();
     size_t cnt = 0;
@@ -45,7 +47,9 @@ void MySimulator::run()
 		std::pair <int,int> moveTranslation = house.moveTranslation(nextMove);
 		if (nextMove == Step::Finish)
 		{
+			lock.lock();
 			results.stepsLog += step2char(nextMove);
+			lock.unlock();
 			break;
 		}
 		if (nextMove == Step::Stay)
@@ -62,13 +66,16 @@ void MySimulator::run()
 		else
 		{
 			cleaner.move(moveTranslation.first, moveTranslation.second);
-			results.inDock = (curPos == house.getDockingStation()) ? "TRUE" : "FALSE";
 		}
+		lock.lock();
 		results.numSteps ++;
 		results.stepsLog += step2char(nextMove);
 		results.dirtLeft = house.totalDirt();
+		results.inDock = (curPos == house.getDockingStation()) ? "TRUE" : "FALSE";
+		lock.unlock();
     }
 	std::pair<int, int> curPos = cleaner.getPosition();
+	lock.lock();
 	if(nextMove == Step::Finish || curPos == house.getDockingStation())
 	{
 		results.status = "FINISHED";
@@ -83,6 +90,7 @@ void MySimulator::run()
 	}
 	results.inDock = (curPos == house.getDockingStation()) ? "TRUE" : "FALSE";
 	results.score = calcScore(house.getMaxSteps(), results.numSteps, results.dirtLeft, results.status, (curPos == house.getDockingStation()));
+	lock.unlock();
 	std::cout << "Simulation completed\n";
 }
 

@@ -224,7 +224,7 @@ void runSim(MySimulator *sim, std::atomic<bool> *finished, std::condition_variab
     std::unique_lock l(*m);     // make sure the calling thread has started waiting
     std::cout << "Thread " << std::this_thread::get_id() << " is running a simulation" << std::endl;
     l.unlock();                 // make sure the calling thread won't block if the simulation blocks
-    sim->run();
+    sim->run(*m);
     l.lock();
     *finished = true;
     l.unlock();
@@ -247,7 +247,7 @@ void beginRunSim(SimArgs &simArgs)
     std::unique_lock l(m); // make sure t doesnt start the simulation before we start waiting
     std::thread t(runSim, &sim, &finished, &timeout_cv, &m);
     std::cout << "Started a thread for simulation sun, thread_id = " << t.get_id() << std::endl;
-    if (!timeout_cv.wait_for(l, std::chrono::milliseconds(maxSteps), [&finished]() { return finished.load(); })) {
+    if (!timeout_cv.wait_for(l, std::chrono::milliseconds(2*maxSteps), [&finished]() { return finished.load(); })) {
         // Timeout occurred
         pthread_cancel(t.native_handle());
         t.detach();
