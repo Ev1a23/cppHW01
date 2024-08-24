@@ -104,6 +104,7 @@ Step Algorithm_208992883_322623182_BFS::handleChargingLogic() {
         this->totalSteps++;
         return Step::Stay;
     }
+	pathToTarget = calculatePathFromAncestor(bfsQueue.front(), here);
     return Step::North; // dummy return;
 }
 
@@ -229,14 +230,12 @@ std::deque<Step> Algorithm_208992883_322623182_BFS::calculatePath(std::pair<int,
 			}
 		}
 	}
-	int distToAncestor = 0;
 	while(!sourcePathToDocking.empty() && sourceCurLoc != targetCurLoc)
 	{
 		sourceCurLoc = moveTranslation(static_cast<Direction>(sourcePathToDocking.front()));
 		sourcePathToDocking.pop_front();
 		targetCurLoc = moveTranslation(static_cast<Direction>(targetPathToDocking.front()));
 		targetPathToDocking.pop_front();
-		distToAncestor++;
 	}
 	std::pair<int,int> ancestor = sourceCurLoc;
 	std::cout << "Ancestor: (" << ancestor.first << ", " << ancestor.second << ")\n";
@@ -259,7 +258,7 @@ std::deque<Step> Algorithm_208992883_322623182_BFS::calculatePath(std::pair<int,
 		Step s = pathFromAncestor.front();
 		path.push_back(s);
 		pathFromAncestor.pop_front();
-		targetCurLoc = locationTranslation(static_cast<Direction>(s), targetCurLoc);
+		targetCurLoc = locationTranslation(static_cast<Direction>((static_cast<int>(s)+2)%4), targetCurLoc);
 	}
 	std::cout << "Path size between points " << path.size() << "\n";
 	return path;
@@ -282,6 +281,7 @@ std::deque<Step> Algorithm_208992883_322623182_BFS::calculatePathFromAncestor(st
 {
 	std::deque<Step> path;
 	std::pair<int,int> current = target;
+	std::cout << "Ancestor: (" << ancestor.first << ", " << ancestor.second << ")" << "Target: (" << target.first << ", " << target.second << ")\n";
 	while(current != ancestor)
 	{
 		std::cout << "Current: (" << current.first << ", " << current.second << ")\n";
@@ -289,6 +289,8 @@ std::deque<Step> Algorithm_208992883_322623182_BFS::calculatePathFromAncestor(st
 		Step s = static_cast<Step>((static_cast<int>(d)+2)%4);
 		path.push_front(static_cast<Step>((static_cast<int>(d) + 2) % 4));
 		current = locationTranslation(d, current);
+		std::cout << "Next: (" << current.first << ", " << current.second << ")\n";
 	}
+	std::cout << "Path size from ancestor: " << path.size() << "\n";
 	return path;	
 }
