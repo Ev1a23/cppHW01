@@ -12,9 +12,8 @@ Step Algorithm_208992883_322623182_BFS::nextStep() {
     if (this->algoGrid.empty()) {
         initializeGrid();
     }
-
     // std::cout << "totalSteps = " << this->totalSteps << "\n";
-    // std::cout << "here = (" << here.first << ", " << here.second << ")\n";
+    std::cout << "here = (" << here.first << ", " << here.second << ")\n";
     // std::cout << "distToDocking = " << algoGrid[keyConvert(here)].getDistToDocking() << "\n";
     // std::cout << "current_battery = " << this->batteryMeter->getBatteryState() << "\n";
 	// std::cout << "Total Visited: " << visited.size() << "\n";	
@@ -35,6 +34,7 @@ Step Algorithm_208992883_322623182_BFS::nextStep() {
 
     if ((here_p.getDistToDocking()) + 1 >= std::min(this->batteryMeter->getBatteryState(), this->maxSteps - this->totalSteps)) {
         std::cout << "Algo decision: returning to docking\n";
+		this->totalSteps++;
         return returnToDocking();
     }
 
@@ -44,7 +44,13 @@ Step Algorithm_208992883_322623182_BFS::nextStep() {
         return Step::Stay;
     }
 
-    return moveTowardsTarget();
+    Step s = moveTowardsTarget();
+	Direction d = static_cast<Direction>(s);
+	std::cout << "Taking Step" << static_cast<int>(s) << "\n";
+	std::pair<int,int> nextLoc = locationTranslation(d, here);
+	std::cout << "Moving to: (" << nextLoc.first << ", " << nextLoc.second << ")\n";
+	this->here = nextLoc;
+	return s;
 }
 
 void Algorithm_208992883_322623182_BFS::initializeGrid() {
@@ -53,8 +59,11 @@ void Algorithm_208992883_322623182_BFS::initializeGrid() {
     dock.setDirtLevel(-3);
     this->algoGrid[keyConvert(this->dockingStation)] = dock;
     here = this->dockingStation;
-    bfsQueue.push(here);
     visited.insert(keyConvert(here));
+	updateLoc();
+	enqueueNeighbors();
+	pathToTarget = calculatePathFromAncestor(bfsQueue.front(), here);
+	std::cout << "Path to target size: " << pathToTarget.size() << " bfsQueue size: " << bfsQueue.size() << "\n";
 }
 
 void Algorithm_208992883_322623182_BFS::updateLoc() {
@@ -71,7 +80,8 @@ void Algorithm_208992883_322623182_BFS::updateLoc() {
                     here_p.setDistToDocking(neighbor_p.getDistToDocking() + 1);
                     here_p.setDirectionToDocking(d);
                 }
-            } else {
+            } 
+			else {
                 this->algoGrid[n_key] = Position(here_p.getDistToDocking() + 1, static_cast<Direction>((i + 2) % 4));
             }
         }
@@ -94,6 +104,7 @@ Step Algorithm_208992883_322623182_BFS::handleChargingLogic() {
         this->totalSteps++;
         return Step::Stay;
     }
+	pathToTarget = calculatePathFromAncestor(bfsQueue.front(), here);
     return Step::North; // dummy return;
 }
 
@@ -104,6 +115,7 @@ bool Algorithm_208992883_322623182_BFS::canMoveTo(const std::pair<int, int>& pos
             return !this->wallsSensor->isWall(d);
         }
     }
+	std::cout << "Error: canMoveTo() failed\n";
     return false;
 }
 
@@ -136,6 +148,7 @@ void Algorithm_208992883_322623182_BFS::enqueueNeighbors() {
             std::pair<int,int> n = moveTranslation(d);
             size_t n_key = keyConvert(n);
             if (visited.find(n_key) == visited.end()) {
+				std::cout << "Enqueueing neighbor: (" << n.first << ", " << n.second << ") here= (" <<here.first << "," << here.second << ")\n";
                 bfsQueue.push(n);
             }
         }
@@ -143,29 +156,145 @@ void Algorithm_208992883_322623182_BFS::enqueueNeighbors() {
 }
 
 Step Algorithm_208992883_322623182_BFS::moveTowardsTarget() {
-    if (bfsQueue.empty()) {
-        enqueueNeighbors();
-    }
-
+	this->totalSteps++;
+	if(!pathToTarget.empty()) 
+	{
+		Step nextStep = pathToTarget.front();
+		pathToTarget.pop_front();
+		std::cout << "Moving towards target: " << static_cast<int>(nextStep) << "\n";
+		return nextStep;
+	}
+	std::cout << "Path to target is empty\n";
     while (!bfsQueue.empty()) {
         std::pair<int, int> target = bfsQueue.front();
-        bfsQueue.pop();
-
-        if (target == here) {
-            enqueueNeighbors();
-            continue;
-        }
-
-        if (canMoveTo(target)) {
-            Step move = getStepTowards(target);
-            if (move != Step::Stay) {
-                std::cout << "Algo decision: Moving towards target\n";
-                here = moveTranslation(static_cast<Direction>(move));
-                this->totalSteps++;
-                return move;
-            }
-        }
+		if(target==here)
+		{
+			std::cout << "Reached target\n";
+			bfsQueue.pop();
+			enqueueNeighbors();
+			while(!bfsQueue.empty() && visited.find(keyConvert(bfsQueue.front())) != visited.end())
+			{
+				bfsQueue.pop();
+			}
+			std::pair<int, int> nextTarget = bfsQueue.front();
+			std::cout << "Next target: (" << nextTarget.first << ", " << nextTarget.second << ")\n";
+			std::deque<Step> curPath = calculatePath(here, nextTarget);
+			std::cout << "Path to target size: " << curPath.size() << "\n";
+			if(pathToTarget.size() + this->algoGrid[keyConvert(nextTarget)].getDistToDocking() + 1 >= std::min(this->batteryMeter->getBatteryState(), this->maxSteps - this->totalSteps))
+			{
+				//Not enough steps to reach target
+				std::cout << "Algo decision: returning to docking\n";
+				pathToTarget = calculatePathToDocking(here);
+			}
+			else
+			{
+				std::cout << "Algo decision: calculating new path\n";
+				pathToTarget = curPath;
+			}
+			Step nextStep = pathToTarget.front();
+			pathToTarget.pop_front();
+			return nextStep;
+		}
+		else if(here == dockingStation)
+		{
+			pathToTarget = calculatePath(here, target);
+		}
     }
 
     return returnToDocking();
+}
+
+std::deque<Step> Algorithm_208992883_322623182_BFS::calculatePath(std::pair<int,int> source, std::pair<int,int> target)
+{
+	std::cout << "------Calculating path between points (" << source.first << ", " << source.second << ") and (" << target.first << ", " << target.second << ")------\n";
+	std::deque<Step> sourcePathToDocking = calculatePathToDocking(source);
+	std::deque<Step> targetPathToDocking = calculatePathToDocking(target);
+	std::cout << "Source path size: " << sourcePathToDocking.size() << " Target path size: " << targetPathToDocking.size() << "\n";
+	std::pair<int,int> sourceCurLoc = source;
+	std::pair<int,int> targetCurLoc = target;
+	int sourcePathDistToDocking = sourcePathToDocking.size();
+	int targetPathDistToDocking = targetPathToDocking.size();
+	if(sourcePathDistToDocking != targetPathDistToDocking)
+	{
+		if(sourcePathDistToDocking < targetPathDistToDocking)
+		{
+			while(targetPathToDocking.size() > sourcePathDistToDocking)
+			{
+				targetPathToDocking.pop_front();
+			}
+		}
+		else
+		{
+			while(sourcePathToDocking.size() > targetPathDistToDocking)
+			{
+				sourcePathToDocking.pop_front();
+			}
+		}
+	}
+	while(!sourcePathToDocking.empty() && sourceCurLoc != targetCurLoc)
+	{
+		std::cout << "SourceCurLoc: (" << sourceCurLoc.first << ", " << sourceCurLoc.second << ")" << "TargetCurLoc: (" << targetCurLoc.first << ", " << targetCurLoc.second << ")\n";
+		sourceCurLoc = locationTranslation(static_cast<Direction>(sourcePathToDocking.front()), sourceCurLoc);
+		sourcePathToDocking.pop_front();
+		targetCurLoc = locationTranslation(static_cast<Direction>(targetPathToDocking.front()), targetCurLoc);
+		targetPathToDocking.pop_front();
+	}
+	std::pair<int,int> ancestor = sourceCurLoc;
+	std::cout << "Ancestor: (" << ancestor.first << ", " << ancestor.second << ")\n";
+	sourceCurLoc = source;
+	targetCurLoc = target;
+	std::deque<Step> pathToDocking = calculatePathToDocking(source);
+	std::deque<Step> pathFromAncestor = calculatePathFromAncestor(target, ancestor);
+	std::deque<Step> path;
+	while(sourceCurLoc != ancestor)
+	{
+		std::cout << "SourceCurLoc: (" << sourceCurLoc.first << ", " << sourceCurLoc.second << ")\n";
+		Step s = pathToDocking.front();
+		path.push_back(s);
+		pathToDocking.pop_front();
+		sourceCurLoc = locationTranslation(static_cast<Direction>(s), sourceCurLoc);
+	}
+	std::cout << "Source added " << path.size() << " steps\n";
+	while(!pathFromAncestor.empty())
+	{
+		std::cout << "TargetCurLoc: (" << targetCurLoc.first << ", " << targetCurLoc.second << ")\n";
+		Step s = pathFromAncestor.front();
+		path.push_back(s);
+		pathFromAncestor.pop_front();
+		targetCurLoc = locationTranslation(static_cast<Direction>((static_cast<int>(s)+2)%4), targetCurLoc);
+		std::cout << "TargetCurLoc: (" << targetCurLoc.first << ", " << targetCurLoc.second << ")\n";
+	}
+	std::cout << "Path size between points " << path.size() << "\n";
+	return path;
+}
+
+std::deque<Step> Algorithm_208992883_322623182_BFS::calculatePathToDocking(std::pair<int,int> source)
+{
+	std::deque<Step> path;
+	std::pair<int,int> current = source;
+	while(current != dockingStation)
+	{
+		Direction d = this->algoGrid[keyConvert(current)].getDirectionToDocking();
+		path.push_back(static_cast<Step>(d));
+		current = locationTranslation(d,current);
+	}
+	return path;	
+}
+
+std::deque<Step> Algorithm_208992883_322623182_BFS::calculatePathFromAncestor(std::pair<int,int> target, std::pair<int,int> ancestor)
+{
+	std::deque<Step> path;
+	std::pair<int,int> current = target;
+	std::cout << "Ancestor: (" << ancestor.first << ", " << ancestor.second << ")" << "Target: (" << target.first << ", " << target.second << ")\n";
+	while(current != ancestor)
+	{
+		std::cout << "Current: (" << current.first << ", " << current.second << ")\n";
+		Direction d = this->algoGrid[keyConvert(current)].getDirectionToDocking();
+		Step s = static_cast<Step>((static_cast<int>(d)+2)%4);
+		path.push_front(static_cast<Step>((static_cast<int>(d) + 2) % 4));
+		current = locationTranslation(d, current);
+		std::cout << "Next: (" << current.first << ", " << current.second << ")\n";
+	}
+	std::cout << "Path size from ancestor: " << path.size() << "\n";
+	return path;	
 }

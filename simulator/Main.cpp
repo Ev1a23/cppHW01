@@ -96,7 +96,7 @@ void validateHouseFile(const fs::path &houseFilePath, std::vector<House> &valid_
 
 bool validateAlgoFile(const fs::path &algoFilePath, std::vector<void*> &algoPointers)
 {
-
+	std::cout << "Validating algo file: " << algoFilePath << "\n";
     size_t algoCountBefore = AlgorithmRegistrar::getAlgorithmRegistrar().count(); // how many algorithm are registered so far
     void *algoFilePtr;
     try
