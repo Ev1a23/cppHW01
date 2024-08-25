@@ -13,7 +13,7 @@ Step Algorithm_208992883_322623182_BFS::nextStep() {
         initializeGrid();
     }
     // std::cout << "totalSteps = " << this->totalSteps << "\n";
-    std::cout << "here = (" << here.first << ", " << here.second << ")\n";
+    std::cout << "------here = (" << here.first << ", " << here.second << ") batteryLevel = " << this->batteryMeter->getBatteryState() << " distToDocking = "<< algoGrid[keyConvert(here)].getDistToDocking() << "TotalStep Taken = " << this->totalSteps << "------\n"; 
     // std::cout << "distToDocking = " << algoGrid[keyConvert(here)].getDistToDocking() << "\n";
     // std::cout << "current_battery = " << this->batteryMeter->getBatteryState() << "\n";
 	// std::cout << "Total Visited: " << visited.size() << "\n";	
@@ -32,24 +32,34 @@ Step Algorithm_208992883_322623182_BFS::nextStep() {
 	visited.insert(keyConvert(here));
 
 
-    if ((here_p.getDistToDocking()) + 1 >= std::min(this->batteryMeter->getBatteryState(), this->maxSteps - this->totalSteps)) {
-        std::cout << "Algo decision: returning to docking\n";
+    if ((here_p.getDistToDocking()) + 1 > std::min(this->batteryMeter->getBatteryState(), this->maxSteps - this->totalSteps)) {
 		pathToTarget = calculatePathToDocking(here);
-		this->totalSteps++;
         return returnToDocking();
     }
 
     if (this->dirtSensor->dirtLevel() > 0) {
 		if(this->dirtSensor->dirtLevel() == 1)
 		{
-			std::cout << "Dirt level is 1, new bfsQueue, around: (" << here.first << ", " << here.second << ")\n";
-			bfsQueue = std::queue<std::pair<int, int>>();
+			size_t size_before = bfsQueue.size();
 			enqueueNeighbors();
-			std::cout << "New bfsQueue size: " << bfsQueue.size() << "\n";
-			pathToTarget = calculatePath(here, bfsQueue.front());
-			std::cout << "Path to target size: " << pathToTarget.size() << "\n";
+			if(bfsQueue.size() > size_before)
+			{
+				bfsQueue = std::queue<std::pair<int,int>>();
+				enqueueNeighbors();
+			}
+			if(bfsQueue.empty())
+			{
+				std::cout << "No more dirt to clean\n";
+				pathToTarget = calculatePathToDocking(here);
+				bfsQueue.push(dockingStation);
+			}
+			else
+			{
+				pathToTarget = calculatePath(here, bfsQueue.front());
+				std::cout << "Found dirt at: (" << here.first << ", " << here.second << ")\n";
+			}
 		}
-        std::cout << "Algo decision: Cleaning\n";
+		std::cout << "Algo decision: cleaning\n";
         this->totalSteps++;
         return Step::Stay;
     }
@@ -83,16 +93,22 @@ void Algorithm_208992883_322623182_BFS::updateLoc() {
             std::pair<int,int> n = moveTranslation(d);
             size_t n_key = keyConvert(n);
             auto it = this->algoGrid.find(n_key);
-            if (it != this->algoGrid.end()) {
-                Position& neighbor_p = it->second;
-                if (here_p.getDistToDocking() > neighbor_p.getDistToDocking() + 1) {
-                    here_p.setDistToDocking(neighbor_p.getDistToDocking() + 1);
-                    here_p.setDirectionToDocking(d);
-                }
-            } 
-			else {
-                this->algoGrid[n_key] = Position(here_p.getDistToDocking() + 1, static_cast<Direction>((i + 2) % 4));
-            }
+			if (it == this->algoGrid.end())
+			{
+				this->algoGrid[n_key] = Position(here_p.getDistToDocking() + 1, static_cast<Direction>((i + 2) % 4));
+			}
+            // if (it != this->algoGrid.end()) {
+            //     Position& neighbor_p = it->second;
+            //     if (here_p.getDistToDocking() >= neighbor_p.getDistToDocking() + 1) {
+			// 		std::cout << "Updating position: (" << n.first << ", " << n.second << ") with distToDocking: " << neighbor_p.getDistToDocking() + 1 << "here = (" << here.first << ", " << here.second << ")\n";
+            //         here_p.setDistToDocking(neighbor_p.getDistToDocking() + 1);
+            //         here_p.setDirectionToDocking(d);
+            //     }
+            // } 
+			// else {
+            //     this->algoGrid[n_key] = Position(here_p.getDistToDocking() + 1, static_cast<Direction>((i + 2) % 4));
+			// 	std::cout << "New position: (" << n.first << ", " << n.second << ") with distToDocking: " << here_p.getDistToDocking() + 1 << "here = (" << here.first << ", " << here.second << ")\n";
+            // }
         }
     }
 }
@@ -159,6 +175,7 @@ void Algorithm_208992883_322623182_BFS::enqueueNeighbors() {
             if (visited.find(n_key) == visited.end()) {
 				std::cout << "Enqueueing neighbor: (" << n.first << ", " << n.second << ") here= (" <<here.first << "," << here.second << ")\n";
                 bfsQueue.push(n);
+				this->algoGrid[n_key] = Position(this->algoGrid[keyConvert(here)].getDistToDocking() + 1, static_cast<Direction>((i + 2) % 4));
             }
         }
     }

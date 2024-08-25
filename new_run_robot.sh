@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Number of iterations
-iterations=10000
+iterations=1000000
 # Command to run
-command="./my_robot -house_path=.. -algo_path=./algo_dir -num_threads=2"
+command="./my_robot -house_path=.. -algo_path=./algo_dir -num_threads=20"
 cn=0
 
 # Run the command in a loop
