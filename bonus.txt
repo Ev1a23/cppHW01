@@ -1,3 +1,4 @@
 *When a thread runs after the timeout, it's being canceled immediately, without busy waiting, thanks to our implementation using pthread_cancel and condition variables.
 *A special character 'T' will be written to the output file in case a thread is terminated, which implies the relvant run time exceeded the timeout.
-*our general cmake file creates a folder named algo_dir which includes all of our algorithm's .so files.
+*Our general cmake file creates a folder named algo_dir which includes all of our algorithm's .so files.
+*We limit the num_threads to be 2 times the number of available cores, because if we generate a lot of threads, in our case where each thread is using a lot of processing power, it will be less efficient than limiting by factor of the cores.

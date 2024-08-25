@@ -143,7 +143,10 @@ Config parse_args(int argc, char* argv[]) {
         } else if (arg.find("-num_threads=") == 0) {
             config.num_threads = std::stoi(arg.substr(strlen("-num_threads=")));
             if (config.num_threads < 1)
-                throw std::runtime_error("Illegal num_threads parameter: " + std::to_string(config.num_threads));
+                {throw std::runtime_error("Illegal num_threads parameter: " + std::to_string(config.num_threads));}
+			config.num_threads = std::min(config.num_threads, 2 * static_cast<int>(std::thread::hardware_concurrency()));
+			std::cout << "Using " << config.num_threads << " threads" << std::endl;
+
         } else if (arg == "-summary_only") {
             config.summary_only = true;
         } else {
