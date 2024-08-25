@@ -195,3 +195,18 @@ int MyAlgorithm::Position::getDirtLevel() const
 {
     return dirtLevel;
 }
+
+std::deque<Step> MyAlgorithm::calculatePathFromAncestor(std::pair<int,int> target, std::pair<int,int> ancestor)
+{
+	std::deque<Step> path;
+	std::pair<int,int> current = target;
+	std::cout << "Ancestor: (" << ancestor.first << ", " << ancestor.second << ")" << "Target: (" << target.first << ", " << target.second << ")\n";
+	while(current != ancestor)
+	{
+		Direction d = this->algoGrid[keyConvert(current)].getDirectionToDocking();
+		Step s = static_cast<Step>((static_cast<int>(d)+2)%4);
+		path.push_front(static_cast<Step>((static_cast<int>(d) + 2) % 4));
+		current = locationTranslation(d, current);
+	}
+	return path;	
+}

@@ -5,6 +5,8 @@
 #include <utility>
 #include "common/AbstractAlgorithm.h"
 #include <unordered_map>
+#include <queue>
+#include <unordered_set>
 
 class MyAlgorithm : public AbstractAlgorithm  {
 public:
@@ -37,6 +39,13 @@ public:
 		int i = pos.first;
 		int j = pos.second;
 		return ((size_t)i) << 32 | (unsigned int) j;
+	}
+
+	static std::pair<int,int> decryptKey(size_t k)
+	{
+		int i = (int)(k >> 32);
+		int j = (int)(k & 0xFFFFFFFF);
+		return {i,j};
 	}
 
 	static bool compareDirts(int a, int b)
@@ -73,11 +82,14 @@ protected:
 	double rechargeAmount;
     std::pair<int,int> here;
     std::unordered_map<size_t, MyAlgorithm::Position> algoGrid;
+    std::unordered_set<size_t> visited;
+	std::deque<Step> pathToTarget;
     void updateHere();
     std::pair<int,int> moveTranslation(Direction directionFromEnum) const;
 	std::pair<int,int> locationTranslation(Direction directionFromEnum, std::pair<int,int> location) const;
     std::size_t minDist() const;
     Direction neighborsHandle();
+	std::deque<Step> calculatePathFromAncestor(std::pair<int,int> target, std::pair<int,int> ancestor);
 };
 
 #endif // ALGORITHM_H

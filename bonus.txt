@@ -1,3 +1,3 @@
-*HLD
-	We wrote and HLD file to explain our design, implementation and algorithm approach.
-	Furthermore, we've attached the sequence diagram and uml class diagram to make the design and main logic understood better.
+*When a thread runs after the timeout, it's being canceled immediately, without busy waiting, thanks to our implementation using pthread_cancel and condition variables.
+*A special character 'T' will be written to the output file in case a thread is terminated, which implies the relvant run time exceeded the timeout.
+*our general cmake file creates a folder named algo_dir which includes all of our algorithm's .so files.

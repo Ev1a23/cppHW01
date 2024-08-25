@@ -67,7 +67,6 @@ Step Algorithm_208992883_322623182_randomized_DFS::nextStep() {
 
     // if not charging, update info:
     this->updateHere();
-    Direction next = RandomizedNeighborsHandle(); // use only when exploring
     ////////////////////////////
     // returning to docking:
     if ((here_p.getDistToDocking()) + 1 >= std::min(this->batteryMeter->getBatteryState(), this->maxSteps - this->totalSteps))
@@ -91,6 +90,7 @@ Step Algorithm_208992883_322623182_randomized_DFS::nextStep() {
     // exploring:
     std::cout << "Algo decision: Exploring\n";
 	this->totalSteps++;
+	Direction next = ChooseNextStep();
 	here = moveTranslation(next);
     return static_cast<Step>(next);
 }
@@ -137,4 +137,68 @@ Direction Algorithm_208992883_322623182_randomized_DFS::RandomizedNeighborsHandl
         }
     }
     return bestD;
+}
+
+Direction Algorithm_208992883_322623182_randomized_DFS::ChooseNextStep()
+{
+	if (here == dockingStation)
+	{
+		Position best = this->algoGrid.begin()->second;
+		size_t bestKey = this->algoGrid.begin()->first;
+		for (auto it = this->algoGrid.begin(); it != this->algoGrid.end(); ++it) 
+		{
+			if (it->second.getDirtLevel() == -1 || it->second.getDirtLevel() == -3)
+			{
+				//wall or docking
+				continue;
+			}
+			if (!comparePositions(best, it->second))
+			{
+				best = it->second;
+				bestKey = it->first;
+			}
+		}
+		std::pair<int,int> bestPos = decryptKey(bestKey);
+		pathToTarget = this->calculatePathFromAncestor(bestPos, dockingStation);
+		Direction nextD = static_cast<Direction>(pathToTarget.front());
+		pathToTarget.pop_front();
+		return nextD;
+	}
+
+	else
+	{
+		if(!pathToTarget.empty())
+		{
+			Direction nextStep = static_cast<Direction>(pathToTarget.front());
+			pathToTarget.pop_front();
+			return nextStep;
+		}
+		else
+		{
+			return RandomizedNeighborsHandle();
+		}
+	}
+}
+
+bool Algorithm_208992883_322623182_randomized_DFS::comparePositions(Position positionA, Position positionB) const
+{
+	bool c =  compareDirts(positionA.getDirtLevel(), positionB.getDirtLevel());
+	bool d = positionA.getDistToDocking() < positionB.getDistToDocking();
+	if (c)
+	{
+		return true;
+	}
+	else
+	{
+		if(positionA.getDirtLevel() == positionB.getDirtLevel())
+		{
+			if(d)
+			{
+				return true;
+			}
+			return false;
+		}
+		return false;
+	}
+
 }

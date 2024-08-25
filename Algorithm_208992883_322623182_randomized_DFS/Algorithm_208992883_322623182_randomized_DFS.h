@@ -9,6 +9,8 @@ public:
     Algorithm_208992883_322623182_randomized_DFS();
     Step nextStep() override;
 	Direction RandomizedNeighborsHandle();
+	Direction ChooseNextStep();
+	bool comparePositions(Position positionA, Position positionB) const;
 };
 
 #endif // RANDOMIZED_STEP_ALGORITHM_H

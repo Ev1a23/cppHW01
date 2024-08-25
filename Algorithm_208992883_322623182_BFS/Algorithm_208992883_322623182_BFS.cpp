@@ -311,18 +311,3 @@ std::deque<Step> Algorithm_208992883_322623182_BFS::calculatePathToDocking(std::
 	}
 	return path;	
 }
-
-std::deque<Step> Algorithm_208992883_322623182_BFS::calculatePathFromAncestor(std::pair<int,int> target, std::pair<int,int> ancestor)
-{
-	std::deque<Step> path;
-	std::pair<int,int> current = target;
-	std::cout << "Ancestor: (" << ancestor.first << ", " << ancestor.second << ")" << "Target: (" << target.first << ", " << target.second << ")\n";
-	while(current != ancestor)
-	{
-		Direction d = this->algoGrid[keyConvert(current)].getDirectionToDocking();
-		Step s = static_cast<Step>((static_cast<int>(d)+2)%4);
-		path.push_front(static_cast<Step>((static_cast<int>(d) + 2) % 4));
-		current = locationTranslation(d, current);
-	}
-	return path;	
-}
