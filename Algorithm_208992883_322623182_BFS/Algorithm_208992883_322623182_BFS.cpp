@@ -41,6 +41,13 @@ Step Algorithm_208992883_322623182_BFS::nextStep() {
     if (this->dirtSensor->dirtLevel() > 0) {
         std::cout << "Algo decision: Cleaning\n";
         this->totalSteps++;
+		if(!foundDirt)
+		{
+			std::cout << "Found dirt, setting the center of bfs to: (" << here.first << ", " << here.second << ")\n";
+			foundDirt = true;
+			bfsQueue = std::queue<std::pair<int, int>>();
+			enqueueNeighbors();
+		}
         return Step::Stay;
     }
 
@@ -63,7 +70,6 @@ void Algorithm_208992883_322623182_BFS::initializeGrid() {
 	updateLoc();
 	enqueueNeighbors();
 	pathToTarget = calculatePathFromAncestor(bfsQueue.front(), here);
-	std::cout << "Path to target size: " << pathToTarget.size() << " bfsQueue size: " << bfsQueue.size() << "\n";
 }
 
 void Algorithm_208992883_322623182_BFS::updateLoc() {

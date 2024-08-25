@@ -30,6 +30,7 @@ private:
 	std::deque<Step> calculatePathToDocking(std::pair<int,int> source);
 	std::deque<Step> calculatePathFromAncestor(std::pair<int,int> target, std::pair<int,int> ancestor);
 
+	bool foundDirt = false;
 };
 
 #endif // BFS_ALGORITHM_H
