@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <cstring>
+#include <latch>
 
 #include <iostream>
 #include <string>
@@ -42,6 +43,7 @@ struct Config {
 
 
 struct SimArgs {
+    std::latch& ml;
     House &house;
     int house_ind;
     AbstractAlgorithm *algo;
@@ -279,6 +281,7 @@ void beginRunSim(SimArgs &simArgs)
     std::lock_guard<std::mutex> guard(summary_lock);
     summary[simArgs.algo_ind + 1][simArgs.house_ind + 1] = std::to_string(results.score);   // +1 because first row and first 
                                                                                     // col are for algos and houses names
+    simArgs.ml.count_down();
 }
 
 void thread_print(auto thread_id, fs::path house, std::string algo) {
@@ -346,12 +349,23 @@ int main(int argc, char* argv[]) {
         {
             threads.push_back(std::make_unique<std::thread>(start_task));
         }
+        for (auto& t : threads)
+        {
+            t->detach();
+        }
         std::cout << "Finished creating threads" << std::endl;
 
 
         //////////////////////////////////////////////////////////////////////
         //          Fill Q with tasks - one per <house, algo> pair          //
         //////////////////////////////////////////////////////////////////////
+        int algocount= 0;
+        for (auto algo : AlgorithmRegistrar::getAlgorithmRegistrar()){
+            algocount++;
+        }
+        std::latch tasks_latch(valid_houses.size() * algocount);
+ 
+
         int algo_ind = 0;
         for (auto algo : AlgorithmRegistrar::getAlgorithmRegistrar())
         {
@@ -361,7 +375,7 @@ int main(int argc, char* argv[]) {
             {
                 algorithms.push_back(algo.create()); // save unique ptr in main's stack so algo object won't be freed
                 std::unique_lock lk(Q_lock);
-                Q.push_back(SimArgs{valid_houses[i], house_ind, algorithms.back().get(), algo_ind, algo.name()}); //std::make_pair(house, algorithms.back().get())); // add task to Q
+                Q.push_back(SimArgs{tasks_latch, valid_houses[i], house_ind, algorithms.back().get(), algo_ind, algo.name()}); //std::make_pair(house, algorithms.back().get())); // add task to Q
                 lk.unlock();
                 Q_not_empty.notify_one(); // awake a waiting thread
                 ++house_ind;
@@ -372,14 +386,7 @@ int main(int argc, char* argv[]) {
                     // threads won't start another loop, but if there's a task in Q they will handle it
         Q_not_empty.notify_all(); // awake sleeping all threads
 
-        //////////////////////////////////////////////////////////////////////
-        //                          Join Threads                            //
-        //////////////////////////////////////////////////////////////////////
-        for (int i =0; i < threads.size(); i++)
-        {
-            threads[i]->join();
-        }
-
+        tasks_latch.wait();
 
         write_summary();
 		//////////////////////////////////////////////////////////////////////

@@ -20,3 +20,8 @@ In terminal of main directory:
 	2. cd build
 	3. cmake ..
 	4. make
+
+The custom_algorithm dir is for shared code of our 2 algorithms.
+So 2 .so files will be generated after compiling everything:
+Algorithm_208992883_322623182_BFS.so
+Algorithm_208992883_322623182_randomized_DFS.so

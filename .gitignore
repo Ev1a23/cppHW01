@@ -1,5 +1,0 @@
-*.o
-build/
-common_run.sh
-algo_dir/
-*.json
