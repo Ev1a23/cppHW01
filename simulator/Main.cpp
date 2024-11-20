@@ -70,11 +70,11 @@ std::vector<std::vector<std::string>> summary;
 
 void handleInvalidFileException(const std::exception &e, const fs::path &invalidFilePath)
 {
-    std::cout << invalidFilePath.string() << std::endl;
+    //std::cout << invalidFilePath.string() << std::endl;
     fs::path errorFilename = invalidFilePath.filename().replace_extension("error");
     errorFilename = errorFilename.string().compare(0,3,"lib") == 0 ? fs::path(errorFilename.string().substr(3)) : errorFilename;
     fs::path errorPath = fs::current_path().string() / errorFilename;
-    std::cout << errorPath.string() << std::endl;
+    //std::cout << errorPath.string() << std::endl;
     std::ofstream errorFile(errorPath);
     if (!errorFile) {
         std::cerr << "Failed to open file: " << invalidFilePath << std::endl;
@@ -98,7 +98,7 @@ void validateHouseFile(const fs::path &houseFilePath, std::vector<House> &valid_
 
 bool validateAlgoFile(const fs::path &algoFilePath, std::vector<void*> &algoPointers)
 {
-	std::cout << "Validating algo file: " << algoFilePath << "\n";
+	//std::cout << "Validating algo file: " << algoFilePath << "\n";
     size_t algoCountBefore = AlgorithmRegistrar::getAlgorithmRegistrar().count(); // how many algorithm are registered so far
     void *algoFilePtr;
     try
@@ -147,7 +147,7 @@ Config parse_args(int argc, char* argv[]) {
             if (config.num_threads < 1)
                 {throw std::runtime_error("Illegal num_threads parameter: " + std::to_string(config.num_threads));}
 			config.num_threads = std::min(config.num_threads, 2 * static_cast<int>(std::thread::hardware_concurrency()));
-			std::cout << "Using " << config.num_threads << " threads" << std::endl;
+			//std::cout << "Using " << config.num_threads << " threads" << std::endl;
 
         } else if (arg == "-summary_only") {
             config.summary_only = true;
@@ -227,7 +227,7 @@ void runSim(MySimulator *sim, std::atomic<bool> *finished, std::condition_variab
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, nullptr);
     pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, nullptr);
     std::unique_lock l(*m);     // make sure the calling thread has started waiting
-    std::cout << "Thread " << std::this_thread::get_id() << " is running a simulation" << std::endl;
+    //std::cout << "Thread " << std::this_thread::get_id() << " is running a simulation" << std::endl;
     l.unlock();                 // make sure the calling thread won't block if the simulation blocks
     sim->run(*m);
     l.lock();
@@ -251,12 +251,12 @@ void beginRunSim(SimArgs &simArgs)
     std::mutex m;
     std::unique_lock l(m); // make sure t doesnt start the simulation before we start waiting
     std::thread t(runSim, &sim, &finished, &timeout_cv, &m);
-    std::cout << "Started a thread for simulation sun, thread_id = " << t.get_id() << std::endl;
+    t.detach();
+    //std::cout << "Started a thread for simulation sun, thread_id = " << t.get_id() << std::endl;
     if (!timeout_cv.wait_for(l, std::chrono::milliseconds(2*maxSteps), [&finished]() { return finished.load(); })) {
         // Timeout occurred
         pthread_cancel(t.native_handle());
-        t.detach();
-        std::cout << "Timeout for " << outputFilePath << std::endl;
+        //std::cout << "Timeout for " << outputFilePath << std::endl;
         results = sim.getResults();
         results.score = maxSteps * 2 + initialDirt * 300 + 2000;
         results.stepsLog += "T";
@@ -264,8 +264,11 @@ void beginRunSim(SimArgs &simArgs)
     }
     else
     {
-        t.join();
-        std::cout << "Finished sim " << outputFilePath << " within timeout\n";
+        if (t.joinable())
+        {
+            t.join();
+        }
+        //std::cout << "Finished sim " << outputFilePath << " within timeout\n";
         results = sim.getResults();
     }
     if (!config.summary_only)
@@ -285,33 +288,29 @@ void beginRunSim(SimArgs &simArgs)
 }
 
 void thread_print(auto thread_id, fs::path house, std::string algo) {
-    std::cout << "Thread " << thread_id << " handles (add / remove) a new task" << std::endl;
-    std::cout << "\t house: " << house << std::endl;
-    std::cout << "\t algo: " << algo << std::endl;
-    std::cout << "\t #task_remained = " << Q.size() << std::endl;
+    //std::cout << "Thread " << thread_id << " handles (add / remove) a new task" << std::endl;
+    //std::cout << "\t house: " << house << std::endl;
+    //std::cout << "\t algo: " << algo << std::endl;
+    //std::cout << "\t #task_remained = " << Q.size() << std::endl;
 }
 
 void start_task()
 {
-    std::cout << "Thread started, id: " << std::this_thread::get_id() << std::endl;
+    //std::cout << "Thread started, id: " << std::this_thread::get_id() << std::endl;
     while (!Q.empty() || done == 0)
     {
-        std::unique_lock<std::mutex> lk(Q_lock); // lock here because while condition access Q
-        Q_not_empty.wait(lk, []{return (!Q.empty() || done);});     // practically waits until 
-                                                                    // there's an available task or all tasks are done
+        std::unique_lock<std::mutex> lk(Q_lock);
+
+        Q_not_empty.wait(lk, [&]{ return !Q.empty() || done; });
+
         if (!Q.empty())
         {
             SimArgs simArgs = Q.front();
             Q.pop_front();
-            lk.unlock();
             beginRunSim(simArgs);
         }
-        else
-        {
-            lk.unlock();
-        }
     }
-    std::cout << "Thread finished, id: " << std::this_thread::get_id() << std::endl;
+    //std::cout << "Thread finished, id: " << std::this_thread::get_id() << std::endl;
 }
 
 
@@ -324,10 +323,10 @@ int main(int argc, char* argv[]) {
         //////////////////////////////////////////////////////////////////////
         config = parse_args(argc, argv);
 
-        std::cout << "House Path: " << config.house_path << std::endl;
-        std::cout << "Algo Path: " << config.algo_path << std::endl;
-        std::cout << "Number of Threads: " << config.num_threads << std::endl;
-        std::cout << "Summary Only: " << (config.summary_only ? "true" : "false") << std::endl;
+        //std::cout << "House Path: " << config.house_path << std::endl;
+        //std::cout << "Algo Path: " << config.algo_path << std::endl;
+        //std::cout << "Number of Threads: " << config.num_threads << std::endl;
+        //std::cout << "Summary Only: " << (config.summary_only ? "true" : "false") << std::endl;
 
 
         //////////////////////////////////////////////////////////////////////
@@ -348,12 +347,13 @@ int main(int argc, char* argv[]) {
         for (int i = 0; i < config.num_threads; i++)
         {
             threads.push_back(std::make_unique<std::thread>(start_task));
+            threads.back()->detach();
         }
-        for (auto& t : threads)
-        {
-            t->detach();
-        }
-        std::cout << "Finished creating threads" << std::endl;
+        // for (auto& t : threads)
+        // {
+        //     t->detach();
+        // }
+        //std::cout << "Finished creating threads" << std::endl;
 
 
         //////////////////////////////////////////////////////////////////////
@@ -384,10 +384,10 @@ int main(int argc, char* argv[]) {
         }
         done = 1;   // set before notifying all - 
                     // threads won't start another loop, but if there's a task in Q they will handle it
+        std::cout << "Done!" << std::endl;
         Q_not_empty.notify_all(); // awake sleeping all threads
 
         tasks_latch.wait();
-
         write_summary();
 		//////////////////////////////////////////////////////////////////////
         //                          Dlclose on opened algos                 //
@@ -398,7 +398,7 @@ int main(int argc, char* argv[]) {
 		{
 			dlclose(p);
 		}
-		std::cout<<"Finished closing all algo handles"<<"\n";
+		//std::cout<<"Finished closing all algo handles"<<"\n";
     }
     
     catch(const std::exception& e)
