@@ -225,25 +225,16 @@ void write_summary()
 void runSim(MySimulator *sim, std::atomic<bool> *finished, std::condition_variable *cv_timeout, std::mutex *m)
 {
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, nullptr);
-    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, nullptr); // Safer alternative to ASYNCHRONOUS
+    pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, nullptr);
+	std::unique_lock<std::mutex> l(*m); 
+	std::cout << "Thread " << std::this_thread::get_id() << " is running a simulation" << std::endl;
 
-    try {
-        std::unique_lock<std::mutex> l(*m); 
-        std::cout << "Thread " << std::this_thread::get_id() << " is running a simulation" << std::endl;
+	l.unlock();
+	sim->run(*m);
 
-        l.unlock(); // Allow calling thread to proceed if the simulation blocks
-        sim->run(*m);
-
-        l.lock();
-        *finished = true;
-        cv_timeout->notify_one(); // Wake up calling thread
-    } catch (const std::exception &e) {
-        std::cerr << "Exception in runSim: " << e.what() << std::endl;
-        cv_timeout->notify_one(); // Ensure calling thread is notified even on exception
-    } catch (...) {
-        std::cerr << "Unknown exception in runSim" << std::endl;
-        cv_timeout->notify_one();
-    }
+	l.lock();
+	*finished = true;
+	cv_timeout->notify_one(); // wake up calling thread
 }
 
 void beginRunSim(SimArgs &simArgs) {
@@ -266,6 +257,7 @@ void beginRunSim(SimArgs &simArgs) {
             })) {
             // Timeout occurred
             std::cout << "Timeout for " << outputFilePath << std::endl;
+			pthread_cancel(t.native_handle());
 			t.detach();
             results = sim.getResults();
             results.score = maxSteps * 2 + initialDirt * 300 + 2000;
@@ -405,6 +397,7 @@ int main(int argc, char* argv[]) {
 
         tasks_latch.wait();
         write_summary();
+		std::cout << "Finished Writing Summary " << std::endl;
 		//////////////////////////////////////////////////////////////////////
         //                          Dlclose on opened algos                 //
         //////////////////////////////////////////////////////////////////////
@@ -414,7 +407,7 @@ int main(int argc, char* argv[]) {
 		{
 			dlclose(p);
 		}
-		std::cout<<"Finished closing all algo handles"<<"\n";
+        std::cout<<"Finished closing all algo handles"<<"\n";
     }
     
     catch(const std::exception& e)
