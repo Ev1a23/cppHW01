@@ -32,7 +32,7 @@ Step Algorithm_208992883_322623182_BFS::nextStep() {
 	visited.insert(keyConvert(here));
 
 
-    if ((here_p.getDistToDocking()) + 1 > std::min(this->batteryMeter->getBatteryState(), this->maxSteps - this->totalSteps)) {
+    if ((here_p.getDistToDocking()) + 1 >= std::min(this->batteryMeter->getBatteryState(), this->maxSteps - this->totalSteps)) {
 		pathToTarget = calculatePathToDocking(here);
         return returnToDocking();
     }
