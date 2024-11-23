@@ -226,35 +226,35 @@ void runSim(MySimulator *sim, std::atomic<bool> *finished, std::condition_variab
 {
     pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, nullptr);
     pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, nullptr);
-	std::unique_lock<std::mutex> l(*m); 
+	std::unique_lock<std::mutex> l(*m);  // make sure the calling thread has started waiting
 	std::cout << "Thread " << std::this_thread::get_id() << " is running a simulation" << std::endl;
 
-	l.unlock();
+	l.unlock(); // make sure the calling thread won't block if the simulation blocks
 	sim->run(*m);
 
 	l.lock();
 	*finished = true;
-	cv_timeout->notify_one(); // wake up calling thread
+	cv_timeout->notify_one(); // wake up calling thread in case of timeout has not reached yet
 }
 
 void beginRunSim(SimArgs &simArgs) {
     MySimulator::SimResults results;
     std::string outputFilePath = simArgs.getOutputFile();
     MySimulator sim = simArgs.createSim();
+	int score;
     std::size_t initialDirt = simArgs.house.totalDirt();
     std::size_t maxSteps = simArgs.house.getMaxSteps();
 
-    std::atomic<bool> finished(false);
+    std::atomic<bool> finished=false;
     std::condition_variable timeout_cv;
     std::mutex m;
 
-    std::unique_lock l(m); // Ensure thread waits for simulation to start
+    std::unique_lock l(m); // make sure t doesnt start the simulation before we start waiting
     std::thread t(runSim, &sim, &finished, &timeout_cv, &m);
+	    std::cout << "Started a thread for simulation sun, thread_id = " << t.get_id() << std::endl;
     
     try {
-        if (!timeout_cv.wait_for(l, std::chrono::milliseconds(2 * maxSteps), [&finished]() { 
-                return finished.load(); 
-            })) {
+        if (!timeout_cv.wait_for(l, std::chrono::milliseconds(2*maxSteps), [&finished]() { return finished.load(); })) {
             // Timeout occurred
             std::cout << "Timeout for " << outputFilePath << std::endl;
 			pthread_cancel(t.native_handle());
@@ -357,10 +357,6 @@ int main(int argc, char* argv[]) {
             threads.push_back(std::make_unique<std::thread>(start_task));
             threads.back()->detach();
         }
-        // for (auto& t : threads)
-        // {
-        //     t->detach();
-        // }
         std::cout << "Finished creating threads" << std::endl;
 
 
@@ -392,7 +388,6 @@ int main(int argc, char* argv[]) {
         }
         done = 1;   // set before notifying all - 
                     // threads won't start another loop, but if there's a task in Q they will handle it
-        std::cout << "Done!" << std::endl;
         Q_not_empty.notify_all(); // awake sleeping all threads
 
         tasks_latch.wait();
